@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Slack-style 팔레트 */
+  --slack-bg: #FFFFFF;
+  --slack-bg-secondary: #F8F8F8;
+  --slack-sidebar: #3F0E40;
+  --slack-sidebar-hover: #522653;
+  --slack-sidebar-active: #1164A3;
+  --slack-text: #1D1C1D;
+  --slack-text-secondary: #616061;
+  --slack-text-muted: #ABABAD;
+  --slack-border: #DDDDDD;
+  --slack-border-light: #EEEEEE;
+  --slack-accent: #1264A3;
+  --slack-green: #007A5A;
+  --slack-red: #E01E5A;
+  --slack-yellow: #ECB22E;
+  --slack-blue: #36C5F0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+  background-color: var(--slack-bg);
+  color: var(--slack-text);
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background-color: var(--slack-bg);
+}
+
+.font-pixel {
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* === 에이전트 애니메이션 === */
+
+@keyframes pixel-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes pixel-typing {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-1px) rotate(-1deg); }
+  75% { transform: translateY(0px) rotate(1deg); }
+}
+
+@keyframes pixel-think {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(-3deg); }
+  70% { transform: rotate(3deg); }
+}
+
+@keyframes speech-pop {
+  0% { transform: translateX(-50%) scale(0); opacity: 0; }
+  60% { transform: translateX(-50%) scale(1.05); }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+@keyframes status-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes monitor-flicker {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-pixel-float { animation: pixel-float 2.5s ease-in-out infinite; }
+.animate-pixel-typing { animation: pixel-typing 0.4s ease-in-out infinite; }
+.animate-pixel-think { animation: pixel-think 1.2s ease-in-out infinite; }
+.animate-speech-pop { animation: speech-pop 0.3s ease-out forwards; }
+.animate-status-bounce { animation: status-bounce 0.8s ease-in-out infinite; }
+.animate-monitor-flicker { animation: monitor-flicker 1.5s ease-in-out infinite; }
+.animate-pulse-dot { animation: pulse-dot 1.5s ease-in-out infinite; }
+
+/* 스크롤바 — Slack 스타일 (얇고 미니멀) */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #C1C1C1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #A0A0A0; }

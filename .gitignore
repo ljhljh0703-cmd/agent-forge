@@ -1,0 +1,21 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+.env
+.env.local
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# AI가 생성한 출력물 (런타임 산출물)
+output/
+public/output/
+
+# 내부 툴 상태 파일
+docs/.bkit-memory.json
+docs/.pdca-snapshots/
+docs/.pdca-status.json

@@ -1,0 +1,65 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        'win-gray': '#c0c0c0',
+        'win-blue': '#000080',
+        'win-white': '#ffffff',
+        'win-dark': '#808080',
+        'win-black': '#000000',
+        'win-light': '#dfdfdf',
+        'win-highlight': '#ffffff',
+        'win-shadow': '#808080',
+        'iso': {
+          floor: '#c49a6c',
+          'floor-alt': '#b8895e',
+          'floor-dark': '#a07850',
+          wall: '#d4a574',
+          'wall-dark': '#b8895e',
+          brick: '#9b5b3f',
+          'brick-light': '#c47a5a',
+          wood: '#6b4423',
+          'wood-light': '#8b6343',
+          'wood-dark': '#4a2e1a',
+          cream: '#f5e6d3',
+          accent: '#c8a84e',
+          'accent-light': '#e8c86e',
+          panel: '#2a1a0e',
+          'panel-light': '#3a2a1a',
+          text: '#f5e6d3',
+          'text-dim': '#a08060',
+          bg: '#1a0e06',
+        },
+      },
+      boxShadow: {
+        'outset': 'inset 1px 1px 0 #ffffff, inset -1px -1px 0 #808080',
+        'inset': 'inset -1px -1px 0 #ffffff, inset 1px 1px 0 #808080',
+        'pixel': '4px 4px 0 rgba(74, 46, 26, 0.4)',
+        'pixel-sm': '2px 2px 0 rgba(74, 46, 26, 0.4)',
+      },
+      fontFamily: {
+        'pixel': ['"Press Start 2P"', 'cursive'],
+        'mono': ['"Courier New"', 'monospace'],
+        'system': ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto'],
+      },
+      fontSize: {
+        'xs': ['11px', '13px'],
+        'sm': ['12px', '14px'],
+        'base': ['13px', '15px'],
+        'pixel-xs': ['8px', '12px'],
+        'pixel-sm': ['10px', '14px'],
+        'pixel-base': ['12px', '16px'],
+      },
+      borderWidth: {
+        '1': '1px',
+        '3': '3px',
+      },
+    },
+  },
+  plugins: [],
+};
