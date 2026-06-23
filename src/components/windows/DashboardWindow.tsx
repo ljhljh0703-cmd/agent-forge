@@ -3,6 +3,41 @@ import { useWindowContext } from '../../context/WindowContext';
 import { getMetricsCollector, ExperimentSummary } from '../../services/metrics-collector';
 import { formatCost, formatTokens, formatLatency } from '../../services/cost-calculator';
 
+function downloadMetricsJSON(
+  summary: ExperimentSummary,
+  modelStrategy: string,
+  auditScore: number | null,
+  loopCount: number,
+): void {
+  const byAgentFlat: Record<string, { inputTokens: number; outputTokens: number; costUSD: number }> = {};
+  for (const [id, s] of Object.entries(summary.byAgent)) {
+    byAgentFlat[id] = { inputTokens: s.inputTokens, outputTokens: s.outputTokens, costUSD: s.cost };
+  }
+  const payload = {
+    _note: '실측값. fill-metrics.mjs로 README에 자동 반영.',
+    debtScore: auditScore,
+    loopbackCount: loopCount,
+    domCount: null,
+    hasGameLoop: null,
+    iframeLoadTimeMs: null,
+    pipelineTotalMs: summary.totalLatencyMs,
+    modelStrategy,
+    totalCostUSD: summary.totalCost,
+    totalTokens: summary.totalInputTokens + summary.totalOutputTokens,
+    byAgent: byAgentFlat,
+    allFlash: null,
+    hybridPro: null,
+    allPro: null,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'last-run-metrics.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 const AGENT_COLORS: Record<string, string> = {
   planner:  '#d4a574',
   architect:'#c9866f',
@@ -144,7 +179,7 @@ function LatencyHeatmap({ summary }: { summary: ExperimentSummary }) {
 }
 
 export const DashboardWindow: React.FC = () => {
-  const { currentExperimentId } = useWindowContext();
+  const { currentExperimentId, pipeline, modelStrategy } = useWindowContext();
   const [summary, setSummary] = useState<ExperimentSummary>(() =>
     getMetricsCollector().getSummary(currentExperimentId),
   );
@@ -161,6 +196,15 @@ export const DashboardWindow: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full text-xs gap-2 overflow-y-auto p-1">
+      {/* 메트릭 다운로드 */}
+      {summary.totalApiCalls > 0 && (
+        <button
+          onClick={() => downloadMetricsJSON(summary, modelStrategy, pipeline.auditResult?.score ?? null, pipeline.loopCount)}
+          className="flex-shrink-0 w-full py-1 border border-amber-500 rounded text-amber-800 hover:bg-amber-100 font-bold"
+        >
+          결과 저장 → last-run-metrics.json
+        </button>
+      )}
       {/* 헤더 요약 */}
       <div
         className="flex-shrink-0 grid grid-cols-3 gap-1 p-2 rounded text-center"

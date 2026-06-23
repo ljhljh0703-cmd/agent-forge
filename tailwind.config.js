@@ -34,8 +34,6 @@ export default {
           'wood-light': '#8b6343',
           'wood-dark': '#4a2e1a',
           cream: '#f5e6d3',
-          accent: '#c8a84e',
-          'accent-light': '#e8c86e',
           panel: '#2a1a0e',
           'panel-light': '#3a2a1a',
           text: '#f5e6d3',

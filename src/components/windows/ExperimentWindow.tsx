@@ -44,8 +44,8 @@ export function generateExperimentReport(run: ExperimentRun): string {
 }
 
 const AVAILABLE_MODELS = [
-  'gemini-2.0-flash',
-  'gemini-2.0-pro',
+  'gemini-3.5-flash',
+  'gemini-3.1-pro',
   'claude-sonnet-4-6',
   'claude-opus-4-6',
   'claude-haiku-4-5-20251001',
@@ -74,11 +74,11 @@ function makeDefaultConfig(): ExperimentConfig {
     input: { idea: '', domain: 'game' },
     options: { maxLoops: 3, timeout: 300_000, collectIntermediates: false },
     agentModels: {
-      planner:   { provider: 'gemini', model: 'gemini-2.0-flash', temperature: 0.8 },
-      architect: { provider: 'gemini', model: 'gemini-2.0-flash', temperature: 0.3 },
+      planner:   { provider: 'gemini', model: 'gemini-3.5-flash', temperature: 0.8 },
+      architect: { provider: 'gemini', model: 'gemini-3.5-flash', temperature: 0.3 },
       compiler:  { provider: 'gemini', model: 'local',            temperature: 0   },
-      worker:    { provider: 'gemini', model: 'gemini-2.0-flash', temperature: 0.2 },
-      auditor:   { provider: 'gemini', model: 'gemini-2.0-flash', temperature: 0.1 },
+      worker:    { provider: 'gemini', model: 'gemini-3.5-flash', temperature: 0.2 },
+      auditor:   { provider: 'gemini', model: 'gemini-3.5-flash', temperature: 0.1 },
     },
   };
 }

@@ -225,7 +225,7 @@ export const WindowContextProvider: React.FC<{ children: React.ReactNode }> = ({
     { id: 'code-input',   title: '📂 Code Input', zIndex: 0, isMinimized: false, isVisible: false },
   ]);
 
-  const defaultMetrics = { totalApiCalls: 0, totalTokens: 0, totalCost: 0, avgLatencyMs: 0, errorCount: 0, currentModel: 'gemini-2.0-flash' };
+  const defaultMetrics = { totalApiCalls: 0, totalTokens: 0, totalCost: 0, avgLatencyMs: 0, errorCount: 0, currentModel: 'gemini-3.5-flash' };
   const [agents, setAgents] = useState<AgentData[]>([
     { agentId: 'planner', status: 'idle', currentTask: '', yesterdayMemo: '', lastUpdated: Date.now(), ...defaultMetrics },
     { agentId: 'architect', status: 'idle', currentTask: '', yesterdayMemo: '', lastUpdated: Date.now(), ...defaultMetrics },

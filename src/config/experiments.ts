@@ -94,16 +94,16 @@ export const EXPERIMENT_PRESETS: ExperimentConfig[] = [
   {
     id: 'preset-gemini-all',
     name: '전원 Gemini (현재)',
-    description: '현재 설정 — 모든 에이전트에 Gemini 2.0 Flash',
+    description: '현재 설정 — 모든 에이전트에 Gemini 3.5 Flash',
     cooperationPattern: 'sequential',
     input: { idea: '', domain: 'game' },
     options: DEFAULT_OPTIONS,
     agentModels: {
-      planner:   { provider: 'gemini', model: 'gemini-2.0-flash', temperature: 0.8 },
-      architect: { provider: 'gemini', model: 'gemini-2.0-flash', temperature: 0.3 },
+      planner:   { provider: 'gemini', model: 'gemini-3.5-flash', temperature: 0.8 },
+      architect: { provider: 'gemini', model: 'gemini-3.5-flash', temperature: 0.3 },
       compiler:  { provider: 'gemini', model: 'local',            temperature: 0   },
-      worker:    { provider: 'gemini', model: 'gemini-2.0-flash', temperature: 0.2 },
-      auditor:   { provider: 'gemini', model: 'gemini-2.0-flash', temperature: 0.1 },
+      worker:    { provider: 'gemini', model: 'gemini-3.5-flash', temperature: 0.2 },
+      auditor:   { provider: 'gemini', model: 'gemini-3.5-flash', temperature: 0.1 },
     },
   },
   {
@@ -114,11 +114,11 @@ export const EXPERIMENT_PRESETS: ExperimentConfig[] = [
     input: { idea: '', domain: 'game' },
     options: { ...DEFAULT_OPTIONS, maxLoops: 3 },
     agentModels: {
-      planner:   { provider: 'gemini', model: 'gemini-2.0-flash', temperature: 0.8 },
-      architect: { provider: 'gemini', model: 'gemini-2.0-flash', temperature: 0.3 },
+      planner:   { provider: 'gemini', model: 'gemini-3.5-flash', temperature: 0.8 },
+      architect: { provider: 'gemini', model: 'gemini-3.5-flash', temperature: 0.3 },
       compiler:  { provider: 'gemini', model: 'local',            temperature: 0   },
-      worker:    { provider: 'gemini', model: 'gemini-2.0-flash', temperature: 0.3 },
-      auditor:   { provider: 'gemini', model: 'gemini-2.0-flash', temperature: 0.3 },
+      worker:    { provider: 'gemini', model: 'gemini-3.5-flash', temperature: 0.3 },
+      auditor:   { provider: 'gemini', model: 'gemini-3.5-flash', temperature: 0.3 },
     },
   },
 ];

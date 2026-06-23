@@ -31,7 +31,7 @@ const getMonitorColor = (status: string): string => {
     case 'writing': return '#4ae84a';
     case 'executing': return '#4a8ae8';
     case 'researching': return '#e8c84a';
-    case 'thinking': return '#c8a84e';
+    case 'thinking': return 'oklch(65% 0.18 25)';
     case 'error': return '#e84040';
     case 'success': return '#4ae84a';
     default: return '#2a4a3a'; // idle — 어두운 초록
