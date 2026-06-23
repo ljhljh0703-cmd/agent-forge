@@ -196,7 +196,7 @@ export function getAIClient(): AIClient {
     _client = new AIClient({
       provider: 'gemini',
       apiKey,
-      model: import.meta.env.VITE_AI_MODEL ?? 'gemini-2.0-flash',
+      model: import.meta.env.VITE_AI_MODEL ?? 'gemini-3.5-flash',
       maxTokens: 8192,
     });
   }

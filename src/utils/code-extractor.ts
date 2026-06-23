@@ -32,9 +32,9 @@ export function extractCodeBlocks(markdown: string): CodeBlock[] {
     // <!-- index.html -->  /  /* style.css */  /  // game.js
     const firstLine = content.split('\n')[0].trim();
     const filenameMatch =
-      firstLine.match(/<!--\s*([\w./\-]+)\s*-->/) ??
-      firstLine.match(/\/\*\s*([\w./\-]+)\s*\*\//) ??
-      firstLine.match(/\/\/\s*([\w./\-]+)/);
+      firstLine.match(/<!--\s*([\w./-]+)\s*-->/) ??
+      firstLine.match(/\/\*\s*([\w./-]+)\s*\*\//) ??
+      firstLine.match(/\/\/\s*([\w./-]+)/);
 
     blocks.push({
       language,
@@ -96,7 +96,7 @@ export interface MermaidDiagram {
 export function extractSWCodeBlocks(markdown: string): GeneratedFile[] {
   const files: GeneratedFile[] = [];
   // 백틱 3개 + 슬래시 포함 경로 패턴 (src/, tests/, __tests__/ 등)
-  const fence = /```([\w./\-]+\/[\w./\-]+)\n([\s\S]*?)```/g;
+  const fence = /```([\w./-]+\/[\w./-]+)\n([\s\S]*?)```/g;
   let match: RegExpExecArray | null;
   let idx = 0;
 

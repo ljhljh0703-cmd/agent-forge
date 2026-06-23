@@ -7,6 +7,13 @@ export default {
   theme: {
     extend: {
       colors: {
+        brand: 'oklch(45% 0.12 250)',
+        'brand-strong': 'oklch(35% 0.13 250)',
+        accent: 'oklch(65% 0.18 25)',
+        ink: 'oklch(14% 0.005 70)',
+        'ink-soft': 'oklch(42% 0.012 70)',
+        line: 'oklch(91.5% 0.005 70)',
+        surface: 'oklch(100% 0 0)',
         'win-gray': '#c0c0c0',
         'win-blue': '#000080',
         'win-white': '#ffffff',

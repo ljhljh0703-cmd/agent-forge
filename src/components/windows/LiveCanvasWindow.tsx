@@ -154,7 +154,7 @@ const MermaidView: React.FC<{ diagram: MermaidDiagram | undefined }> = ({ diagra
         mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'loose' });
 
         // Gemini가 종종 생성하는 문법 오류 자동 정제
-        let code = diagram.code
+        const code = diagram.code
           .replace(/```mermaid\s*/g, '')   // 중첩된 코드 펜스 제거
           .replace(/```\s*$/g, '')
           .replace(/\t/g, '    ')          // 탭 → 스페이스

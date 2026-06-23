@@ -15,7 +15,7 @@ const AGENT_ROLES: Record<string, AgentRole> = {
   planner: {
     id: 'planner',
     name: 'Alex (기획자)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.8,
     systemPrompt: `당신은 게임 기획 전문가 Alex입니다.
 사용자의 게임 아이디어를 받아 GDD(Game Design Document)를 생성합니다.
@@ -47,7 +47,7 @@ const AGENT_ROLES: Record<string, AgentRole> = {
   architect: {
     id: 'architect',
     name: 'Sam (아키텍트)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.3,
     systemPrompt: `당신은 게임 기술 아키텍트 Sam입니다.
 GDD를 받아 기술 명세서(SPEC)를 생성합니다.
@@ -91,7 +91,7 @@ GDD를 받아 기술 명세서(SPEC)를 생성합니다.
   worker: {
     id: 'worker',
     name: 'Casey (워커)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.2,
     systemPrompt: `당신은 게임 개발자 Casey입니다.
 기술 명세서(SPEC)의 각 태스크를 받아 실제 게임 코드를 생성합니다.
@@ -126,7 +126,7 @@ GDD를 받아 기술 명세서(SPEC)를 생성합니다.
   auditor: {
     id: 'auditor',
     name: 'Morgan (감시자)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.1,
     systemPrompt: `당신은 QA 엔지니어 Morgan입니다.
 생성된 게임 코드를 검증하고 품질 점수를 매깁니다.
@@ -173,7 +173,7 @@ const COMPILER_ROLES: Record<string, AgentRole> = {
   compiler: {
     id: 'compiler',
     name: 'Jordan (컴파일러)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.2,
     systemPrompt: `당신은 실행 계획 생성기 Jordan입니다.
 GDD(게임 기획서)와 SPEC(기술 명세서)를 받아, Worker가 코드를 생성할 수 있도록 상세한 실행 계획을 JSON으로 출력합니다.
@@ -200,7 +200,7 @@ tasks는 구현 순서대로 정렬. 최소 3개, 최대 8개.`,
   compiler_sw: {
     id: 'compiler_sw',
     name: 'Jordan (태스크 분해기)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.2,
     systemPrompt: `당신은 실행 계획 생성기 Jordan입니다.
 PRD(요구사항 문서)와 아키텍처 문서를 받아, Worker가 보일러플레이트 코드를 생성할 수 있도록 상세한 실행 계획을 JSON으로 출력합니다.
@@ -230,7 +230,7 @@ const SW_AGENT_ROLES: Record<string, AgentRole> = {
   planner_sw: {
     id: 'planner_sw',
     name: 'Alex (요구분석가)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.7,
     systemPrompt: `당신은 시니어 프로덕트 매니저 Alex입니다.
 사용자의 소프트웨어 요구사항을 받아 PRD(Product Requirements Document)를 생성합니다.
@@ -272,7 +272,7 @@ const SW_AGENT_ROLES: Record<string, AgentRole> = {
   architect_sw: {
     id: 'architect_sw',
     name: 'Sam (시스템 설계자)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.3,
     systemPrompt: `당신은 시니어 소프트웨어 아키텍트 Sam입니다.
 PRD를 받아 시스템 아키텍처 문서를 생성합니다.
@@ -351,7 +351,7 @@ project/
   worker_sw: {
     id: 'worker_sw',
     name: 'Casey (코드 생성기)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.2,
     systemPrompt: `당신은 시니어 풀스택 개발자 Casey입니다.
 아키텍처 문서의 구현 순서에 따라 보일러플레이트 코드를 생성합니다.
@@ -385,7 +385,7 @@ project/
   auditor_sw: {
     id: 'auditor_sw',
     name: 'Morgan (아키텍처 리뷰어)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.1,
     systemPrompt: `당신은 시니어 아키텍처 리뷰어 Morgan입니다.
 PRD, 아키텍처 문서, 생성된 코드를 비교 분석하여 품질을 검증합니다.
@@ -437,7 +437,7 @@ const DOCS_AGENT_ROLES: Record<string, AgentRole> = {
   planner_docs: {
     id: 'planner_docs',
     name: 'Alex (문서 기획자)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.7,
     systemPrompt: `당신은 기술 문서 기획 전문가 Alex입니다.
 사용자가 제공한 코드베이스를 분석하여 문서 스코프와 목차(TOC)를 정의합니다.
@@ -476,7 +476,7 @@ const DOCS_AGENT_ROLES: Record<string, AgentRole> = {
   architect_docs: {
     id: 'architect_docs',
     name: 'Sam (코드 분석가)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.3,
     systemPrompt: `당신은 코드베이스 심층 분석 전문가 Sam입니다.
 코드를 분석하여 모듈 구조, 의존성 그래프, 데이터 흐름을 파악합니다.
@@ -520,7 +520,7 @@ graph LR
   compiler_docs: {
     id: 'compiler_docs',
     name: 'Jordan (문서 플래너)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.2,
     systemPrompt: `당신은 문서 작성 계획 생성기 Jordan입니다.
 문서 스코프(TOC)와 코드 분석 결과를 받아, Worker가 각 섹션을 작성할 수 있도록 상세한 실행 계획을 JSON으로 출력합니다.
@@ -547,7 +547,7 @@ tasks는 문서 목차 순서대로 정렬. 최소 3개, 최대 8개.`,
   worker_docs: {
     id: 'worker_docs',
     name: 'Casey (문서 작성기)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.4,
     systemPrompt: `당신은 기술 문서 작성 전문가 Casey입니다.
 코드 분석 결과와 목차를 바탕으로 마크다운 형식의 기술 문서를 작성합니다.
@@ -572,7 +572,7 @@ tasks는 문서 목차 순서대로 정렬. 최소 3개, 최대 8개.`,
   auditor_docs: {
     id: 'auditor_docs',
     name: 'Morgan (문서 리뷰어)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.1,
     systemPrompt: `당신은 기술 문서 품질 리뷰어 Morgan입니다.
 생성된 기술 문서를 5가지 기준으로 검증합니다.
@@ -621,7 +621,7 @@ const FEEDBACK_ROLES: Record<string, AgentRole> = {
   feedback_planner: {
     id: 'feedback_planner',
     name: 'Alex (피드백 분석)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.6,
     systemPrompt: `당신은 게임/소프트웨어 기획 전문가 Alex입니다.
 사용자의 피드백과 현재 프로젝트 상태(GDD, SPEC, 생성 코드)를 분석하여 기획 관점의 개선점을 제시합니다.
@@ -631,7 +631,7 @@ const FEEDBACK_ROLES: Record<string, AgentRole> = {
   feedback_architect: {
     id: 'feedback_architect',
     name: 'Sam (피드백 분석)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.4,
     systemPrompt: `당신은 기술 아키텍트 Sam입니다.
 사용자의 피드백, 현재 SPEC, 기획자의 의견을 바탕으로 기술 아키텍처 관점의 개선점을 제시합니다.
@@ -641,7 +641,7 @@ const FEEDBACK_ROLES: Record<string, AgentRole> = {
   feedback_worker: {
     id: 'feedback_worker',
     name: 'Casey (피드백 분석)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.3,
     systemPrompt: `당신은 시니어 개발자 Casey입니다.
 사용자의 피드백, 현재 생성된 코드, 앞선 팀원들의 의견을 바탕으로 구현 관점의 개선점을 제시합니다.
@@ -651,7 +651,7 @@ const FEEDBACK_ROLES: Record<string, AgentRole> = {
   feedback_coordinator: {
     id: 'feedback_coordinator',
     name: 'Morgan (총괄 조율)',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.2,
     systemPrompt: `당신은 프로젝트 총괄 Morgan입니다.
 팀원들(기획자, 아키텍트, 개발자)의 피드백 분석을 종합하여 최종 개선 방향을 결정합니다.
@@ -679,7 +679,7 @@ const DOC_WRITER_ROLES: Record<string, AgentRole> = {
   skill_writer: {
     id: 'skill_writer',
     name: 'Doc Writer',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.4,
     systemPrompt: `당신은 AI 에이전트 프롬프트 템플릿 작성 전문가입니다.
 현재 프로젝트의 GDD/SPEC을 기반으로 재사용 가능한 SKILL 문서(프롬프트 템플릿)를 작성합니다.
@@ -694,7 +694,7 @@ const DOC_WRITER_ROLES: Record<string, AgentRole> = {
   handoff_writer: {
     id: 'handoff_writer',
     name: 'Handoff Writer',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.3,
     systemPrompt: `당신은 세션 핸드오프 문서 작성 전문가입니다.
 현재 작업 상태를 다음 세션에 전달하기 위한 핸드오프 문서를 작성합니다.
@@ -710,7 +710,7 @@ const DOC_WRITER_ROLES: Record<string, AgentRole> = {
   startercode_writer: {
     id: 'startercode_writer',
     name: 'StarterCode Writer',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.5-flash',
     temperature: 0.3,
     systemPrompt: `당신은 개발 프로젝트 온보딩 문서 작성 전문가입니다.
 생성된 프로토타입 코드를 다른 개발 툴이나 개발자가 빠르게 이어받아 개발할 수 있도록

@@ -20,3 +20,6 @@ public/output/
 docs/.bkit-memory.json
 docs/.pdca-snapshots/
 docs/.pdca-status.json
+
+# 내부 디스패치/작업지시 (공개 금지 — claude-ext)
+_dev/

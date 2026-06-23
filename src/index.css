@@ -1,26 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  /* Slack-style 팔레트 */
-  --slack-bg: #FFFFFF;
-  --slack-bg-secondary: #F8F8F8;
-  --slack-sidebar: #3F0E40;
-  --slack-sidebar-hover: #522653;
-  --slack-sidebar-active: #1164A3;
-  --slack-text: #1D1C1D;
-  --slack-text-secondary: #616061;
-  --slack-text-muted: #ABABAD;
-  --slack-border: #DDDDDD;
-  --slack-border-light: #EEEEEE;
-  --slack-accent: #1264A3;
-  --slack-green: #007A5A;
-  --slack-red: #E01E5A;
-  --slack-yellow: #ECB22E;
-  --slack-blue: #36C5F0;
+  --bg: oklch(98.5% 0.002 70);
+  --surface: oklch(100% 0 0);
+  --ink: oklch(14% 0.005 70);
+  --ink-soft: oklch(42% 0.012 70);
+  --brand: oklch(45% 0.12 250);
+  --brand-strong: oklch(35% 0.13 250);
+  --accent: oklch(65% 0.18 25);
+  --line: oklch(91.5% 0.005 70);
+  --radius: 12px;
 }
 
 * {
@@ -32,17 +25,22 @@
 html, body {
   width: 100%;
   height: 100%;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'IBM Plex Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
   overflow: hidden;
-  background-color: var(--slack-bg);
-  color: var(--slack-text);
+  background-color: var(--bg);
+  color: var(--ink);
+  word-break: keep-all;
+}
+
+code, pre, .mono {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
 }
 
 #root {
   width: 100%;
   height: 100%;
   display: flex;
-  background-color: var(--slack-bg);
+  background-color: var(--bg);
 }
 
 .font-pixel {
