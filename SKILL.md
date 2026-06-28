@@ -2,6 +2,8 @@
 
 > **이 파일은 Compiler 노드가 참조하는 프로젝트 스킬/규칙 문서입니다.**
 
+AgentForge는 AI 게임 스튜디오 파이프라인(기획→제작→검증)의 웹 자동생성 인스턴스다 — Auditor 폐루프·Debt Score·HITL이 단순 바이브코딩과 구분되는 거버넌스 핵심. 단, 에셋 생성(②Asset)과 자기진화(⑤Evolve)는 현재 범위 밖이며, game-studio-pipeline 본체(vault 설계·진행 중)와는 별도 독립 구현이다.
+
 ---
 
 ## 프로젝트 규칙

@@ -1,34 +1,65 @@
 # Agent Forge OS
 
+**한국어** | [English](README.en.md)
+
+AI 에이전트 5단계로 웹게임을 기획→코드→검증까지 자동 생성하는 파이프라인.
+
 [![작동 프로토타입](https://img.shields.io/badge/상태-작동_프로토타입-blue)](.)
-[![BYOK](https://img.shields.io/badge/AI-Gemini_Flash%2FPro_계열_실호출(BYOK)-orange)](.)
+[![BYOK](https://img.shields.io/badge/AI-Gemini_3.5_Flash%2F3.1_Pro(BYOK)-orange)](.)
 [![Debt Score](https://img.shields.io/badge/Debt_Score-측정전-lightgrey)](.)
 [![TS Strict](https://img.shields.io/badge/TypeScript-5.3_strict-3178C6)](.)
-
-> **바이브코딩의 문제**: 아이디어 → 코드까지 과정이 블랙박스 — 어디서 막혔는지, AI가 무슨 판단을 했는지, 생성된 코드가 실제로 돌아가는지 알 수 없다.
->
-> **Agent Forge OS**: 5명의 전문가 AI 에이전트가 역할을 분담해 게임·소프트웨어·문서를 단계별로 생성·검증·루프백하는 **폐루프(closed-loop) 파이프라인**. 각 판단 근거와 Debt Score가 실시간으로 보인다.
+[![MIT](https://img.shields.io/badge/license-MIT-green)](.)
 
 ---
 
-## 5단 파이프라인
+## 문제정의
+
+바이브코딩으로 게임을 만들면 과정이 불투명해진다. 어디서 막혔는지, AI가 무슨 판단을 내렸는지, 생성된 코드가 실제로 브라우저에서 돌아가는지 알 수 없다.
+
+Agent Forge OS는 이 과정을 5명의 전문 AI 에이전트로 분담·단계화하고, 최종 코드를 iframe 샌드박스에서 직접 실행 검증한다. 각 판단 근거(GDD→SPEC→코드)와 Debt Score가 실시간으로 노출된다.
+
+---
+
+## 핵심 차별축
+
+**ⓐ 5단 에이전트 폐루프** — Planner→Architect→Compiler→Worker→Auditor. 각 단계 산출물이 다음 단계의 입력이 되고, Auditor 판정에 따라 Worker 또는 Compiler로 자동 루프백(MAX 3회).
+
+**ⓑ iframe 샌드박스 실행 검증 + Debt Score** — 생성 코드를 격리된 iframe에서 직접 실행. Probe가 DOM 수·gameLoop 존재·런타임 오류를 수집하고 Auditor가 Debt Score(0–10)를 산출. 코드가 "돌아가는지"를 주장이 아닌 실행으로 검증.
+
+**ⓒ 모델전략별 비용 계측** — All Flash / Hybrid Pro / All Pro 전략을 런타임에 전환하고 에이전트별 토큰·USD를 대시보드에서 실시간 확인.
+
+> AI 게임 스튜디오 파이프라인(기획→제작→검증)의 **웹 자동생성 인스턴스** — 자동생성을 넘은 거버넌스·HITL이 이 도구의 차별점이다.
+
+---
+
+## 아키텍처
 
 ```mermaid
 flowchart LR
     U([사용자 아이디어]) --> A
-    A["🧑‍💼 Planner\nAlex\n──────\n산출물: GDD"] --> B
-    B["🧑‍🔧 Architect\nSam\n──────\n산출물: SPEC"] --> C
-    C["🧑‍💻 Compiler\nJordan\n──────\n산출물: ExecutionPlan JSON"] --> D
-    D["👨‍🚀 Worker\nCasey\n──────\n산출물: 코드(스트리밍)"] --> E
-    E["🧑‍⚖️ Auditor\nMorgan\n──────\n산출물: AuditResult JSON\nDebt Score 0-10"]
+    A["Planner · Alex\n산출물: GDD"] --> B
+    B["Architect · Sam\n산출물: SPEC"] --> C
+    C["Compiler · Jordan\n산출물: ExecutionPlan JSON"] --> D
+    D["Worker · Casey\n산출물: 코드(스트리밍)"] --> E
+    E["Auditor · Morgan\n산출물: AuditResult\nDebt Score 0-10"]
     E -->|"fix-worker (MAX 3)"| D
     E -->|"fix-compiler (MAX 3)"| C
     E -->|pass| OUT([최종 산출물])
 ```
 
-### iframe 샌드박스 검증 흐름
+**AI 게임 스튜디오 5단계 매핑** (provisional — 작가 vault 설계·진행 중):
 
-```
+| 스튜디오 단계 | AgentForge 대응 | 현황 |
+| --- | --- | --- |
+| ① Plan — 기획·GDD | Planner (Alex) | 구현 완료 |
+| ② Asset — 스프라이트·타일 생성 | — | **현재 범위 밖** |
+| ③ Produce — 코드 생성 | Architect + Compiler + Worker | 구현 완료 |
+| ④ Verify — 폐루프 검증 | Auditor + iframe + Debt Score | 구현 완료 (핵심 강점) |
+| ⑤ Evolve — 패턴·실패 자동 누적 | — | **현재 범위 밖** |
+
+### iframe 검증 흐름
+
+```text
 Worker 생성 코드
       ↓
   iframe sandbox (allow-scripts)
@@ -40,18 +71,16 @@ Worker 생성 코드
   ├─ gameLoop 감지 (rAF/setInterval ≤100ms → true)
   └─ 5초 타임아웃 시 강제 종료
       ↓
-  Auditor → Debt Score 0-10 산출
+  Auditor → Debt Score 0-10
   (0-4: pass / 5-10: fix 루프백, MAX_AUDIT_LOOPS=3)
 ```
 
----
+### E2E 실측 결과
 
-## 검증 결과 (E2E 실측)
-
-> 아래 수치는 Task 2 E2E 실행 후 채워집니다.
+> 아래 수치는 `npm run dev` 후 파이프라인 완주 → Dashboard "결과 저장" → `node scripts/fill-metrics.mjs` 실행으로 자동 채워집니다.
 
 | 지표 | 값 |
-|------|----|
+| --- | --- |
 | Debt Score (slime-survivors) | [측정전] |
 | 루프백 횟수 | [측정전] |
 | DOM 요소 수 | [측정전] |
@@ -61,117 +90,65 @@ Worker 생성 코드
 
 ### 비용 케이스스터디 (모델전략별)
 
-| 전략 | 총 USD | 입력 토큰 | 출력 토큰 |
-|------|--------|----------|----------|
+| 전략 | 총 USD | 총 토큰 | 소요 시간 |
+| --- | --- | --- | --- |
 | All Flash (gemini-3.5-flash) | [측정전] | [측정전] | [측정전] |
 | Hybrid Pro | [측정전] | [측정전] | [측정전] |
 | All Pro (gemini-3.1-pro) | [측정전] | [측정전] | [측정전] |
 
 ---
 
-## 스크린샷
-
-| Dashboard (토큰·비용) | Pipeline 진행 | Live Canvas | Agent Status |
-|----------------------|--------------|-------------|--------------|
-| *(측정 후 추가)* | *(측정 후 추가)* | *(측정 후 추가)* | *(측정 후 추가)* |
-
----
-
 ## 기술 스택
 
 | 구성 | 버전 / 비고 |
-|------|------------|
+| --- | --- |
 | React | 18 |
 | TypeScript | 5.3 (strict) |
 | Vite | 5 |
 | Tailwind CSS | 3.4 |
 | iframe sandbox | `allow-scripts` 격리 실행 + Probe 검증 |
-| AI 모델 | Gemini 3.5 Flash / 3.1 Pro (`src/config/model-strategy.ts`, BYOK) |
+| AI 모델 | Gemini 3.5 Flash / 3.1 Pro (BYOK, `src/config/model-strategy.ts`) |
 | 비용 계측 | MetricsCollector + CostCalculator (에이전트별 토큰·USD) |
+| 도메인 모드 | Game / Software / Docs |
+
+### 모델 전략
+
+| 전략 | Planner | Architect | Worker | Auditor | 특징 |
+| --- | --- | --- | --- | --- | --- |
+| All Flash | Flash | Flash | Flash | Flash | 빠름·저비용 |
+| Hybrid Pro | Flash | Pro | Flash | Pro | 설계·검토만 Pro |
+| All Pro | Pro | Pro | Pro | Pro | 최고 품질 |
 
 ---
 
-## 빠른 시작
-
-### 1. 설치
+## 실행법
 
 ```bash
 npm install
-```
 
-### 2. API Key 설정 (BYOK)
-
-```bash
+# Gemini API Key 설정 (BYOK — 런타임 전용, dist 번들 안 됨)
 cp .env.example .env
-# .env에 Gemini API Key 입력
-# VITE_AI_API_KEY=AIza...
-```
+# .env: VITE_AI_API_KEY=<your-gemini-key>
 
-> **보안**: 빌드·배포 시 키가 `dist/`에 번들되지 않습니다. 런타임 BYOK 방식 전용.
-
-### 3. 개발 서버 실행
-
-```bash
 npm run dev        # http://localhost:5173
 npm run type-check # tsc --noEmit
 npm run lint       # eslint src
 ```
 
----
-
-## 도메인 모드
-
-| 모드 | 입력 | 산출물 |
-|------|------|--------|
-| **Game** | 게임 아이디어 | 단일 HTML 게임 (DOM 렌더링) |
-| **Software** | 요구사항 | 보일러플레이트 코드 + 아키텍처 |
-| **Docs** | 코드베이스 | 기술 문서 (Mermaid 포함) |
+**실측 수치 자동반영**: 파이프라인 완주 → Dashboard "결과 저장" 클릭 → `docs/last-run-metrics.json` 저장 → `node scripts/fill-metrics.mjs` 실행.
 
 ---
 
-## 모델 전략
+## 정직·한계
 
-`src/config/model-strategy.ts`에서 런타임 전략을 선택합니다.
-
-| 전략 | Planner | Architect | Compiler | Worker | Auditor | 특징 |
-|------|---------|-----------|----------|--------|---------|------|
-| **All Flash** | Flash | Flash | Flash | Flash | Flash | 빠름·저비용 |
-| **Hybrid Pro** | Flash | **Pro** | Flash | Flash | **Pro** | 설계·검토만 Pro |
-| **All Pro** | Pro | Pro | Pro | Pro | Pro | 최고 품질 |
-
----
-
-## 프로젝트 구조
-
-```
-src/
-├── config/
-│   ├── model-strategy.ts    # Flash/Pro 전략 정의
-│   └── domain-mode.ts       # Game/SW/Docs 도메인 설정
-├── services/
-│   ├── agent-service.ts     # 20+ 역할 → systemPrompt/model 매핑
-│   ├── ai-client.ts         # Gemini API 래퍼 (싱글톤)
-│   ├── runtime-sandbox.ts   # iframe 격리 실행 + Probe
-│   ├── metrics-collector.ts # API 콜 메트릭 pub/sub
-│   └── cost-calculator.ts   # 토큰 → USD 변환
-├── context/
-│   └── WindowContext.tsx    # 전역 상태 허브 (windows·agents·pipeline)
-└── components/
-    ├── DraggableWindow.tsx  # 드래그 가능 멀티 윈도우
-    └── windows/
-        ├── DashboardWindow.tsx   # 토큰·USD 실시간 대시보드
-        ├── LiveCanvasWindow.tsx  # iframe sandbox 렌더러
-        └── ...
-output/
-└── slime-survivors/         # 생성된 게임 산출물 예시
-```
+- **Debt Score·비용 수치** = `[측정전]`. 측정 완료 전 수치 주장 없음.
+- **에셋 생성(스프라이트·타일)** = 현재 구현 범위 밖. 코드는 생성하나 아트 에셋 생성 미구현.
+- **자기진화(경험 누적·패턴 학습)** = 현재 구현 범위 밖. 향후 확장 여지.
+- **game-studio-pipeline** = 작가 vault 설계·진행 중(provisional). AgentForge는 그 사상을 공유하는 **독립적 웹 구현**이며 동일 프로젝트가 아님.
+- **본 도구 산출물** = slime-survivors 등 자체 생성 게임. 별도 프로젝트(ClaudeCraft 등)의 산출이 아님.
 
 ---
 
 ## 라이선스
 
 MIT © 2026
-
----
-
-*본 프로젝트는 AI 생성 코드의 폐루프 검증 프로토타입입니다. Debt Score·비용 수치는 실측 후 업데이트됩니다.*
