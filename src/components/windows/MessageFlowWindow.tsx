@@ -5,7 +5,7 @@ import { formatTokens } from '../../services/cost-calculator';
 interface FlowNode {
   id: string;
   label: string;
-  emoji: string;
+  initials: string;
   x: number;
   y: number;
 }
@@ -20,11 +20,11 @@ interface FlowEdge {
 }
 
 const NODES: FlowNode[] = [
-  { id: 'planner',  label: 'Alex',   emoji: '🧑‍💼', x: 110, y: 55  },
-  { id: 'architect',label: 'Sam',    emoji: '🧑‍🔧', x: 110, y: 145 },
-  { id: 'compiler', label: 'Jordan', emoji: '🧑‍💻', x: 110, y: 235 },
-  { id: 'worker',   label: 'Casey',  emoji: '👨‍🚀', x: 110, y: 325 },
-  { id: 'auditor',  label: 'Morgan', emoji: '🧑‍⚖️', x: 110, y: 415 },
+  { id: 'planner',  label: 'Alex',   initials: 'AL', x: 110, y: 55  },
+  { id: 'architect',label: 'Sam',    initials: 'SA', x: 110, y: 145 },
+  { id: 'compiler', label: 'Jordan', initials: 'JO', x: 110, y: 235 },
+  { id: 'worker',   label: 'Casey',  initials: 'CA', x: 110, y: 325 },
+  { id: 'auditor',  label: 'Morgan', initials: 'MO', x: 110, y: 415 },
 ];
 
 const CONTENT_TYPE_LABELS: Record<string, string> = {
@@ -172,10 +172,10 @@ export const MessageFlowWindow: React.FC = () => {
                   stroke={hasPass ? '#8b6f47' : '#c9a87c'}
                   strokeWidth={hasPass ? 2.5 : 1.5}
                 />
-                <text x={node.x} y={node.y - 6} textAnchor="middle" fontSize="16">
-                  {node.emoji}
+                <text x={node.x} y={node.y + 4} textAnchor="middle" fontSize="11" fill="var(--brand)" fontWeight="700">
+                  {node.initials}
                 </text>
-                <text x={node.x} y={node.y + 10} textAnchor="middle" fontSize="9" fill="#2d1810" fontWeight="600">
+                <text x={node.x} y={node.y + 17} textAnchor="middle" fontSize="9" fill="#2d1810" fontWeight="600">
                   {node.label}
                 </text>
               </g>
@@ -190,9 +190,9 @@ export const MessageFlowWindow: React.FC = () => {
         style={{ borderColor: '#c9a87c', backgroundColor: '#faf4ec', color: '#5a3a1a' }}
       >
         <div className="flex justify-between">
-          <span>📨 메시지: {passes.length}건</span>
-          <span>📦 데이터: {formatTokens(totalData)}자</span>
-          <span>📡 API: {apiMetrics.length}건</span>
+          <span>메시지: {passes.length}건</span>
+          <span>데이터: {formatTokens(totalData)}자</span>
+          <span>API: {apiMetrics.length}건</span>
         </div>
         {passes.length === 0 && (
           <div className="text-center mt-1 text-amber-500">파이프라인을 실행하면 흐름이 표시됩니다</div>

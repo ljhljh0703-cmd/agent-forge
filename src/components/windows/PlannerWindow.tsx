@@ -47,7 +47,7 @@ export const PlannerWindow: React.FC = () => {
     if (!file) return;
     // 파일 크기 제한 (500KB)
     if (file.size > 500_000) {
-      addLog(`⚠️ 파일이 너무 큽니다 (${(file.size / 1024).toFixed(0)}KB). 최대 500KB.`, 'warn');
+      addLog(`파일이 너무 큽니다 (${(file.size / 1024).toFixed(0)}KB). 최대 500KB.`, 'warn');
       e.target.value = '';
       return;
     }
@@ -56,7 +56,7 @@ export const PlannerWindow: React.FC = () => {
     reader.onload = (ev) => {
       const content = ev.target?.result as string;
       setGddContent(content);
-      addLog(`📜 GDD loaded: ${file.name}`, 'success');
+      addLog(`GDD loaded: ${file.name}`, 'success');
     };
     reader.readAsText(file);
   };
@@ -89,25 +89,25 @@ ${templateHint}${techHint}
 
     // SW 모드: 텍스트가 없으면 경고
     if (isSW && !swDescription.trim()) {
-      addLog('⚠️ 소프트웨어 요구사항을 입력하세요', 'warn');
+      addLog('소프트웨어 요구사항을 입력하세요', 'warn');
       return;
     }
 
     // 게임 text/file 모드: GDD 직접 사용
     if (!isSW && inputMode !== 'idea') {
       if (!gddContent.trim()) {
-        addLog('⚠️ GDD 내용이 비어있습니다', 'warn');
+        addLog('GDD 내용이 비어있습니다', 'warn');
         return;
       }
       setPipeline({ gdd: gddContent, status: 'running' });
-      addLog('📜 [Alex] GDD 로드 완료', 'success');
+      addLog('[Alex] GDD 로드 완료', 'success');
       setIsDone(true);
       return;
     }
 
     // 게임 idea 모드: 아이디어 입력 확인
     if (!isSW && inputMode === 'idea' && !ideaText.trim()) {
-      addLog('⚠️ 게임 아이디어를 입력하세요', 'warn');
+      addLog('게임 아이디어를 입력하세요', 'warn');
       return;
     }
 
@@ -122,7 +122,7 @@ ${templateHint}${techHint}
     const label = isSW ? 'PRD' : 'GDD';
 
     updateAgent('planner', { status: 'writing', currentTask: `${label} 생성 중...` });
-    addLog(`🧑‍💼 [Alex] ${label} 자동 생성 시작...`, 'info');
+    addLog(`[Alex] ${label} 자동 생성 시작...`, 'info');
 
     let prompt: string;
     if (isSW) {
@@ -152,20 +152,20 @@ ${templateHint}${techHint}
       }
 
       addLog(
-        `🧑‍💼 [Alex] ${label} 생성 완료 (${response.content.length}자, ${response.usage.outputTokens} tokens)`,
+        `[Alex] ${label} 생성 완료 (${response.content.length}자, ${response.usage.outputTokens} tokens)`,
         'success',
       );
       updateAgent('planner', { status: 'idle', currentTask: '' });
       setIsDone(true);
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
-        addLog('⚠️ [Alex] 생성이 취소되었습니다', 'warn');
+        addLog('[Alex] 생성이 취소되었습니다', 'warn');
         updateAgent('planner', { status: 'idle', currentTask: '' });
         return;
       }
       const msg = err instanceof Error ? err.message : String(err);
       setErrorMsg(msg);
-      addLog(`❌ [Alex] ${label} 생성 실패: ${msg}`, 'error');
+      addLog(`[Alex] ${label} 생성 실패: ${msg}`, 'error');
       updateAgent('planner', { status: 'error', currentTask: msg });
     } finally {
       setIsGenerating(false);
@@ -176,13 +176,13 @@ ${templateHint}${techHint}
     // 승인 모드에서 편집된 내용 반영
     if (isEditing && editContent.trim()) {
       setPipeline({ gdd: editContent });
-      addLog(`✏️ ${isSW ? 'PRD' : 'GDD'} 수정 사항 반영됨`, 'info');
+      addLog(`${isSW ? 'PRD' : 'GDD'} 수정 사항 반영됨`, 'info');
     }
     setIsEditing(false);
     toggleWindowVisibility('planner');
     toggleWindowVisibility('architect');
     const label = isSW ? 'PRD' : 'GDD';
-    addLog(`✅ ${label} 승인 → Architect 단계로 진행`, 'success');
+    addLog(`${label} 승인 → Architect 단계로 진행`, 'success');
   };
 
   const handleStartEdit = () => {
@@ -195,11 +195,11 @@ ${templateHint}${techHint}
   };
 
   const generateBtnLabel = isGenerating
-    ? '⏳ 생성 중...'
+    ? '생성 중...'
     : isSW
-    ? '🤖 Generate PRD'
+    ? 'Generate PRD'
     : inputMode === 'idea'
-    ? '🤖 Generate GDD'
+    ? 'Generate GDD'
     : '▶ Start Planning';
 
   return (
@@ -291,7 +291,7 @@ ${templateHint}${techHint}
                   inputMode === mode ? 'bg-win-blue text-white' : 'bg-win-gray hover:bg-win-light'
                 }`}
               >
-                {mode === 'idea' ? '💡 Idea' : mode === 'text' ? '📝 Text' : '📁 File'}
+                {mode === 'idea' ? 'Idea' : mode === 'text' ? 'Text' : 'File'}
               </button>
             ))}
           </div>
@@ -341,7 +341,7 @@ ${templateHint}${techHint}
 
           {inputMode === 'text' && (
             <div className="border border-win-dark bg-win-white p-1">
-              <label className="text-xs font-bold block mb-1">📜 GDD 텍스트 입력</label>
+              <label className="text-xs font-bold block mb-1">GDD 텍스트 입력</label>
               <textarea
                 value={gddContent}
                 onChange={e => setGddContent(e.target.value)}
@@ -356,7 +356,7 @@ ${templateHint}${techHint}
           {inputMode === 'file' && (
             <>
               <div className="border border-win-dark bg-win-white p-1">
-                <label className="text-xs font-bold block mb-1">📜 GDD 파일 업로드</label>
+                <label className="text-xs font-bold block mb-1">GDD 파일 업로드</label>
                 <input
                   type="file"
                   accept=".md,.txt,.markdown"
@@ -378,8 +378,8 @@ ${templateHint}${techHint}
       {errorMsg && (
         <div className="border border-red-400 bg-red-50 p-2 rounded">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-bold text-red-700">❌ 오류 발생</span>
-            <button onClick={() => setErrorMsg('')} className="text-xs text-red-400 hover:text-red-600">✕</button>
+            <span className="text-xs font-bold text-red-700">오류 발생</span>
+            <button onClick={() => setErrorMsg('')} className="text-xs text-red-400 hover:text-red-600">x</button>
           </div>
           <pre className="text-[11px] text-red-600 font-mono whitespace-pre-wrap break-all max-h-32 overflow-auto">{errorMsg}</pre>
         </div>
@@ -390,13 +390,13 @@ ${templateHint}${techHint}
         <div className="border border-win-dark bg-win-white p-1">
           <div className="flex items-center justify-between mb-1">
             <label className="text-xs font-bold">
-              {isEditing ? '✏️ Edit Mode' : 'Preview'}{' '}
-              {isGenerating && <span className="text-blue-500 animate-pulse">⏳ 생성 중...</span>}
+              {isEditing ? 'Edit Mode' : 'Preview'}{' '}
+              {isGenerating && <span className="text-blue-500 animate-pulse">생성 중...</span>}
             </label>
             {isDone && approvalMode && !isGenerating && (
               <div className="flex gap-1">
                 {!isEditing ? (
-                  <button onClick={handleStartEdit} className="text-xs text-blue-600 hover:underline font-bold">✏️ 수정</button>
+                  <button onClick={handleStartEdit} className="text-xs text-blue-600 hover:underline font-bold">수정</button>
                 ) : (
                   <button onClick={handleCancelEdit} className="text-xs text-gray-500 hover:underline">취소</button>
                 )}
@@ -434,7 +434,7 @@ ${templateHint}${techHint}
             className="win-button text-xs px-2"
             style={{ backgroundColor: '#ffcccc' }}
           >
-            ✕
+            x
           </button>
         )}
       </div>
@@ -443,7 +443,7 @@ ${templateHint}${techHint}
         <div className="space-y-1">
           {approvalMode && !isEditing && (
             <div className="text-xs text-amber-600 bg-amber-50 border border-amber-300 rounded px-2 py-1">
-              🛡️ 승인 모드 — 내용을 확인/수정한 뒤 승인하세요
+              승인 모드 — 내용을 확인/수정한 뒤 승인하세요
             </div>
           )}
           <button
@@ -451,7 +451,7 @@ ${templateHint}${techHint}
             className="win-button w-full text-xs font-bold"
             style={{ backgroundColor: '#ccffcc' }}
           >
-            {isEditing ? '✅ 수정 확정 & Continue to Architect' : '▶ Accept & Continue to Architect'}
+            {isEditing ? '수정 확정 & Continue to Architect' : '▶ Accept & Continue to Architect'}
           </button>
         </div>
       )}

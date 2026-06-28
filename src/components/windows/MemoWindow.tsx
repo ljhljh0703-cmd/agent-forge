@@ -52,10 +52,10 @@ const FEEDBACK_AGENTS = [
 ] as const;
 
 const ACTION_LABELS: Record<string, string> = {
-  'regenerate-gdd':  '📝 GDD 재작성',
-  'regenerate-spec': '🔧 SPEC 재작성',
-  'regenerate-code': '💻 코드 재생성',
-  'patch-code':      '🩹 코드 패치',
+  'regenerate-gdd':  'GDD 재작성',
+  'regenerate-spec': 'SPEC 재작성',
+  'regenerate-code': '코드 재생성',
+  'patch-code':      '코드 패치',
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -168,7 +168,7 @@ export const MemoWindow: React.FC = () => {
     };
     setChatHistory(prev => [...prev, userEntry]);
     setIsSending(true);
-    addLog(`📞 [직원 호출] ${opt.label}에게 메시지 전송`, 'info');
+    addLog(`[직원 호출] ${opt.label}에게 메시지 전송`, 'info');
 
     const assistantEntry: ChatMessage = {
       role: 'assistant',
@@ -189,10 +189,10 @@ export const MemoWindow: React.FC = () => {
           return updated;
         });
       });
-      addLog(`📞 [직원 호출] ${opt.label} 응답 완료`, 'success');
+      addLog(`[직원 호출] ${opt.label} 응답 완료`, 'success');
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      addLog(`❌ [직원 호출] 오류: ${msg}`, 'error');
+      addLog(`[직원 호출] 오류: ${msg}`, 'error');
       setChatHistory(prev => {
         const updated = [...prev];
         updated[updated.length - 1] = { ...assistantEntry, content: `오류: ${msg}` };
@@ -209,15 +209,15 @@ export const MemoWindow: React.FC = () => {
     const baseRole = opt.roleId;
 
     if (baseRole === 'worker') {
-      addLog(`🔄 [재생성] Casey — 피드백 반영 재생성`, 'info');
+      addLog(`[재생성] Casey — 피드백 반영 재생성`, 'info');
       const feedbackSpec = `${pipeline.spec}\n\n=== 피드백 ===\n${feedback}`;
       await runWorker(feedbackSpec, pipeline.gdd);
     } else if (baseRole === 'auditor') {
-      addLog(`🔄 [재생성] Morgan — 피드백 반영 재검증`, 'info');
+      addLog(`[재생성] Morgan — 피드백 반영 재검증`, 'info');
       await runAuditor(pipeline.gdd, pipeline.spec, pipeline.generatedCode);
     } else {
-      addLog(`📋 [직원 호출] ${opt.label} 창 열기`, 'info');
-      addLog(`💬 피드백: ${feedback.slice(0, 120)}`, 'info');
+      addLog(`[직원 호출] ${opt.label} 창 열기`, 'info');
+      addLog(`피드백: ${feedback.slice(0, 120)}`, 'info');
       if (opt.windowId) toggleWindowVisibility(opt.windowId);
     }
   };
@@ -230,7 +230,7 @@ export const MemoWindow: React.FC = () => {
     setIsDiscussing(true);
     setDiscussion([]);
     setFeedbackResult(null);
-    addLog('🔥 [에이전트 토론] 시작', 'info');
+    addLog('[에이전트 토론] 시작', 'info');
 
     const agentService = getAgentService();
     const opinions: Record<string, string> = {};
@@ -264,11 +264,11 @@ export const MemoWindow: React.FC = () => {
           });
         });
         opinions[agent.id] = content;
-        addLog(`✓ [${agent.label}] 의견 제출`, 'success');
+        addLog(`[${agent.label}] 의견 제출`, 'success');
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         opinions[agent.id] = `(분석 실패: ${msg})`;
-        addLog(`⚠️ [${agent.label}] 분석 오류`, 'warn');
+        addLog(`[${agent.label}] 분석 오류`, 'warn');
         setDiscussion(prev => {
           const updated = [...prev];
           const lastIdx = updated.map(e => e.agentId).lastIndexOf(agent.id);
@@ -286,12 +286,12 @@ export const MemoWindow: React.FC = () => {
       if (jsonMatch) {
         const result = JSON.parse(jsonMatch[0]) as FeedbackResult;
         setFeedbackResult(result);
-        addLog(`🔥 [토론 완료] 조치: ${result.action} (${result.priority} 우선순위)`, 'success');
+        addLog(`[토론 완료] 조치: ${result.action} (${result.priority} 우선순위)`, 'success');
       } else {
-        addLog('⚠️ [토론] 결과 파싱 실패 — 토론 내용을 직접 확인하세요', 'warn');
+        addLog('[토론] 결과 파싱 실패 — 토론 내용을 직접 확인하세요', 'warn');
       }
     } catch {
-      addLog('⚠️ [토론] 결과 JSON 파싱 오류', 'warn');
+      addLog('[토론] 결과 JSON 파싱 오류', 'warn');
     }
 
     setIsDiscussing(false);
@@ -303,7 +303,7 @@ export const MemoWindow: React.FC = () => {
     setIsApplying(true);
 
     const { action, revisedPrompt, summary } = feedbackResult;
-    addLog(`🚀 [개선 적용] ${action}: ${summary}`, 'info');
+    addLog(`[개선 적용] ${action}: ${summary}`, 'info');
 
     try {
       if (action === 'regenerate-code' || action === 'patch-code') {
@@ -312,19 +312,19 @@ export const MemoWindow: React.FC = () => {
           : pipeline.spec;
         const newCode = await runWorker(combinedSpec, pipeline.gdd, pipeline.executionPlan ?? undefined);
         await runAuditor(pipeline.gdd, pipeline.spec, newCode);
-        addLog(`✅ [개선 완료] 코드 재생성 + 감사 완료`, 'success');
+        addLog(`[개선 완료] 코드 재생성 + 감사 완료`, 'success');
       } else if (action === 'regenerate-spec') {
-        addLog(`📋 [안내] SPEC 재작성 필요 → Architect 창에서 재실행하세요`, 'info');
-        if (revisedPrompt) addLog(`💬 수정 지시: ${revisedPrompt.slice(0, 200)}`, 'info');
+        addLog(`[안내] SPEC 재작성 필요 → Architect 창에서 재실행하세요`, 'info');
+        if (revisedPrompt) addLog(`수정 지시: ${revisedPrompt.slice(0, 200)}`, 'info');
         toggleWindowVisibility('architect');
       } else {
-        addLog(`📋 [안내] GDD 재작성 필요 → Planner 창에서 재실행하세요`, 'info');
-        if (revisedPrompt) addLog(`💬 수정 지시: ${revisedPrompt.slice(0, 200)}`, 'info');
+        addLog(`[안내] GDD 재작성 필요 → Planner 창에서 재실행하세요`, 'info');
+        if (revisedPrompt) addLog(`수정 지시: ${revisedPrompt.slice(0, 200)}`, 'info');
         toggleWindowVisibility('planner');
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      addLog(`❌ [개선 적용] 오류: ${msg}`, 'error');
+      addLog(`[개선 적용] 오류: ${msg}`, 'error');
     } finally {
       setIsApplying(false);
     }
@@ -382,10 +382,10 @@ ${codePreview}
         setDocPreview(content);
       });
       setCanSaveDoc(true);
-      addLog(`📄 [문서 생성] "${docTitle}" 완료`, 'success');
+      addLog(`[문서 생성] "${docTitle}" 완료`, 'success');
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      addLog(`❌ [문서 생성] 오류: ${msg}`, 'error');
+      addLog(`[문서 생성] 오류: ${msg}`, 'error');
     } finally {
       setIsGenerating(false);
     }
@@ -403,7 +403,7 @@ ${codePreview}
     };
     saveDocument(doc);
     refreshDocs();
-    addLog(`💾 [보관함] "${doc.title}" 저장 완료`, 'success');
+    addLog(`[보관함] "${doc.title}" 저장 완료`, 'success');
     setCanSaveDoc(false);
     setDocPreview('');
     setDocTitle('');
@@ -458,7 +458,7 @@ ${codePreview}
                   : 'bg-amber-100 text-amber-900 hover:bg-amber-200'
               }`}
             >
-              💬 직접 대화
+              직접 대화
             </button>
             <button
               onClick={() => setFeedbackMode('pipeline')}
@@ -468,7 +468,7 @@ ${codePreview}
                   : 'bg-amber-100 text-amber-900 hover:bg-amber-200'
               }`}
             >
-              🔥 파이프라인 피드백
+              파이프라인 피드백
             </button>
           </div>
 
@@ -550,16 +550,16 @@ ${codePreview}
             <>
               {/* 파이프라인 현황 배지 */}
               <div className="flex-shrink-0 border border-amber-300 rounded p-2 bg-amber-50">
-                <div className="font-bold text-amber-900 mb-1">📊 파이프라인 현황</div>
+                <div className="font-bold text-amber-900 mb-1">파이프라인 현황</div>
                 <div className="flex flex-wrap gap-2 text-xs">
                   <span className={pipeline.gdd ? 'text-green-700 font-bold' : 'text-gray-400'}>
-                    GDD {pipeline.gdd ? '✓' : '✗'}
+                    GDD {pipeline.gdd ? 'ok' : '--'}
                   </span>
                   <span className={pipeline.spec ? 'text-green-700 font-bold' : 'text-gray-400'}>
-                    SPEC {pipeline.spec ? '✓' : '✗'}
+                    SPEC {pipeline.spec ? 'ok' : '--'}
                   </span>
                   <span className={pipeline.generatedCode.length > 0 ? 'text-green-700 font-bold' : 'text-gray-400'}>
-                    코드 {pipeline.generatedCode.length}개 {pipeline.generatedCode.length > 0 ? '✓' : '✗'}
+                    코드 {pipeline.generatedCode.length}개 {pipeline.generatedCode.length > 0 ? 'ok' : '--'}
                   </span>
                   {pipeline.auditResult && (
                     <span className={pipeline.auditResult.score < 5 ? 'text-green-700 font-bold' : 'text-orange-600 font-bold'}>
@@ -568,7 +568,7 @@ ${codePreview}
                   )}
                 </div>
                 {!pipeline.gdd && (
-                  <div className="text-orange-500 text-xs mt-1">⚠️ 파이프라인을 먼저 실행하세요</div>
+                  <div className="text-orange-500 text-xs mt-1">파이프라인을 먼저 실행하세요</div>
                 )}
               </div>
 
@@ -587,7 +587,7 @@ ${codePreview}
                 disabled={isDiscussing || !pipelineFeedback.trim() || !pipeline.gdd}
                 className="win-button text-xs flex-shrink-0 font-bold disabled:opacity-40"
               >
-                {isDiscussing ? '🔄 토론 진행 중...' : '🔥 에이전트 토론 시작 (4명)'}
+                {isDiscussing ? '토론 진행 중...' : '에이전트 토론 시작 (4명)'}
               </button>
 
               {/* 토론 로그 */}
@@ -603,7 +603,7 @@ ${codePreview}
                       <div className="text-amber-800 whitespace-pre-wrap text-xs leading-relaxed">
                         {entry.content || (
                           isDiscussing ? (
-                            <span className="text-amber-400 animate-pulse">💭 분석 중...</span>
+                            <span className="text-amber-400 animate-pulse">분석 중...</span>
                           ) : ''
                         )}
                       </div>
@@ -630,7 +630,7 @@ ${codePreview}
                     disabled={isApplying}
                     className="win-button text-xs w-full font-bold disabled:opacity-40"
                   >
-                    {isApplying ? '⚙️ 적용 중...' : '✅ 개선 적용'}
+                    {isApplying ? '적용 중...' : '개선 적용'}
                   </button>
                 </div>
               )}
@@ -674,7 +674,7 @@ ${codePreview}
                     docType === t ? 'bg-amber-800 text-amber-50' : 'bg-amber-100 text-amber-900 hover:bg-amber-200'
                   }`}
                 >
-                  {t === 'handoff' ? '핸드오프' : '🚀 StarterCode'}
+                  {t === 'handoff' ? '핸드오프' : 'StarterCode'}
                 </button>
               ))}
             </div>
@@ -705,10 +705,10 @@ ${codePreview}
             {isGenerating
               ? '생성 중...'
               : docType === 'spec'
-              ? '📋 SPEC 불러오기'
+              ? 'SPEC 불러오기'
               : docType === 'startercode'
-              ? '🚀 StarterCode 생성'
-              : '✨ AI 생성'}
+              ? 'StarterCode 생성'
+              : 'AI 생성'}
           </button>
 
           <textarea
@@ -724,7 +724,7 @@ ${codePreview}
             disabled={!canSaveDoc || !docPreview}
             className="win-button text-xs flex-shrink-0 disabled:opacity-40"
           >
-            💾 문서 저장
+            저장
           </button>
         </div>
       )}
@@ -754,7 +754,7 @@ ${codePreview}
                     archiveFilter === f ? 'bg-amber-800 text-amber-50' : 'bg-amber-100 text-amber-900 hover:bg-amber-200'
                   }`}
                 >
-                  {f === 'spec' ? 'SPEC' : f === 'handoff' ? '핸드오프' : '🚀'}
+                  {f === 'spec' ? 'SPEC' : f === 'handoff' ? '핸드오프' : 'SC'}
                 </button>
               ))}
             </div>
@@ -797,13 +797,13 @@ ${codePreview}
                       onClick={() => navigator.clipboard.writeText(selectedDoc.content)}
                       className="flex-1 win-button text-xs"
                     >
-                      📋 복사
+                      복사
                     </button>
                     <button
                       onClick={() => handleDeleteDoc(selectedDoc.id)}
                       className="flex-1 win-button text-xs"
                     >
-                      🗑️ 삭제
+                      삭제
                     </button>
                   </div>
                 </>
@@ -822,7 +822,7 @@ ${codePreview}
             onClick={() => setExpRuns(loadExperimentRuns())}
             className="win-button text-xs flex-shrink-0"
           >
-            🔄 실험 목록 새로고침
+            실험 목록 새로고침
           </button>
 
           <div className="flex flex-1 gap-2 overflow-hidden min-h-0">
@@ -865,7 +865,7 @@ ${codePreview}
                       onClick={() => navigator.clipboard.writeText(reportPreview)}
                       className="flex-1 win-button text-xs"
                     >
-                      📋 복사
+                      복사
                     </button>
                     <button
                       onClick={() => {
@@ -879,11 +879,11 @@ ${codePreview}
                           domainMode,
                         };
                         saveDocument(doc);
-                        addLog(`💾 리포트를 보관함에 저장했습니다`, 'success');
+                        addLog(`리포트를 보관함에 저장했습니다`, 'success');
                       }}
                       className="flex-1 win-button text-xs"
                     >
-                      💾 보관함 저장
+                      보관함 저장
                     </button>
                   </div>
                 </>

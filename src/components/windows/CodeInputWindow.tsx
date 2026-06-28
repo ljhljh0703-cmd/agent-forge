@@ -62,7 +62,7 @@ export const CodeInputWindow: React.FC = () => {
   // ── Paste 모드 ──
   const handlePasteAdd = () => {
     if (!pasteFilename.trim() || !pasteContent.trim()) {
-      addLog('⚠️ 파일명과 코드를 모두 입력하세요', 'warn');
+      addLog('파일명과 코드를 모두 입력하세요', 'warn');
       return;
     }
     if (editingId) {
@@ -77,7 +77,7 @@ export const CodeInputWindow: React.FC = () => {
     }
     setPasteFilename('');
     setPasteContent('');
-    addLog(`📄 파일 추가: ${pasteFilename}`, 'success');
+    addLog(`파일 추가: ${pasteFilename}`, 'success');
   };
 
   const handleEdit = (file: CodeFile) => {
@@ -95,14 +95,14 @@ export const CodeInputWindow: React.FC = () => {
     let count = 0;
     for (const file of Array.from(uploadedFiles)) {
       if (file.size > 500_000) {
-        addLog(`⚠️ ${file.name} 너무 큼 (${(file.size / 1024).toFixed(0)}KB). 건너뜁니다.`, 'warn');
+        addLog(`${file.name} 너무 큼 (${(file.size / 1024).toFixed(0)}KB). 건너뜁니다.`, 'warn');
         continue;
       }
       const text = await file.text();
       addFile(file.webkitRelativePath || file.name, text);
       count++;
     }
-    addLog(`📂 ${count}개 파일 업로드 완료`, 'success');
+    addLog(`${count}개 파일 업로드 완료`, 'success');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -116,7 +116,7 @@ export const CodeInputWindow: React.FC = () => {
       addFile(file.name, text);
       count++;
     }
-    if (count > 0) addLog(`📂 ${count}개 파일 드롭 완료`, 'success');
+    if (count > 0) addLog(`${count}개 파일 드롭 완료`, 'success');
   };
 
   // ── GitHub 모드 ──
@@ -150,10 +150,10 @@ export const CodeInputWindow: React.FC = () => {
         addFile(item.path, content);
         count++;
       }
-      addLog(`🐙 GitHub에서 ${count}개 파일 로드 완료 (${owner}/${repo})`, 'success');
+      addLog(`GitHub에서 ${count}개 파일 로드 완료 (${owner}/${repo})`, 'success');
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      addLog(`❌ GitHub 로드 실패: ${msg}`, 'error');
+      addLog(`GitHub 로드 실패: ${msg}`, 'error');
     } finally {
       setIsFetching(false);
     }
@@ -162,7 +162,7 @@ export const CodeInputWindow: React.FC = () => {
   // ── Generate Docs ──
   const handleGenerate = () => {
     if (files.length === 0) {
-      addLog('⚠️ 코드 파일을 하나 이상 추가하세요', 'warn');
+      addLog('코드 파일을 하나 이상 추가하세요', 'warn');
       return;
     }
 
@@ -187,14 +187,14 @@ ${contextBlock ? `## 프로젝트 컨텍스트\n${contextBlock}\n` : ''}
 ${JSON.stringify(codePayload, null, 2)}`;
 
     setPipeline({ gdd: gddContent, spec: '', generatedCode: [], auditResult: null, executionPlan: null, diagrams: [] });
-    addLog(`📂 ${files.length}개 파일이 파이프라인에 전달됨 — Planner에서 시작하세요`, 'success');
+    addLog(`${files.length}개 파일이 파이프라인에 전달됨 — Planner에서 시작하세요`, 'success');
     toggleWindowVisibility('planner');
   };
 
   const modes: { id: InputMode; label: string }[] = [
-    { id: 'paste', label: '📋 Paste' },
-    { id: 'upload', label: '📁 Upload' },
-    { id: 'github', label: '🐙 GitHub' },
+    { id: 'paste', label: 'Paste' },
+    { id: 'upload', label: 'Upload' },
+    { id: 'github', label: 'GitHub' },
   ];
 
   return (
@@ -235,7 +235,7 @@ ${JSON.stringify(codePayload, null, 2)}`;
               style={{ minHeight: '80px' }}
             />
             <button onClick={handlePasteAdd} className="win-button text-xs">
-              {editingId ? '✏️ 수정 완료' : '➕ 파일 추가'}
+              {editingId ? '수정 완료' : '+ 파일 추가'}
             </button>
           </div>
         )}
@@ -247,7 +247,7 @@ ${JSON.stringify(codePayload, null, 2)}`;
             onDragOver={e => e.preventDefault()}
             onClick={() => fileInputRef.current?.click()}
           >
-            <div className="text-3xl mb-2">📁</div>
+            <div className="text-2xl mb-2 text-gray-400" style={{ fontFamily: 'monospace' }}>↑</div>
             <div className="text-xs text-gray-500">파일을 드래그하거나 클릭하여 업로드</div>
             <div className="text-xs text-gray-400 mt-1">소스 코드 파일만 (최대 500KB/파일)</div>
             <input
@@ -276,7 +276,7 @@ ${JSON.stringify(codePayload, null, 2)}`;
               disabled={isFetching || !githubUrl.trim()}
               className="win-button text-xs disabled:opacity-40"
             >
-              {isFetching ? '⏳ 로드 중...' : '🐙 파일 가져오기'}
+              {isFetching ? '로드 중...' : '파일 가져오기'}
             </button>
           </div>
         )}
@@ -290,8 +290,8 @@ ${JSON.stringify(codePayload, null, 2)}`;
               <span className="flex-1 truncate">{f.path}</span>
               <span className="text-gray-400 shrink-0">{f.language}</span>
               <span className="text-gray-400 shrink-0">({f.lines}줄)</span>
-              <button onClick={() => handleEdit(f)} className="text-blue-500 hover:text-blue-700 shrink-0">✏️</button>
-              <button onClick={() => removeFile(f.id)} className="text-red-500 hover:text-red-700 shrink-0">🗑️</button>
+              <button onClick={() => handleEdit(f)} className="text-blue-500 hover:text-blue-700 shrink-0 text-xs">수정</button>
+              <button onClick={() => removeFile(f.id)} className="text-red-500 hover:text-red-700 shrink-0 text-xs">삭제</button>
             </div>
           ))}
         </div>
@@ -300,7 +300,7 @@ ${JSON.stringify(codePayload, null, 2)}`;
       {/* 프로젝트 컨텍스트 (토글) */}
       <details className="border-t border-win-dark">
         <summary className="px-2 py-1 text-xs font-bold bg-win-gray cursor-pointer hover:bg-win-light">
-          📝 프로젝트 컨텍스트 (선택)
+          프로젝트 컨텍스트 (선택)
         </summary>
         <div className="flex flex-col gap-1 p-2">
           <input
@@ -330,18 +330,18 @@ ${JSON.stringify(codePayload, null, 2)}`;
       {/* 하단 버튼 */}
       <div className="flex gap-1 p-1 bg-win-gray border-t border-win-dark">
         <button
-          onClick={() => { setFiles([]); addLog('🗑️ 파일 목록 초기화', 'info'); }}
+          onClick={() => { setFiles([]); addLog('파일 목록 초기화', 'info'); }}
           disabled={files.length === 0}
           className="win-button text-xs flex-1 disabled:opacity-40"
         >
-          🗑️ Clear All
+          Clear All
         </button>
         <button
           onClick={handleGenerate}
           disabled={files.length === 0}
           className="win-button text-xs flex-[2] disabled:opacity-40 font-bold"
         >
-          📄 Generate Docs ({files.length} files)
+          Generate Docs ({files.length} files)
         </button>
       </div>
     </div>

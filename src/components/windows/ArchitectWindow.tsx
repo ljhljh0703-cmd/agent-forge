@@ -67,7 +67,7 @@ export const ArchitectWindow: React.FC = () => {
 
     const agentStatus = isSW ? 'researching' : 'researching';
     updateAgent('architect', { status: agentStatus, currentTask: `${docLabel} 생성 중...` });
-    addLog(`🧑‍🔧 [Sam] ${docLabel} 자동 생성 시작...`, 'info');
+    addLog(`[Sam] ${docLabel} 자동 생성 시작...`, 'info');
 
     const inputLabel = isSW ? 'PRD' : 'GDD';
     const prompt = `다음 ${inputLabel}를 기반으로 ${isSW ? '시스템 아키텍처 문서' : '기술 명세서(SPEC)'}를 생성하세요:\n\n${pipeline.gdd}`;
@@ -84,7 +84,7 @@ export const ArchitectWindow: React.FC = () => {
 
       setPipeline({ spec: response.content });
       addLog(
-        `🧑‍🔧 [Sam] ${docLabel} 생성 완료 (${response.content.length}자, ${response.usage.outputTokens} tokens)`,
+        `[Sam] ${docLabel} 생성 완료 (${response.content.length}자, ${response.usage.outputTokens} tokens)`,
         'success',
       );
       updateAgent('architect', { status: 'idle', currentTask: '' });
@@ -92,7 +92,7 @@ export const ArchitectWindow: React.FC = () => {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setErrorMsg(msg);
-      addLog(`❌ [Sam] ${docLabel} 생성 실패: ${msg}`, 'error');
+      addLog(`[Sam] ${docLabel} 생성 실패: ${msg}`, 'error');
       updateAgent('architect', { status: 'error', currentTask: msg });
     } finally {
       setIsGenerating(false);
@@ -113,7 +113,7 @@ export const ArchitectWindow: React.FC = () => {
   const handleAcceptNonApproval = async () => {
     if (!pipeline.spec || !pipeline.gdd) return;
 
-    addLog(`✅ ${docLabel} 승인 → Worker 코드 생성 시작`, 'success');
+    addLog(`${docLabel} 승인 → Worker 코드 생성 시작`, 'success');
     toggleWindowVisibility('architect');
     toggleWindowVisibility('terminal');
     toggleWindowVisibility('canvas');
@@ -132,24 +132,24 @@ export const ArchitectWindow: React.FC = () => {
         setPipeline({ loopCount });
 
         if (audit.recommendation === 'pass') {
-          addLog('🎉 모든 검증 통과! 결과물이 Live Canvas에 로드됩니다.', 'success');
+          addLog('모든 검증 통과! 결과물이 Live Canvas에 로드됩니다.', 'success');
           setPipeline({ status: 'complete' });
           break;
         }
 
         if (loopCount >= MAX_LOOPS) {
-          addLog(`⚠️ 최대 루프(${MAX_LOOPS}회) 도달. 현재 결과물로 진행합니다.`, 'warn');
+          addLog(`최대 루프(${MAX_LOOPS}회) 도달. 현재 결과물로 진행합니다.`, 'warn');
           setPipeline({ status: 'complete' });
           break;
         }
 
-        addLog(`🔄 [Morgan→Casey] 수정 요청 (${loopCount}/${MAX_LOOPS}) — ${audit.recommendation}`, 'warn');
+        addLog(`[Morgan→Casey] 수정 요청 (${loopCount}/${MAX_LOOPS}) — ${audit.recommendation}`, 'warn');
         code = await runWorker(pipeline.spec, pipeline.gdd, plan);
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setErrorMsg(msg);
-      addLog(`❌ 파이프라인 실행 실패: ${msg}`, 'error');
+      addLog(`파이프라인 실행 실패: ${msg}`, 'error');
       setPipeline({ status: 'error' });
     }
   };
@@ -161,12 +161,12 @@ export const ArchitectWindow: React.FC = () => {
     // 편집 내용 반영
     if (isEditing && editContent.trim()) {
       setPipeline({ spec: editContent });
-      addLog(`✏️ ${docLabel} 수정 사항 반영됨`, 'info');
+      addLog(`${docLabel} 수정 사항 반영됨`, 'info');
     }
     setIsEditing(false);
     setIsRunning(true);
 
-    addLog(`✅ ${docLabel} 승인 → 실행 계획(Execution Plan) 생성 시작`, 'success');
+    addLog(`${docLabel} 승인 → 실행 계획(Execution Plan) 생성 시작`, 'success');
     toggleWindowVisibility('terminal');
 
     try {
@@ -175,11 +175,11 @@ export const ArchitectWindow: React.FC = () => {
       setLocalPlan(plan);
       setEditedTasks(plan.tasks.map(t => ({ ...t })));
       setApprovalPhase('plan-review');
-      addLog(`📋 실행 계획 생성 완료 — ${plan.tasks.length}개 태스크. 검토 후 승인하세요.`, 'info');
+      addLog(`실행 계획 생성 완료 — ${plan.tasks.length}개 태스크. 검토 후 승인하세요.`, 'info');
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setErrorMsg(msg);
-      addLog(`❌ 실행 계획 생성 실패: ${msg}`, 'error');
+      addLog(`실행 계획 생성 실패: ${msg}`, 'error');
     } finally {
       setIsRunning(false);
     }
@@ -199,7 +199,7 @@ export const ArchitectWindow: React.FC = () => {
     setLocalPlan(updatedPlan);
     setPipeline({ executionPlan: updatedPlan });
 
-    addLog(`✅ 실행 계획 승인 → 코드 생성 시작 (${updatedPlan.tasks.length}개 태스크)`, 'success');
+    addLog(`실행 계획 승인 → 코드 생성 시작 (${updatedPlan.tasks.length}개 태스크)`, 'success');
     toggleWindowVisibility('canvas');
 
     try {
@@ -207,11 +207,11 @@ export const ArchitectWindow: React.FC = () => {
       setLocalCode(code);
       setSelectedFileIdx(0);
       setApprovalPhase('code-review');
-      addLog(`💻 코드 생성 완료 — ${code.length}개 파일. 검토 후 승인하세요.`, 'info');
+      addLog(`코드 생성 완료 — ${code.length}개 파일. 검토 후 승인하세요.`, 'info');
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setErrorMsg(msg);
-      addLog(`❌ 코드 생성 실패: ${msg}`, 'error');
+      addLog(`코드 생성 실패: ${msg}`, 'error');
     } finally {
       setIsRunning(false);
     }
@@ -223,7 +223,7 @@ export const ArchitectWindow: React.FC = () => {
 
     setIsRunning(true);
     setAuditLoopCount(0);
-    addLog(`✅ 코드 승인 → QA 검증 시작`, 'success');
+    addLog(`코드 승인 → QA 검증 시작`, 'success');
 
     try {
       const audit = await runAuditor(pipeline.gdd, pipeline.spec, localCode);
@@ -232,7 +232,7 @@ export const ArchitectWindow: React.FC = () => {
       setPipeline({ loopCount: newLoop });
 
       if (audit.recommendation === 'pass') {
-        addLog('🎉 모든 검증 통과! 결과물이 Live Canvas에 로드됩니다.', 'success');
+        addLog('모든 검증 통과! 결과물이 Live Canvas에 로드됩니다.', 'success');
         setPipeline({ status: 'complete' });
         toggleWindowVisibility('architect');
       } else {
@@ -240,12 +240,12 @@ export const ArchitectWindow: React.FC = () => {
         setLocalAudit(audit);
         setEditedFixPrompt(audit.fixPrompt);
         setApprovalPhase('audit-review');
-        addLog(`🛡️ 감사 결과 검토 필요 — Debt Score: ${audit.score}/10`, 'warn');
+        addLog(`감사 결과 검토 필요 — Debt Score: ${audit.score}/10`, 'warn');
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setErrorMsg(msg);
-      addLog(`❌ QA 검증 실패: ${msg}`, 'error');
+      addLog(`QA 검증 실패: ${msg}`, 'error');
     } finally {
       setIsRunning(false);
     }
@@ -261,14 +261,14 @@ export const ArchitectWindow: React.FC = () => {
     const newLoop = auditLoopCount + 1;
 
     if (newLoop > MAX_AUDIT_LOOPS) {
-      addLog(`⚠️ 최대 루프(${MAX_AUDIT_LOOPS}회) 도달. 현재 결과물로 진행합니다.`, 'warn');
+      addLog(`최대 루프(${MAX_AUDIT_LOOPS}회) 도달. 현재 결과물로 진행합니다.`, 'warn');
       setPipeline({ status: 'complete' });
       toggleWindowVisibility('architect');
       setIsRunning(false);
       return;
     }
 
-    addLog(`🔄 자동 수정 시작 (${newLoop}/${MAX_AUDIT_LOOPS}) — fixPrompt 사용`, 'info');
+    addLog(`자동 수정 시작 (${newLoop}/${MAX_AUDIT_LOOPS}) — fixPrompt 사용`, 'info');
 
     try {
       const code = await runWorker(pipeline.spec, pipeline.gdd, localPlan ?? undefined);
@@ -279,18 +279,18 @@ export const ArchitectWindow: React.FC = () => {
       setPipeline({ loopCount: newLoop });
 
       if (audit.recommendation === 'pass') {
-        addLog('🎉 자동 수정 후 검증 통과!', 'success');
+        addLog('자동 수정 후 검증 통과!', 'success');
         setPipeline({ status: 'complete' });
         toggleWindowVisibility('architect');
       } else {
         setLocalAudit(audit);
         setEditedFixPrompt(audit.fixPrompt);
-        addLog(`🛡️ 자동 수정 후에도 문제 존재 — Debt Score: ${audit.score}/10`, 'warn');
+        addLog(`자동 수정 후에도 문제 존재 — Debt Score: ${audit.score}/10`, 'warn');
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setErrorMsg(msg);
-      addLog(`❌ 자동 수정 실패: ${msg}`, 'error');
+      addLog(`자동 수정 실패: ${msg}`, 'error');
     } finally {
       setIsRunning(false);
     }
@@ -304,7 +304,7 @@ export const ArchitectWindow: React.FC = () => {
     const newLoop = auditLoopCount + 1;
 
     if (newLoop > MAX_AUDIT_LOOPS) {
-      addLog(`⚠️ 최대 루프(${MAX_AUDIT_LOOPS}회) 도달. 현재 결과물로 진행합니다.`, 'warn');
+      addLog(`최대 루프(${MAX_AUDIT_LOOPS}회) 도달. 현재 결과물로 진행합니다.`, 'warn');
       setPipeline({ status: 'complete' });
       toggleWindowVisibility('architect');
       setIsRunning(false);
@@ -313,7 +313,7 @@ export const ArchitectWindow: React.FC = () => {
 
     // 편집된 fixPrompt를 spec에 추가하여 Worker 재실행
     const augmentedSpec = `${pipeline.spec}\n\n=== 사용자 수정 지시 ===\n${editedFixPrompt}`;
-    addLog(`✏️ 사용자 수정 지시 반영 → Worker 재실행 (${newLoop}/${MAX_AUDIT_LOOPS})`, 'info');
+    addLog(`사용자 수정 지시 반영 → Worker 재실행 (${newLoop}/${MAX_AUDIT_LOOPS})`, 'info');
 
     try {
       const code = await runWorker(augmentedSpec, pipeline.gdd, localPlan ?? undefined);
@@ -324,18 +324,18 @@ export const ArchitectWindow: React.FC = () => {
       setPipeline({ loopCount: newLoop });
 
       if (audit.recommendation === 'pass') {
-        addLog('🎉 사용자 지시 반영 후 검증 통과!', 'success');
+        addLog('사용자 지시 반영 후 검증 통과!', 'success');
         setPipeline({ status: 'complete' });
         toggleWindowVisibility('architect');
       } else {
         setLocalAudit(audit);
         setEditedFixPrompt(audit.fixPrompt);
-        addLog(`🛡️ 수정 후에도 문제 존재 — Debt Score: ${audit.score}/10`, 'warn');
+        addLog(`수정 후에도 문제 존재 — Debt Score: ${audit.score}/10`, 'warn');
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setErrorMsg(msg);
-      addLog(`❌ 수정 실패: ${msg}`, 'error');
+      addLog(`수정 실패: ${msg}`, 'error');
     } finally {
       setIsRunning(false);
     }
@@ -343,7 +343,7 @@ export const ArchitectWindow: React.FC = () => {
 
   // ──── audit-review: 현재 결과 그대로 수락 ────
   const handleAcceptAsIs = () => {
-    addLog('✅ 현재 결과물 그대로 수락', 'info');
+    addLog('현재 결과물 그대로 수락', 'info');
     setPipeline({ status: 'complete' });
     toggleWindowVisibility('architect');
   };
@@ -384,12 +384,12 @@ export const ArchitectWindow: React.FC = () => {
     return (
       <div className="space-y-2">
         <div className="text-xs text-blue-600 bg-blue-50 border border-blue-300 rounded px-2 py-1">
-          🛡️ 승인 모드 — 실행 계획을 검토하세요. 태스크 프롬프트를 수정할 수 있습니다.
+          승인 모드 — 실행 계획을 검토하세요. 태스크 프롬프트를 수정할 수 있습니다.
         </div>
 
         {/* 프로젝트 요약 */}
         <div className="border border-win-dark bg-win-light p-2">
-          <div className="text-xs font-bold">📋 {localPlan.projectName}</div>
+          <div className="text-xs font-bold">{localPlan.projectName}</div>
           <div className="text-xs text-gray-500">총 {localPlan.totalTasks}개 태스크</div>
         </div>
 
@@ -405,7 +405,7 @@ export const ArchitectWindow: React.FC = () => {
                 </span>
               </div>
               <div className="text-[10px] text-gray-400 mb-1">
-                📂 {task.targetFiles.join(', ')}
+                {task.targetFiles.join(', ')}
               </div>
               <textarea
                 value={task.prompt}
@@ -424,7 +424,7 @@ export const ArchitectWindow: React.FC = () => {
           className="win-button w-full text-xs font-bold"
           style={{ backgroundColor: '#ccffcc' }}
         >
-          {isRunning ? '⏳ 코드 생성 중...' : `✅ 플랜 승인 & ${isSW ? 'Boilerplate' : '코드'} 생성`}
+          {isRunning ? '코드 생성 중...' : `플랜 승인 & ${isSW ? 'Boilerplate' : '코드'} 생성`}
         </button>
       </div>
     );
@@ -440,12 +440,12 @@ export const ArchitectWindow: React.FC = () => {
     return (
       <div className="space-y-2">
         <div className="text-xs text-purple-600 bg-purple-50 border border-purple-300 rounded px-2 py-1">
-          🛡️ 승인 모드 — 생성된 코드를 검토하세요. 승인하면 QA 검증이 시작됩니다.
+          승인 모드 — 생성된 코드를 검토하세요. 승인하면 QA 검증이 시작됩니다.
         </div>
 
         {/* 파일 리스트 */}
         <div className="border border-win-dark bg-win-light p-1">
-          <div className="text-xs font-bold mb-1">📁 생성된 파일 ({localCode.length})</div>
+          <div className="text-xs font-bold mb-1">생성된 파일 ({localCode.length})</div>
           <div className="space-y-0.5 max-h-24 overflow-auto">
             {localCode.map((file, idx) => (
               <button
@@ -470,7 +470,7 @@ export const ArchitectWindow: React.FC = () => {
         {selectedFile && (
           <div className="border border-win-dark bg-win-white p-1">
             <div className="text-xs font-bold mb-1 text-gray-600">
-              📄 {selectedFile.path}
+              {selectedFile.path}
             </div>
             <pre className="h-48 overflow-auto font-mono text-[11px] whitespace-pre-wrap bg-gray-50 p-1 border border-gray-200">
               {selectedFile.content}
@@ -485,7 +485,7 @@ export const ArchitectWindow: React.FC = () => {
           className="win-button w-full text-xs font-bold"
           style={{ backgroundColor: '#ccffcc' }}
         >
-          {isRunning ? '⏳ QA 검증 중...' : '✅ 코드 승인 & QA 검증'}
+          {isRunning ? 'QA 검증 중...' : '코드 승인 & QA 검증'}
         </button>
       </div>
     );
@@ -501,7 +501,7 @@ export const ArchitectWindow: React.FC = () => {
     return (
       <div className="space-y-2">
         <div className="text-xs text-amber-600 bg-amber-50 border border-amber-300 rounded px-2 py-1">
-          🛡️ 승인 모드 — 감사 결과 검토 ({auditLoopCount}/{MAX_AUDIT_LOOPS})
+          승인 모드 — 감사 결과 검토 ({auditLoopCount}/{MAX_AUDIT_LOOPS})
         </div>
 
         {/* Debt Score */}
@@ -525,7 +525,7 @@ export const ArchitectWindow: React.FC = () => {
               <div className="text-xs font-bold mb-1">Debt Score</div>
               <div className="text-[11px] text-gray-600 leading-tight">{localAudit.summary}</div>
               <div className="text-[10px] mt-1 text-gray-400">
-                ✓ {passedCount} 통과 · ✗ {failedCount} 실패
+                {passedCount} 통과 / {failedCount} 실패
               </div>
             </div>
           </div>
@@ -533,11 +533,11 @@ export const ArchitectWindow: React.FC = () => {
 
         {/* 검증 항목 */}
         <div className="border border-win-dark bg-win-white p-2">
-          <div className="text-xs font-bold mb-1">📋 검증 항목</div>
+          <div className="text-xs font-bold mb-1">검증 항목</div>
           <div className="space-y-0.5 max-h-32 overflow-auto">
             {localAudit.checks.map((check, idx) => (
               <div key={idx} className="flex items-start gap-1 text-[11px]">
-                <span className="shrink-0">{check.passed ? '✅' : '❌'}</span>
+                <span className="shrink-0 font-bold" style={{ color: check.passed ? 'var(--ok)' : '#E01E5A' }}>{check.passed ? 'ok' : 'no'}</span>
                 <span className="text-gray-400 shrink-0">[{check.category}]</span>
                 <span className={check.passed ? 'text-gray-600' : 'text-red-600 font-medium'}>
                   {check.item}
@@ -553,7 +553,7 @@ export const ArchitectWindow: React.FC = () => {
         {/* 수정 지시 (편집 가능) */}
         {localAudit.fixPrompt && (
           <div className="border border-win-dark bg-win-white p-2">
-            <div className="text-xs font-bold mb-1">🔧 수정 지시 (편집 가능)</div>
+            <div className="text-xs font-bold mb-1">수정 지시 (편집 가능)</div>
             <textarea
               value={editedFixPrompt}
               onChange={e => setEditedFixPrompt(e.target.value)}
@@ -571,7 +571,7 @@ export const ArchitectWindow: React.FC = () => {
             className="win-button flex-1 text-xs font-bold"
             style={{ backgroundColor: '#dbeafe' }}
           >
-            {isRunning ? '⏳ 수정 중...' : '🤖 자동 수정'}
+            {isRunning ? '수정 중...' : '자동 수정'}
           </button>
           <button
             onClick={handleFixWithInput}
@@ -579,7 +579,7 @@ export const ArchitectWindow: React.FC = () => {
             className="win-button flex-1 text-xs font-bold"
             style={{ backgroundColor: '#fef3c7' }}
           >
-            {isRunning ? '⏳ 수정 중...' : '✏️ 내 지시로'}
+            {isRunning ? '수정 중...' : '내 지시로'}
           </button>
           <button
             onClick={handleAcceptAsIs}
@@ -587,7 +587,7 @@ export const ArchitectWindow: React.FC = () => {
             className="win-button flex-1 text-xs font-bold"
             style={{ backgroundColor: '#ccffcc' }}
           >
-            ✅ 수락
+            수락
           </button>
         </div>
       </div>
@@ -598,8 +598,8 @@ export const ArchitectWindow: React.FC = () => {
   const renderError = () => errorMsg ? (
     <div className="border border-red-400 bg-red-50 p-2 rounded">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-bold text-red-700">❌ 오류 발생</span>
-        <button onClick={() => setErrorMsg('')} className="text-xs text-red-400 hover:text-red-600">✕</button>
+        <span className="text-xs font-bold text-red-700">오류 발생</span>
+        <button onClick={() => setErrorMsg('')} className="text-xs text-red-400 hover:text-red-600">x</button>
       </div>
       <pre className="text-[11px] text-red-600 font-mono whitespace-pre-wrap break-all max-h-32 overflow-auto">{errorMsg}</pre>
     </div>
@@ -642,7 +642,7 @@ export const ArchitectWindow: React.FC = () => {
       {pipeline.gdd && (
         <div className="border border-win-dark bg-win-light p-1">
           <label className="text-xs font-bold block mb-1">
-            📜 {isSW ? 'PRD' : 'GDD'} 입력
+            {isSW ? 'PRD' : 'GDD'} 입력
           </label>
           <div className="h-16 overflow-auto font-mono text-xs whitespace-pre-wrap text-gray-600">
             {pipeline.gdd.slice(0, 300)}
@@ -656,13 +656,13 @@ export const ArchitectWindow: React.FC = () => {
         <div className="border border-win-dark bg-win-white p-1">
           <div className="flex items-center justify-between mb-1">
             <label className="text-xs font-bold">
-              {isEditing ? `✏️ ${docLabel} Edit Mode` : `${docLabel} Preview`}{' '}
-              {isGenerating && <span className="text-blue-500 animate-pulse">⏳ 생성 중...</span>}
+              {isEditing ? `${docLabel} Edit Mode` : `${docLabel} Preview`}{' '}
+              {isGenerating && <span className="text-blue-500 animate-pulse">생성 중...</span>}
             </label>
             {isDone && approvalMode && !isGenerating && (
               <div className="flex gap-1">
                 {!isEditing ? (
-                  <button onClick={handleStartEdit} className="text-xs text-blue-600 hover:underline font-bold">✏️ 수정</button>
+                  <button onClick={handleStartEdit} className="text-xs text-blue-600 hover:underline font-bold">수정</button>
                 ) : (
                   <button onClick={handleCancelEdit} className="text-xs text-gray-500 hover:underline">취소</button>
                 )}
@@ -694,7 +694,7 @@ export const ArchitectWindow: React.FC = () => {
       {/* 승인 모드: GDD 도착 + 아직 미생성 시 대기 안내 */}
       {pipeline.gdd && !preview && !isGenerating && !isDone && approvalMode && (
         <div className="text-xs text-amber-600 bg-amber-50 border border-amber-300 rounded px-2 py-1">
-          🛡️ 승인 모드 — {isSW ? 'PRD' : 'GDD'}가 확인되었습니다. 아래 버튼으로 {docLabel} 생성을 시작하세요.
+          승인 모드 — {isSW ? 'PRD' : 'GDD'}가 확인되었습니다. 아래 버튼으로 {docLabel} 생성을 시작하세요.
         </div>
       )}
 
@@ -706,7 +706,7 @@ export const ArchitectWindow: React.FC = () => {
             disabled={isGenerating}
             className="win-button flex-1 text-xs"
           >
-            {isGenerating ? '⏳ 생성 중...' : `🔄 Re-generate ${docLabel}`}
+            {isGenerating ? '생성 중...' : `Re-generate ${docLabel}`}
           </button>
         )}
         {isGenerating && (
@@ -715,7 +715,7 @@ export const ArchitectWindow: React.FC = () => {
             className="win-button text-xs px-2"
             style={{ backgroundColor: '#ffcccc' }}
           >
-            ✕
+            x
           </button>
         )}
       </div>
@@ -724,7 +724,7 @@ export const ArchitectWindow: React.FC = () => {
         <div className="space-y-1">
           {approvalMode && !isEditing && (
             <div className="text-xs text-amber-600 bg-amber-50 border border-amber-300 rounded px-2 py-1">
-              🛡️ 승인 모드 — {docLabel}를 확인/수정한 뒤 승인하세요
+              승인 모드 — {docLabel}를 확인/수정한 뒤 승인하세요
             </div>
           )}
           <button
@@ -734,9 +734,9 @@ export const ArchitectWindow: React.FC = () => {
             style={{ backgroundColor: '#ccffcc' }}
           >
             {isRunning
-              ? '⏳ 실행 계획 생성 중...'
+              ? '실행 계획 생성 중...'
               : isEditing
-                ? `✅ 수정 확정 & ${approvalMode ? '실행 계획 생성' : `Generate ${isSW ? 'Boilerplate' : 'Game Code'}`}`
+                ? `수정 확정 & ${approvalMode ? '실행 계획 생성' : `Generate ${isSW ? 'Boilerplate' : 'Game Code'}`}`
                 : approvalMode
                   ? `▶ ${docLabel} 승인 & 실행 계획 생성`
                   : `▶ Accept & Generate ${isSW ? 'Boilerplate' : 'Game Code'}`}

@@ -37,7 +37,7 @@ function AxisBar({
         return (
           <div key={id} className="flex items-center gap-2 mb-1">
             <span className="text-xs text-amber-800 truncate" style={{ width: '80px' }}>
-              {isWinner ? '🏆 ' : '   '}{runNames[id] ?? id.slice(-6)}
+              {isWinner ? '* ' : '  '}{runNames[id] ?? id.slice(-6)}
             </span>
             <div className="flex-1 bg-amber-100 rounded" style={{ height: '12px' }}>
               <div
@@ -143,7 +143,7 @@ export const ComparisonWindow: React.FC = () => {
         disabled={selected.length < 1}
         className="win-button text-xs font-bold flex-shrink-0 disabled:opacity-40"
       >
-        ⚖️ 비교 분석
+        비교 분석
       </button>
 
       {/* 비교 결과 */}
@@ -204,10 +204,10 @@ export const ComparisonWindow: React.FC = () => {
           {/* Export */}
           <div className="flex gap-2 flex-shrink-0 pb-2">
             <button onClick={handleExport} className="flex-1 win-button text-xs">
-              📥 Report MD
+              Report MD
             </button>
             <button onClick={handleExportCSV} className="flex-1 win-button text-xs">
-              📊 Metrics CSV
+              Metrics CSV
             </button>
           </div>
         </div>

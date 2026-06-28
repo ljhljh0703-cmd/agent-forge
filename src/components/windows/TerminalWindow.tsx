@@ -5,12 +5,12 @@ export const TerminalWindow: React.FC = () => {
   const { logs, agents } = useWindowContext();
 
   const statusIcons: Record<string, string> = {
-    idle: '⏸️',
-    writing: '✍️',
-    researching: '🔍',
-    executing: '⚙️',
-    error: '⚠️',
-    syncing: '💾',
+    idle: '—',
+    writing: 'W',
+    researching: 'R',
+    executing: 'E',
+    error: '!',
+    syncing: 'S',
   };
 
   return (
@@ -28,7 +28,7 @@ export const TerminalWindow: React.FC = () => {
       </div>
 
       <div className="border border-win-dark bg-win-white p-1">
-        <label className="text-xs font-bold block mb-1">🤖 Agent Status</label>
+        <label className="text-xs font-bold block mb-1">Agent Status</label>
         <div className="space-y-0.5">
           {agents.map(agent => (
             <div key={agent.agentId} className="text-xs flex justify-between items-center">
