@@ -7,12 +7,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        brand: 'oklch(45% 0.12 250)',
-        'brand-strong': 'oklch(35% 0.13 250)',
-        accent: 'oklch(65% 0.18 25)',
-        ink: 'oklch(14% 0.005 70)',
-        'ink-soft': 'oklch(42% 0.012 70)',
-        line: 'oklch(91.5% 0.005 70)',
+        brand: 'oklch(60% 0.15 40)',
+        'brand-strong': 'oklch(50% 0.16 40)',
+        'brand-50': 'oklch(96% 0.025 40)',
+        accent: 'oklch(70% 0.13 90)',
+        ink: 'oklch(20% 0.01 60)',
+        'ink-soft': 'oklch(45% 0.012 60)',
+        line: 'oklch(91% 0.006 70)',
         surface: 'oklch(100% 0 0)',
         'win-gray': '#c0c0c0',
         'win-blue': '#000080',

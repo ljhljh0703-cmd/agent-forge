@@ -31,7 +31,7 @@ const getMonitorColor = (status: string): string => {
     case 'writing': return '#4ae84a';
     case 'executing': return '#4a8ae8';
     case 'researching': return '#e8c84a';
-    case 'thinking': return 'oklch(65% 0.18 25)';
+    case 'thinking': return 'oklch(70% 0.13 90)';
     case 'error': return '#e84040';
     case 'success': return '#4ae84a';
     default: return '#2a4a3a'; // idle — 어두운 초록
@@ -134,7 +134,7 @@ export const EmployeeCard: React.FC<EmployeeCardProps> = ({
           }}
         >
           {/* 이름 + 역할 */}
-          <div style={{ fontWeight: 700, fontSize: '12px', marginBottom: '4px', color: '#1264A3' }}>
+          <div style={{ fontWeight: 700, fontSize: '12px', marginBottom: '4px', color: 'var(--brand)' }}>
             {employee.name} · {employee.title}
           </div>
           {/* 내용 */}
@@ -332,10 +332,10 @@ export const EmployeeCard: React.FC<EmployeeCardProps> = ({
           padding: '2px 8px',
           fontSize: '9px',
           fontWeight: 600,
-          color: isWorking ? '#FFFFFF' : '#616061',
+          color: isWorking ? '#FFFFFF' : 'var(--ink-soft)',
           backgroundColor: isWorking
-            ? (isError ? '#E01E5A' : '#1264A3')
-            : '#F0F0F0',
+            ? (isError ? '#E01E5A' : 'var(--brand)')
+            : 'var(--brand-50)',
           borderRadius: '10px',
           display: 'inline-block',
         }}

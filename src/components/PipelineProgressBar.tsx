@@ -110,25 +110,25 @@ export const PipelineProgressBar: React.FC = () => {
 
   const statusColor = (s: StageStatus): string => {
     switch (s) {
-      case 'completed': return '#007A5A';
-      case 'active': return '#1264A3';
+      case 'completed': return 'var(--ok)';
+      case 'active': return 'var(--brand)';
       case 'error': return '#E01E5A';
-      case 'pending': return 'rgba(255,255,255,0.25)';
+      case 'pending': return 'var(--line)';
     }
   };
 
   const lineColor = (leftStatus: StageStatus, rightStatus: StageStatus): string => {
-    if (leftStatus === 'completed' && rightStatus !== 'pending') return '#007A5A';
-    if (leftStatus === 'completed') return 'rgba(255,255,255,0.2)';
-    return 'rgba(255,255,255,0.1)';
+    if (leftStatus === 'completed' && rightStatus !== 'pending') return 'var(--ok)';
+    if (leftStatus === 'completed') return 'var(--line)';
+    return 'var(--line)';
   };
 
   return (
     <div
       className="px-4 py-3"
-      style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}
+      style={{ borderBottom: '1px solid var(--line)' }}
     >
-      <label style={{ fontSize: '12px', fontWeight: 600, color: 'rgba(255,255,255,0.7)', marginBottom: '8px', display: 'block' }}>
+      <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-soft)', marginBottom: '8px', display: 'block' }}>
         Pipeline
       </label>
 
@@ -145,7 +145,6 @@ export const PipelineProgressBar: React.FC = () => {
                   borderRadius: '50%',
                   backgroundColor: statusColor(status),
                   transition: 'background-color 0.3s',
-                  boxShadow: status === 'active' ? `0 0 8px ${statusColor(status)}` : 'none',
                   animation: status === 'active' ? 'pulse-dot 1.5s ease-in-out infinite' : 'none',
                 }}
               />
@@ -194,10 +193,10 @@ export const PipelineProgressBar: React.FC = () => {
             fontSize: '10px',
             fontWeight: stages[idx] === 'active' ? 700 : 500,
             color: stages[idx] === 'pending'
-              ? 'rgba(255,255,255,0.3)'
+              ? 'var(--line)'
               : stages[idx] === 'error'
                 ? '#E01E5A'
-                : 'rgba(255,255,255,0.7)',
+                : 'var(--ink-soft)',
             lineHeight: '14px',
             minWidth: '14px',
           }}>
@@ -205,7 +204,7 @@ export const PipelineProgressBar: React.FC = () => {
             {timings[idx] > 0 && (
               <div style={{
                 fontSize: '9px',
-                color: stages[idx] === 'active' ? '#1264A3' : 'rgba(255,255,255,0.4)',
+                color: stages[idx] === 'active' ? 'var(--brand)' : 'var(--ink-soft)',
                 fontVariantNumeric: 'tabular-nums',
               }}>
                 {stages[idx] === 'active' && pipeline.loopCount > 0 && idx === 4
