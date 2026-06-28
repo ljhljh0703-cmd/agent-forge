@@ -95,7 +95,7 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
         top: `${position.y}px`,
         width: `${size.w}px`,
         height: `${size.h}px`,
-        zIndex: windowState?.zIndex || 10,
+        zIndex: (windowState?.zIndex ?? 0) + 100,
         backgroundColor: '#FFFFFF',
         borderRadius: '8px',
         border: '1px solid #DDDDDD',

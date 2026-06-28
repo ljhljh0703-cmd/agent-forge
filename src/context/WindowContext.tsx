@@ -210,19 +210,19 @@ const WindowContext = createContext<WindowContextType | undefined>(undefined);
 
 export const WindowContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [windows, setWindows] = useState<WindowState[]>([
-    { id: 'planner', title: '📜 Planner', zIndex: 10, isMinimized: false, isVisible: false },
-    { id: 'architect', title: '🧑‍🔧 Architect', zIndex: 9, isMinimized: false, isVisible: false },
-    { id: 'terminal', title: '🖥️ Terminal', zIndex: 8, isMinimized: false, isVisible: false },
-    { id: 'canvas', title: '🎮 Live Canvas', zIndex: 7, isMinimized: false, isVisible: false },
-    { id: 'memo', title: '📞 직원 호출', zIndex: 6, isMinimized: false, isVisible: false },
-    { id: 'history', title: '📚 History', zIndex: 5, isMinimized: false, isVisible: false },
+    { id: 'planner', title: 'Planner', zIndex: 10, isMinimized: false, isVisible: false },
+    { id: 'architect', title: 'Architect', zIndex: 9, isMinimized: false, isVisible: false },
+    { id: 'terminal', title: 'Terminal', zIndex: 8, isMinimized: false, isVisible: false },
+    { id: 'canvas', title: 'Live Canvas', zIndex: 7, isMinimized: false, isVisible: false },
+    { id: 'memo', title: '직원 호출', zIndex: 6, isMinimized: false, isVisible: false },
+    { id: 'history', title: 'History', zIndex: 5, isMinimized: false, isVisible: false },
     // ── Lab Mode 창 ──
-    { id: 'message-flow', title: '🔀 Message Flow', zIndex: 4, isMinimized: false, isVisible: false },
-    { id: 'experiment',   title: '🧪 Experiment Lab', zIndex: 3, isMinimized: false, isVisible: false },
-    { id: 'dashboard',    title: '📊 Dashboard', zIndex: 2, isMinimized: false, isVisible: false },
-    { id: 'comparison',   title: '⚖️ Comparison', zIndex: 1, isMinimized: false, isVisible: false },
+    { id: 'message-flow', title: 'Message Flow', zIndex: 4, isMinimized: false, isVisible: false },
+    { id: 'experiment',   title: 'Experiment Lab', zIndex: 3, isMinimized: false, isVisible: false },
+    { id: 'dashboard',    title: 'Dashboard', zIndex: 2, isMinimized: false, isVisible: false },
+    { id: 'comparison',   title: 'Comparison', zIndex: 1, isMinimized: false, isVisible: false },
     // ── Docs Mode 창 ──
-    { id: 'code-input',   title: '📂 Code Input', zIndex: 0, isMinimized: false, isVisible: false },
+    { id: 'code-input',   title: 'Code Input', zIndex: 0, isMinimized: false, isVisible: false },
   ]);
 
   const defaultMetrics = { totalApiCalls: 0, totalTokens: 0, totalCost: 0, avgLatencyMs: 0, errorCount: 0, currentModel: 'gemini-3.5-flash' };
@@ -239,7 +239,7 @@ export const WindowContextProvider: React.FC<{ children: React.ReactNode }> = ({
       id: '0',
       timestamp: Date.now(),
       level: 'info',
-      message: '🏰 Agent Forge initialized. Awaiting orders...',
+      message: 'Agent Forge initialized. Awaiting orders...',
     },
   ]);
 
@@ -305,13 +305,13 @@ export const WindowContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const setApprovalMode = useCallback((on: boolean) => {
     setApprovalModeState(on);
     try { localStorage.setItem('approval_mode', String(on)); } catch { /* noop */ }
-    addLog(on ? '🛡️ 승인 모드 활성화 — GDD/SPEC 완성 후 수정 및 승인 필요' : '⚡ 승인 모드 비활성화 — 자동 진행', 'info');
+    addLog(on ? '승인 모드 활성화 — GDD/SPEC 완성 후 수정 및 승인 필요' : '승인 모드 비활성화 — 자동 진행', 'info');
   }, [addLog]);
 
   const setModelStrategy = useCallback((strategy: ModelStrategy) => {
     setModelStrategyState(strategy);
     applyModelStrategy(strategy);
-    addLog(`🔀 모델 전략 변경: ${MODEL_STRATEGIES[strategy].label} — ${MODEL_STRATEGIES[strategy].description}`, 'info');
+    addLog(`모델 전략 변경: ${MODEL_STRATEGIES[strategy].label} — ${MODEL_STRATEGIES[strategy].description}`, 'info');
   }, [addLog]);
 
   const updateAgent = useCallback((agentId: string, data: Partial<AgentData>) => {
@@ -351,7 +351,7 @@ export const WindowContextProvider: React.FC<{ children: React.ReactNode }> = ({
         id: String(Date.now()),
         timestamp: Date.now(),
         level: 'info' as const,
-        message: `🔄 도메인 전환: ${DOMAIN_CONFIGS[domainMode].label} → ${config.label}`,
+        message: `도메인 전환: ${DOMAIN_CONFIGS[domainMode].label} → ${config.label}`,
       },
     ]);
   }, [domainMode]);
@@ -403,14 +403,14 @@ export const WindowContextProvider: React.FC<{ children: React.ReactNode }> = ({
       passed: pipeline.auditResult?.recommendation === 'pass',
     };
     savePipelineLog(log);
-    addLog(`💾 세션 저장 완료 — "${log.projectName}"`, 'success');
+    addLog(`세션 저장 완료 — "${log.projectName}"`, 'success');
   }, [pipeline.status]);
 
   // Compiler: GDD+SPEC → 실행 계획(JSON) 생성
   const runCompiler = useCallback(async (gdd: string, spec: string): Promise<ExecutionPlan> => {
     // 동시 실행 방지 (ref 기반 락 — 비동기 state에 의존하지 않음)
     if (compilerLockRef.current) {
-      addLog('⚠️ 파이프라인이 이미 실행 중입니다', 'warn');
+      addLog('파이프라인이 이미 실행 중입니다', 'warn');
       throw new Error('파이프라인 실행 중');
     }
     compilerLockRef.current = true;
@@ -436,7 +436,7 @@ export const WindowContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
     setPipeline({ status: 'running', currentNode: 'compiler' });
     updateAgent('compiler', { status: 'executing', currentTask: '실행 계획 수립 중...' });
-    addLog(`🧑‍💻 [Jordan] 실행 계획 분석 시작...`, 'info');
+    addLog(`[Jordan] 실행 계획 분석 시작...`, 'info');
 
     const prompt = `다음 ${inputLabel}와 ${docLabel}를 분석하여 실행 계획 JSON을 생성하세요.
 
@@ -456,7 +456,7 @@ ${spec.slice(0, 4000)}`;
       const plan: ExecutionPlan = parsed;
       setPipeline({ executionPlan: plan });
       addLog(
-        `🧑‍💻 [Jordan] 실행 계획 완료 — ${plan.totalTasks}개 태스크 (${plan.tasks.filter(t => t.difficulty === 'HIGH').length} HIGH)`,
+        `[Jordan] 실행 계획 완료 — ${plan.totalTasks}개 태스크 (${plan.tasks.filter(t => t.difficulty === 'HIGH').length} HIGH)`,
         'success',
       );
       updateAgent('compiler', {
@@ -469,7 +469,7 @@ ${spec.slice(0, 4000)}`;
     } catch (err) {
       compilerLockRef.current = false;
       const msg = err instanceof Error ? err.message : String(err);
-      addLog(`❌ [Jordan] 오류: ${msg}`, 'error');
+      addLog(`[Jordan] 오류: ${msg}`, 'error');
       updateAgent('compiler', { status: 'error', currentTask: msg });
       // 파싱 실패 시 기본 플랜으로 폴백
       const fallback: ExecutionPlan = {
@@ -497,7 +497,7 @@ ${spec.slice(0, 4000)}`;
 
     setPipeline({ status: 'running', currentNode: 'worker' });
     updateAgent('worker', { status: 'writing', currentTask: '코드 생성 시작...' });
-    addLog('👨‍🚀 [Casey] Worker 시작 - 코드 자동 생성', 'info');
+    addLog('[Casey] Worker 시작 - 코드 자동 생성', 'info');
 
     // 구현 순서 파싱 (## 6. 구현 순서 섹션)
     const taskMatch = spec.match(/## 6\.\s*구현 순서([\s\S]*?)(?=##|$)/i);
@@ -558,7 +558,7 @@ ${spec}${planContext}
 
     try {
       updateAgent('worker', { currentTask: `코드 생성 중 (${tasks.length}개 태스크)` });
-      addLog(`👨‍🚀 [Casey] ${tasks.length || 1}개 태스크 실행 중...`, 'info');
+      addLog(`[Casey] ${tasks.length || 1}개 태스크 실행 중...`, 'info');
 
       await agentService.executeStream(roleId, prompt, (chunk) => {
         streamedContent += chunk;
@@ -574,7 +574,7 @@ ${spec}${planContext}
         // Mermaid 다이어그램 추출 (분석 결과에서)
         const diagrams = extractMermaidDiagrams(streamedContent);
         setPipeline({ diagrams });
-        addLog(`📄 [Casey] 기술 문서 생성 완료 (${streamedContent.length}자, 다이어그램 ${diagrams.length}개)`, 'success');
+        addLog(`[Casey] 기술 문서 생성 완료 (${streamedContent.length}자, 다이어그램 ${diagrams.length}개)`, 'success');
       } else if (isSW) {
         // SW 모드: 파일 경로 포함 코드 블록 추출
         const swFiles = extractSWCodeBlocks(streamedContent);
@@ -584,14 +584,14 @@ ${spec}${planContext}
         const diagrams = extractMermaidDiagrams(spec);
         setPipeline({ diagrams });
 
-        addLog(`👨‍🚀 [Casey] ${generated.length}개 파일 생성 완료 (다이어그램 ${diagrams.length}개)`, 'success');
+        addLog(`[Casey] ${generated.length}개 파일 생성 완료 (다이어그램 ${diagrams.length}개)`, 'success');
       } else {
         // 게임 모드: 일반 코드 블록 추출
         const blocks = extractCodeBlocks(streamedContent);
         const files = codeBlocksToFiles(blocks, 'game');
         generated.push(...files);
 
-        addLog(`👨‍🚀 [Casey] ${generated.length}개 파일 생성 완료`, 'success');
+        addLog(`[Casey] ${generated.length}개 파일 생성 완료`, 'success');
       }
 
       updateAgent('worker', { status: 'idle', currentTask: '' });
@@ -602,7 +602,7 @@ ${spec}${planContext}
       return generated;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      addLog(`❌ [Casey] 오류: ${msg}`, 'error');
+      addLog(`[Casey] 오류: ${msg}`, 'error');
       updateAgent('worker', { status: 'error', currentTask: msg });
       setPipeline({ status: 'error' });
       throw err;
@@ -623,23 +623,23 @@ ${spec}${planContext}
                  : 'auditor';
 
     updateAgent('auditor', { status: 'executing', currentTask: '자동 검증 중...' });
-    addLog('🧑‍⚖️ [Morgan] Auditor 검증 시작', 'info');
+    addLog('[Morgan] Auditor 검증 시작', 'info');
 
     // Game 모드: 런타임 샌드박스 실행
     let runtimeReport: RuntimeReport | null = null;
     const isGame = domainMode === 'game';
     if (isGame && code.length > 0) {
       try {
-        addLog('🔬 [Morgan] 런타임 샌드박스 실행 중...', 'info');
+        addLog('[Morgan] 런타임 샌드박스 실행 중...', 'info');
         runtimeReport = await executeInSandbox(code);
         setPipeline({ runtimeReport });
         if (runtimeReport.success) {
-          addLog(`🔬 런타임 검증 완료 — 에러 없음, DOM ${runtimeReport.domInfo.elementCount}개, 게임루프 ${runtimeReport.hasGameLoop ? '감지' : '미감지'} (${runtimeReport.loadTimeMs}ms)`, 'success');
+          addLog(`런타임 검증 완료 — 에러 없음, DOM ${runtimeReport.domInfo.elementCount}개, 게임루프 ${runtimeReport.hasGameLoop ? '감지' : '미감지'} (${runtimeReport.loadTimeMs}ms)`, 'success');
         } else {
-          addLog(`🔬 런타임 검증 완료 — 에러 ${runtimeReport.errors.length}개 발견 (${runtimeReport.loadTimeMs}ms)`, 'warn');
+          addLog(`런타임 검증 완료 — 에러 ${runtimeReport.errors.length}개 발견 (${runtimeReport.loadTimeMs}ms)`, 'warn');
         }
       } catch (err) {
-        addLog(`⚠️ 런타임 샌드박스 실행 실패 — 정적 분석으로 진행`, 'warn');
+        addLog(`런타임 샌드박스 실행 실패 — 정적 분석으로 진행`, 'warn');
       }
     }
 
@@ -657,12 +657,12 @@ ${spec}${planContext}
     // 런타임 결과 섹션 (Game 모드에서만)
     const runtimeSection = runtimeReport
       ? `\n\n=== 런타임 실행 결과 ===
-- 실행 성공: ${runtimeReport.success ? '✅' : '❌'}
+- 실행 성공: ${runtimeReport.success ? 'ok' : 'no'}
 - 에러: ${runtimeReport.errors.length > 0 ? runtimeReport.errors.join('; ') : '없음'}
 - 경고: ${runtimeReport.warnings.length > 0 ? runtimeReport.warnings.join('; ') : '없음'}
-- 게임 루프 감지: ${runtimeReport.hasGameLoop ? '✅' : '❌'}
+- 게임 루프 감지: ${runtimeReport.hasGameLoop ? 'ok' : 'no'}
 - DOM 엘리먼트 수: ${runtimeReport.domInfo.elementCount}개
-- Canvas 존재: ${runtimeReport.domInfo.hasCanvas ? '✅' : '❌'}
+- Canvas 존재: ${runtimeReport.domInfo.hasCanvas ? 'ok' : 'no'}
 - Console 로그: ${runtimeReport.logs.length > 0 ? runtimeReport.logs.slice(0, 10).join('; ') : '없음'}
 - 로드 시간: ${runtimeReport.loadTimeMs}ms`
       : '';
@@ -706,7 +706,7 @@ JSON 형식으로만 응답하세요.`;
         } else if (hasOnlyMinor || result.score < 5) {
           result.recommendation = 'pass';
           if (hasOnlyMinor && result.checks.some((c: AuditCheck) => !c.passed)) {
-            addLog('⚠️ [Morgan] Minor 이슈 있음 - 경고와 함께 PASS 처리', 'warn');
+            addLog('[Morgan] Minor 이슈 있음 - 경고와 함께 PASS 처리', 'warn');
           }
         }
       }
@@ -715,7 +715,7 @@ JSON 형식으로만 응답하세요.`;
       if (result.recommendation !== 'pass') {
         const currentLoop = pipelineRef.current.loopCount;
         if (currentLoop >= MAX_AUDIT_LOOPS - 1) {
-          addLog(`⛔ [Morgan] 최대 재시도(${MAX_AUDIT_LOOPS}회) 초과 — 파이프라인 강제 종료`, 'warn');
+          addLog(`[Morgan] 최대 재시도(${MAX_AUDIT_LOOPS}회) 초과 — 파이프라인 강제 종료`, 'warn');
           result.recommendation = 'pass';
         } else {
           setPipeline({ loopCount: currentLoop + 1 });
@@ -723,7 +723,7 @@ JSON 형식으로만 응답하세요.`;
       }
 
       addLog(
-        `🧑‍⚖️ [Morgan] 검증 완료 - Debt Score: ${result.score}/10 → ${result.recommendation.toUpperCase()}`,
+        `[Morgan] 검증 완료 - Debt Score: ${result.score}/10 → ${result.recommendation.toUpperCase()}`,
         result.recommendation === 'pass' ? 'success' : 'warn',
       );
       updateAgent('auditor', { status: 'idle', currentTask: '' });
@@ -736,7 +736,7 @@ JSON 형식으로만 응답하세요.`;
       return result;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      addLog(`❌ [Morgan] 오류: ${msg}`, 'error');
+      addLog(`[Morgan] 오류: ${msg}`, 'error');
       updateAgent('auditor', { status: 'error', currentTask: msg });
       const fallback: AuditResult = {
         score: 0,
