@@ -4,6 +4,7 @@ import { constants } from 'node:fs';
 import { basename, join, relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { codexHome, finalAgentMessage, runCodexExec } from './codex-cli.js';
+import { checkTemplateApi, formatTemplateApiCheck, type TemplateApiCheck } from './template-api.js';
 
 interface RunMeta {
   runId: string;
@@ -22,7 +23,9 @@ interface RunMeta {
     atlas: string;
     game: string;
     snapshot: string;
+    templateApiCheck: string;
   };
+  templateApiCheck: TemplateApiCheck;
   proof: {
     usesCanvas: boolean;
     usesGeneratedAsset: boolean;
@@ -51,12 +54,17 @@ async function main(): Promise<void> {
   const assetDir = join(runDir, 'assets');
   const gameDir = join(runDir, 'game');
   const proofDir = join(runDir, 'proof');
+  const knowledgeDir = join(repoRoot, 'orchestrator', 'knowledge');
+  const [templateApi, designRules] = await Promise.all([
+    readFile(join(knowledgeDir, 'template_api.md'), 'utf8'),
+    readFile(join(knowledgeDir, 'design_rules.md'), 'utf8'),
+  ]);
 
   await mkdir(assetDir, { recursive: true });
   await mkdir(gameDir, { recursive: true });
   await mkdir(proofDir, { recursive: true });
 
-  const gddResult = await runCodexExec(gddPrompt(idea), {
+  const gddResult = await runCodexExec(gddPrompt(idea, templateApi, designRules), {
     cwd: repoRoot,
     sandbox: 'read-only',
     timeoutMs: 180_000,
@@ -66,8 +74,12 @@ async function main(): Promise<void> {
   }
   const gdd = finalAgentMessage(gddResult);
   if (!gdd) throw new Error('Codex GDD generation returned no agent message');
+  const templateApiCheck = checkTemplateApi(idea, gdd);
   const gddPath = join(runDir, 'gdd.md');
-  await writeFile(gddPath, gdd.endsWith('\n') ? gdd : `${gdd}\n`, 'utf8');
+  const checkedGdd = `${gdd.trim()}\n\n---\n\n## Deterministic Template API Check\n\n${formatTemplateApiCheck(templateApiCheck)}\n`;
+  await writeFile(gddPath, checkedGdd, 'utf8');
+  const templateApiCheckPath = join(proofDir, 'template-api-check.json');
+  await writeJson(templateApiCheckPath, templateApiCheck);
 
   const assetResult = await runCodexExec(assetPrompt(idea), {
     cwd: repoRoot,
@@ -100,7 +112,7 @@ async function main(): Promise<void> {
   });
 
   const assetRelativeFromGame = `../assets/${basename(spritePath)}`;
-  const produceResult = await runCodexExec(producePrompt(idea, gdd, assetRelativeFromGame), {
+  const produceResult = await runCodexExec(producePrompt(idea, checkedGdd, assetRelativeFromGame, templateApiCheck), {
     cwd: repoRoot,
     sandbox: 'read-only',
     timeoutMs: 180_000,
@@ -134,7 +146,9 @@ async function main(): Promise<void> {
       atlas: toRepoRelative(atlasPath),
       game: toRepoRelative(gamePath),
       snapshot: toRepoRelative(snapshotPath),
+      templateApiCheck: toRepoRelative(templateApiCheckPath),
     },
+    templateApiCheck,
     proof: {
       usesCanvas: /<canvas[\s>]/i.test(html),
       usesGeneratedAsset: html.includes(assetRelativeFromGame),
@@ -147,11 +161,18 @@ async function main(): Promise<void> {
   console.log(JSON.stringify(meta, null, 2));
 }
 
-function gddPrompt(gameIdea: string): string {
+function gddPrompt(gameIdea: string, templateApi: string, designRules: string): string {
   return [
     'Return a concise markdown GDD for a tiny browser Canvas game.',
     'Do not edit files and do not run shell commands.',
+    'Use the provided DESIGN_RULES and TEMPLATE_API as hard constraints.',
     'Keep scope to one screen, one controllable actor, one win/score loop, and one generated sprite asset.',
+    'If the user idea asks for unsupported TEMPLATE_API features, explicitly add an "Out-of-scope / Downscope" section and redesign the game into the supported Canvas slice.',
+    'Do not silently accept unsupported features.',
+    'TEMPLATE_API:',
+    templateApi,
+    'DESIGN_RULES:',
+    designRules,
     `Idea: ${gameIdea}`,
   ].join('\n');
 }
@@ -168,13 +189,16 @@ function assetPrompt(gameIdea: string): string {
   ].join('\n');
 }
 
-function producePrompt(gameIdea: string, gdd: string, assetPath: string): string {
+function producePrompt(gameIdea: string, gdd: string, assetPath: string, templateApiCheck: TemplateApiCheck): string {
   return [
     'Return one complete standalone HTML document only. No markdown fences.',
     'The game must use a <canvas> element and JavaScript CanvasRenderingContext2D.',
     `It must load the generated sprite from "${assetPath}" with an Image object and draw it with ctx.drawImage(...).`,
     'Do not use DOM sprites for gameplay. Do not reference external CDNs or remote assets.',
     'Implement keyboard movement and a visible score or survival timer.',
+    'Stay inside the P1 Template API. Do not add unsupported features.',
+    `Template API status: ${templateApiCheck.status}`,
+    `Flagged unsupported capabilities: ${templateApiCheck.flagged.map((flag) => flag.capability).join(', ') || 'none'}`,
     `Game idea: ${gameIdea}`,
     'GDD:',
     gdd.slice(0, 4000),

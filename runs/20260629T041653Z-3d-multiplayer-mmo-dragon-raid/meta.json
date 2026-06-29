@@ -1,0 +1,64 @@
+{
+  "runId": "20260629T041653Z-3d-multiplayer-mmo-dragon-raid",
+  "idea": "3D multiplayer MMO dragon raid",
+  "createdAt": "2026-06-29T04:16:53.575Z",
+  "codex": {
+    "gddThreadId": "019f1198-2f66-7c10-8fc7-21e78746729a",
+    "assetThreadId": "019f1198-8a87-75e3-bfc8-0e6d5d198625",
+    "produceThreadId": "019f119a-e64b-7852-9682-dc21431b9a79",
+    "assetSource": "/Users/godju/.codex/generated_images/019f1198-8a87-75e3-bfc8-0e6d5d198625/ig_03de008177811218016a41f21d84d881918437965c0cea50f8.png"
+  },
+  "outputs": {
+    "gdd": "runs/20260629T041653Z-3d-multiplayer-mmo-dragon-raid/gdd.md",
+    "rawAsset": "runs/20260629T041653Z-3d-multiplayer-mmo-dragon-raid/assets/codex-raw.png",
+    "sprite": "runs/20260629T041653Z-3d-multiplayer-mmo-dragon-raid/assets/codex-sprite.png",
+    "atlas": "runs/20260629T041653Z-3d-multiplayer-mmo-dragon-raid/assets/atlas.json",
+    "game": "runs/20260629T041653Z-3d-multiplayer-mmo-dragon-raid/game/index.html",
+    "snapshot": "runs/20260629T041653Z-3d-multiplayer-mmo-dragon-raid/proof/snapshot.png",
+    "templateApiCheck": "runs/20260629T041653Z-3d-multiplayer-mmo-dragon-raid/proof/template-api-check.json"
+  },
+  "templateApiCheck": {
+    "status": "downscoped",
+    "inScope": [
+      "single_screen_canvas",
+      "standalone_html",
+      "single_generated_sprite",
+      "sprite_draw_image",
+      "keyboard_input",
+      "pointer_restart",
+      "top_down_2d_movement",
+      "simple_dash_or_burst",
+      "simple_entities",
+      "simple_collision",
+      "score_timer_win_fail",
+      "basic_canvas_ui",
+      "basic_particle_or_motion_feedback",
+      "headless_snapshot"
+    ],
+    "flagged": [
+      {
+        "capability": "three_d",
+        "severity": "unsupported",
+        "matched": [
+          "3d"
+        ],
+        "suggestedDownscope": "Use a top-down 2D Canvas view with simple shape/sprite depth cues."
+      },
+      {
+        "capability": "network_multiplayer",
+        "severity": "unsupported",
+        "matched": [
+          "multiplayer",
+          "mmo"
+        ],
+        "suggestedDownscope": "Use a single-player loop with local score/timer pressure."
+      }
+    ]
+  },
+  "proof": {
+    "usesCanvas": true,
+    "usesGeneratedAsset": true,
+    "usesDrawImage": true,
+    "snapshotCaptured": true
+  }
+}

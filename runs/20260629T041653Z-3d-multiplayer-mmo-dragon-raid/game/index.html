@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dragon Raid Dash</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #17151b;
+      color: #f7efe0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+    }
+
+    canvas {
+      width: min(100vw, 960px);
+      height: min(100vh, 600px);
+      max-width: 100vw;
+      max-height: 100vh;
+      image-rendering: auto;
+      background: #211b22;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<canvas id="game" width="960" height="600" aria-label="Dragon Raid Dash game canvas"></canvas>
+
+<script>
+(function () {
+  "use strict";
+
+  const canvas = document.getElementById("game");
+  const ctx = canvas.getContext("2d");
+
+  const W = canvas.width;
+  const H = canvas.height;
+  const arena = { x: 48, y: 70, w: 864, h: 482 };
+
+  const sprite = new Image();
+  sprite.src = "../assets/codex-sprite.png";
+
+  const keys = Object.create(null);
+  const targetScore = 10;
+  const roundTime = 60;
+  const maxHits = 3;
+
+  let state = "play";
+  let score = 0;
+  let timeLeft = roundTime;
+  let lastTime = performance.now();
+  let sigils = [];
+  let hazards = [];
+  let embers = [];
+  let dashTrail = [];
+  let hazardSpawnTimer = 0;
+  let sigilSpawnTimer = 0;
+  let message = "";
+
+  const player = {
+    x: W / 2,
+    y: H / 2,
+    r: 18,
+    speed: 190,
+    vx: 0,
+    vy: 0,
+    hits: 0,
+    invuln: 0,
+    dashCooldown: 0,
+    dashCooldownMax: 1.35,
+    dashTime: 0,
+    dashVectorX: 0,
+    dashVectorY: 0
+  };
+
+  function reset() {
+    state = "play";
+    score = 0;
+    timeLeft = roundTime;
+    message = "";
+    sigils = [];
+    hazards = [];
+    embers = [];
+    dashTrail = [];
+    hazardSpawnTimer = 0.45;
+    sigilSpawnTimer = 0;
+    player.x = W / 2;
+    player.y = H / 2;
+    player.vx = 0;
+    player.vy = 0;
+    player.hits = 0;
+    player.invuln = 0;
+    player.dashCooldown = 0;
+    player.dashTime = 0;
+    spawnSigil(true);
+    for (let i = 0; i < 32; i += 1) spawnEmber();
+    lastTime = performance.now();
+  }
+
+  function rand(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function distance(a, b, c, d) {
+    const dx = a - c;
+    const dy = b - d;
+    return Math.hypot(dx, dy);
+  }
+
+  function circleOverlap(ax, ay, ar, bx, by, br) {
+    return distance(ax, ay, bx, by) <= ar + br;
+  }
+
+  function spawnSigil(first) {
+    let x = player.x;
+    let y = player.y;
+    const progress = 1 - timeLeft / roundTime;
+    const minDist = first ? 80 : 120 + progress * 120;
+
+    for (let tries = 0; tries < 80; tries += 1) {
+      x = rand(arena.x + 40, arena.x + arena.w - 40);
+      y = rand(arena.y + 40, arena.y + arena.h - 40);
+      if (distance(x, y, player.x, player.y) >= minDist) break;
+    }
+
+    sigils.push({
+      x,
+      y,
+      r: 13,
+      pulse: rand(0, Math.PI * 2)
+    });
+  }
+
+  function spawnHazard() {
+    const progress = 1 - timeLeft / roundTime;
+    const radius = rand(36, 62);
+    const finalRush = timeLeft <= 15;
+    const drift = finalRush ? rand(18, 42) : rand(7, 22);
+    const angle = rand(0, Math.PI * 2);
+
+    hazards.push({
+      x: rand(arena.x + radius, arena.x + arena.w - radius),
+      y: rand(arena.y + radius, arena.y + arena.h - radius),
+      r: radius,
+      warn: Math.max(0.55, 1.15 - progress * 0.35),
+      danger: Math.max(1.0, 1.65 - progress * 0.3),
+      age: 0,
+      vx: Math.cos(angle) * drift,
+      vy: Math.sin(angle) * drift,
+      hitOnce: false
+    });
+  }
+
+  function spawnEmber() {
+    embers.push({
+      x: rand(arena.x, arena.x + arena.w),
+      y: rand(arena.y, arena.y + arena.h),
+      r: rand(1.2, 3.2),
+      vx: rand(-12, 18),
+      vy: rand(-24, -6),
+      life: rand(1.2, 3.2),
+      maxLife: rand(1.2, 3.2)
+    });
+  }
+
+  function dash() {
+    if (state !== "play" || player.dashCooldown > 0 || player.dashTime > 0) return;
+
+    let dx = 0;
+    let dy = 0;
+    if (keys.ArrowLeft || keys.a || keys.A) dx -= 1;
+    if (keys.ArrowRight || keys.d || keys.D) dx += 1;
+    if (keys.ArrowUp || keys.w || keys.W) dy -= 1;
+    if (keys.ArrowDown || keys.s || keys.S) dy += 1;
+
+    if (dx === 0 && dy === 0) {
+      dx = player.vx || 1;
+      dy = player.vy || 0;
+    }
+
+    const len = Math.hypot(dx, dy) || 1;
+    player.dashVectorX = dx / len;
+    player.dashVectorY = dy / len;
+    player.dashTime = 0.18;
+    player.dashCooldown = player.dashCooldownMax;
+  }
+
+  window.addEventListener("keydown", function (event) {
+    keys[event.key] = true;
+    if (event.key === " " || event.key === "Shift") {
+      event.preventDefault();
+      dash();
+    }
+  });
+
+  window.addEventListener("keyup", function (event) {
+    keys[event.key] = false;
+  });
+
+  canvas.addEventListener("pointerdown", function () {
+    if (state !== "play") reset();
+  });
+
+  function update(dt) {
+    if (state !== "play") return;
+
+    timeLeft -= dt;
+    if (timeLeft <= 0) {
+      timeLeft = 0;
+      endGame(false);
+      return;
+    }
+
+    player.invuln = Math.max(0, player.invuln - dt);
+    player.dashCooldown = Math.max(0, player.dashCooldown - dt);
+
+    let ix = 0;
+    let iy = 0;
+    if (keys.ArrowLeft || keys.a || keys.A) ix -= 1;
+    if (keys.ArrowRight || keys.d || keys.D) ix += 1;
+    if (keys.ArrowUp || keys.w || keys.W) iy -= 1;
+    if (keys.ArrowDown || keys.s || keys.S) iy += 1;
+
+    const inputLen = Math.hypot(ix, iy);
+    if (inputLen > 0) {
+      ix /= inputLen;
+      iy /= inputLen;
+      player.vx = ix;
+      player.vy = iy;
+    }
+
+    let moveSpeed = player.speed;
+    let mx = ix;
+    let my = iy;
+
+    if (player.dashTime > 0) {
+      player.dashTime -= dt;
+      moveSpeed = 620;
+      mx = player.dashVectorX;
+      my = player.dashVectorY;
+      dashTrail.push({ x: player.x, y: player.y, life: 0.22 });
+    }
+
+    player.x += mx * moveSpeed * dt;
+    player.y += my * moveSpeed * dt;
+    player.x = clamp(player.x, arena.x + player.r, arena.x + arena.w - player.r);
+    player.y = clamp(player.y, arena.y + player.r, arena.y + arena.h - player.r);
+
+    for (let i = dashTrail.length - 1; i >= 0; i -= 1) {
+      dashTrail[i].life -= dt;
+      if (dashTrail[i].life <= 0) dashTrail.splice(i, 1);
+    }
+
+    hazardSpawnTimer -= dt;
+    const progress = 1 - timeLeft / roundTime;
+    if (hazardSpawnTimer <= 0) {
+      spawnHazard();
+      hazardSpawnTimer = Math.max(0.55, 1.85 - progress * 0.85);
+    }
+
+    sigilSpawnTimer -= dt;
+    if (sigils.length < 2 && sigilSpawnTimer <= 0) {
+      spawnSigil(false);
+      sigilSpawnTimer = rand(2.0, 3.8);
+    }
+
+    for (let i = hazards.length - 1; i >= 0; i -= 1) {
+      const h = hazards[i];
+      h.age += dt;
+      h.x += h.vx * dt;
+      h.y += h.vy * dt;
+
+      if (h.x < arena.x + h.r || h.x > arena.x + arena.w - h.r) h.vx *= -1;
+      if (h.y < arena.y + h.r || h.y > arena.y + arena.h - h.r) h.vy *= -1;
+
+      h.x = clamp(h.x, arena.x + h.r, arena.x + arena.w - h.r);
+      h.y = clamp(h.y, arena.y + h.r, arena.y + arena.h - h.r);
+
+      const active = h.age > h.warn;
+      if (active && !h.hitOnce && player.invuln <= 0 && circleOverlap(player.x, player.y, player.r, h.x, h.y, h.r * 0.82)) {
+        h.hitOnce = true;
+        player.hits += 1;
+        player.invuln = 1.0;
+        if (player.hits >= maxHits) {
+          endGame(false);
+          return;
+        }
+      }
+
+      if (h.age > h.warn + h.danger) hazards.splice(i, 1);
+    }
+
+    for (let i = sigils.length - 1; i >= 0; i -= 1) {
+      sigils[i].pulse += dt * 5;
+      if (circleOverlap(player.x, player.y, player.r, sigils[i].x, sigils[i].y, sigils[i].r)) {
+        sigils.splice(i, 1);
+        score += 1;
+        sigilSpawnTimer = 0.45;
+        if (score >= targetScore) {
+          endGame(true);
+          return;
+        }
+      }
+    }
+
+    for (let i = embers.length - 1; i >= 0; i -= 1) {
+      const e = embers[i];
+      e.x += e.vx * dt;
+      e.y += e.vy * dt;
+      e.life -= dt;
+      if (e.life <= 0 || e.y < arena.y - 20) {
+        embers.splice(i, 1);
+        spawnEmber();
+      }
+    }
+  }
+
+  function endGame(won) {
+    state = won ? "win" : "fail";
+    message = won ? "RAID CLEAR" : "RAID FAILED";
+  }
+
+  function drawArena() {
+    ctx.fillStyle = "#211b22";
+    ctx.fillRect(0, 0, W, H);
+
+    const tile = 36;
+    for (let y = arena.y; y < arena.y + arena.h; y += tile) {
+      for (let x = arena.x; x < arena.x + arena.w; x += tile) {
+        ctx.fillStyle = ((x + y) / tile) % 2 === 0 ? "#2d2630" : "#28222a";
+        ctx.fillRect(x, y, tile, tile);
+      }
+    }
+
+    ctx.strokeStyle = "#7b5f4d";
+    ctx.lineWidth = 8;
+    ctx.strokeRect(arena.x, arena.y, arena.w, arena.h);
+
+    ctx.strokeStyle = "rgba(255, 224, 142, 0.18)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(arena.x + 10, arena.y + 10, arena.w - 20, arena.h - 20);
+  }
+
+  function drawEmbers() {
+    for (const e of embers) {
+      const alpha = clamp(e.life / e.maxLife, 0, 1);
+      ctx.fillStyle = "rgba(255, 128, 55, " + (0.25 + alpha * 0.45) + ")";
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function drawHazards() {
+    for (const h of hazards) {
+      const active = h.age > h.warn;
+      const warnRatio = clamp(h.age / h.warn, 0, 1);
+      const pulse = 0.75 + Math.sin(h.age * 16) * 0.25;
+
+      if (!active) {
+        ctx.fillStyle = "rgba(255, 54, 54, " + (0.12 + pulse * 0.16) + ")";
+        ctx.beginPath();
+        ctx.arc(h.x, h.y, h.r * warnRatio, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "rgba(255, 224, 128, 0.85)";
+        ctx.lineWidth = 3;
+        ctx.setLineDash([8, 8]);
+        ctx.beginPath();
+        ctx.arc(h.x, h.y, h.r, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      } else {
+        const fade = clamp(1 - (h.age - h.warn) / h.danger, 0, 1);
+        ctx.fillStyle = "rgba(208, 34, 31, " + (0.28 + fade * 0.34) + ")";
+        ctx.beginPath();
+        ctx.arc(h.x, h.y, h.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "rgba(255, 126, 55, " + (0.12 + fade * 0.2) + ")";
+        ctx.beginPath();
+        ctx.arc(h.x, h.y, h.r * 0.62, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "rgba(255, 226, 156, " + (0.2 + fade * 0.55) + ")";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(h.x, h.y, h.r * (0.82 + pulse * 0.1), 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+  }
+
+  function drawSigils() {
+    for (const s of sigils) {
+      const p = 1 + Math.sin(s.pulse) * 0.12;
+
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      ctx.rotate(s.pulse * 0.35);
+
+      ctx.fillStyle = "rgba(65, 210, 175, 0.18)";
+      ctx.beginPath();
+      ctx.arc(0, 0, s.r * 2.2 * p, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#4de0b6";
+      ctx.beginPath();
+      for (let i = 0; i < 6; i += 1) {
+        const a = -Math.PI / 2 + i * Math.PI / 3;
+        const rr = i % 2 === 0 ? s.r * 1.35 * p : s.r * 0.72 * p;
+        const x = Math.cos(a) * rr;
+        const y = Math.sin(a) * rr;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#f9fff7";
+      ctx.beginPath();
+      ctx.arc(0, 0, s.r * 0.36, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+  }
+
+  function drawPlayer() {
+    for (const t of dashTrail) {
+      ctx.fillStyle = "rgba(83, 195, 255, " + clamp(t.life / 0.22, 0, 1) * 0.24 + ")";
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, player.r * 1.15, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    if (player.invuln > 0 && Math.floor(player.invuln * 16) % 2 === 0) {
+      ctx.globalAlpha = 0.45;
+    }
+
+    ctx.save();
+    ctx.translate(player.x, player.y);
+
+    const angle = Math.atan2(player.vy, player.vx);
+    if (player.vx !== 0 || player.vy !== 0) ctx.rotate(angle + Math.PI / 2);
+
+    ctx.shadowColor = "rgba(98, 216, 255, 0.5)";
+    ctx.shadowBlur = player.dashTime > 0 ? 18 : 6;
+
+    if (sprite.complete && sprite.naturalWidth > 0) {
+      ctx.drawImage(sprite, -24, -24, 48, 48);
+    } else {
+      ctx.fillStyle = "#69d4ff";
+      ctx.beginPath();
+      ctx.arc(0, 0, player.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#f8f1d8";
+      ctx.fillRect(-5, -21, 10, 26);
+    }
+
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  function drawUI() {
+    ctx.fillStyle = "rgba(17, 15, 18, 0.82)";
+    ctx.fillRect(0, 0, W, 58);
+
+    ctx.fillStyle = "#f7efe0";
+    ctx.font = "700 22px system-ui, sans-serif";
+    ctx.textBaseline = "middle";
+    ctx.fillText("Dragon Raid Dash", 28, 29);
+
+    ctx.font = "700 20px system-ui, sans-serif";
+    ctx.fillText("Sigils " + score + " / " + targetScore, 304, 29);
+    ctx.fillText("Time " + Math.ceil(timeLeft), 478, 29);
+    ctx.fillText("Hits " + player.hits + " / " + maxHits, 610, 29);
+
+    const barX = 736;
+    const barY = 20;
+    const barW = 170;
+    const barH = 16;
+    const ready = 1 - player.dashCooldown / player.dashCooldownMax;
+
+    ctx.fillStyle = "#3b333d";
+    ctx.fillRect(barX, barY, barW, barH);
+
+    ctx.fillStyle = ready >= 1 ? "#6ee7b7" : "#59a8e8";
+    ctx.fillRect(barX, barY, barW * clamp(ready, 0, 1), barH);
+
+    ctx.strokeStyle = "#f7efe0";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(barX, barY, barW, barH);
+
+    ctx.font = "600 12px system-ui, sans-serif";
+    ctx.fillStyle = "#f7efe0";
+    ctx.fillText("DASH", barX + 58, barY + 32);
+  }
+
+  function drawOverlay() {
+    if (state === "play") return;
+
+    ctx.fillStyle = "rgba(12, 10, 14, 0.74)";
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.fillStyle = state === "win" ? "#77f7c6" : "#ff897d";
+    ctx.font = "800 58px system-ui, sans-serif";
+    ctx.fillText(message, W / 2, H / 2 - 52);
+
+    ctx.fillStyle = "#f7efe0";
+    ctx.font = "700 24px system-ui, sans-serif";
+    ctx.fillText("Sigils collected: " + score + " / " + targetScore, W / 2, H / 2 + 8);
+
+    ctx.font = "600 19px system-ui, sans-serif";
+    ctx.fillText("Click or tap to restart", W / 2, H / 2 + 58);
+
+    ctx.textAlign = "start";
+  }
+
+  function render() {
+    drawArena();
+    drawEmbers();
+    drawSigils();
+    drawHazards();
+    drawPlayer();
+    drawUI();
+    drawOverlay();
+  }
+
+  function frame(now) {
+    const dt = Math.min(0.033, (now - lastTime) / 1000);
+    lastTime = now;
+    update(dt);
+    render();
+    requestAnimationFrame(frame);
+  }
+
+  reset();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beacon Moth Dash</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #071018;
+    color: #eef8ff;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    overflow: hidden;
+  }
+
+  body {
+    display: grid;
+    place-items: center;
+  }
+
+  canvas {
+    width: min(960px, 100vw);
+    height: auto;
+    max-height: 100vh;
+    background: #071018;
+    display: block;
+  }
+</style>
+</head>
+<body>
+<canvas id="game" width="960" height="540" aria-label="Beacon Moth Dash game canvas"></canvas>
+
+<script>
+(() => {
+  "use strict";
+
+  const canvas = document.getElementById("game");
+  const ctx = canvas.getContext("2d");
+
+  const W = canvas.width;
+  const H = canvas.height;
+  const targetScore = 30;
+  const totalTime = 45;
+
+  const sprite = new Image();
+  sprite.src = "../assets/codex-sprite.png";
+
+  const keys = Object.create(null);
+
+  let state;
+
+  function rand(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  function clamp(v, min, max) {
+    return Math.max(min, Math.min(max, v));
+  }
+
+  function dist(a, b) {
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    return Math.hypot(dx, dy);
+  }
+
+  function newBeacon() {
+    return {
+      x: rand(130, W - 130),
+      y: rand(110, H - 110),
+      r: 58,
+      flash: 0,
+      swapIn: rand(5, 15)
+    };
+  }
+
+  function resetGame() {
+    state = {
+      mode: "play",
+      score: 0,
+      time: totalTime,
+      last: performance.now(),
+      player: {
+        x: W * 0.5,
+        y: H * 0.56,
+        vx: 0,
+        vy: 0,
+        speed: 175,
+        slow: 0,
+        dash: 0,
+        dashCooldown: 0,
+        facingX: 1,
+        facingY: 0
+      },
+      beacon: newBeacon(),
+      motes: [],
+      wisps: [],
+      trails: [],
+      hitFlash: 0,
+      moteSpawn: 0,
+      wispSpawn: 0
+    };
+
+    for (let i = 0; i < 8; i++) spawnMote(true);
+    for (let i = 0; i < 4; i++) spawnWisp();
+  }
+
+  function spawnMote(initial) {
+    const b = state.beacon;
+    const spread = state.time <= 10 ? 125 : state.time <= 30 ? 105 : 85;
+    const angle = rand(0, Math.PI * 2);
+    const radius = rand(14, spread);
+    state.motes.push({
+      x: clamp(b.x + Math.cos(angle) * radius, 25, W - 25),
+      y: clamp(b.y + Math.sin(angle) * radius, 25, H - 25),
+      r: rand(5, 8),
+      pulse: rand(0, Math.PI * 2),
+      value: 1,
+      born: initial ? rand(0, 2) : 0
+    });
+  }
+
+  function spawnWisp() {
+    const edge = Math.floor(rand(0, 4));
+    const speed = state.time <= 10 ? rand(62, 92) : state.time <= 30 ? rand(48, 72) : rand(34, 52);
+    let x = rand(0, W);
+    let y = rand(0, H);
+
+    if (edge === 0) y = -20;
+    if (edge === 1) x = W + 20;
+    if (edge === 2) y = H + 20;
+    if (edge === 3) x = -20;
+
+    const targetX = rand(120, W - 120);
+    const targetY = rand(95, H - 95);
+    const angle = Math.atan2(targetY - y, targetX - x);
+
+    state.wisps.push({
+      x,
+      y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      r: rand(13, 18),
+      wobble: rand(0, Math.PI * 2),
+      hitDelay: 0
+    });
+  }
+
+  function update(dt) {
+    if (state.mode !== "play") return;
+
+    state.time -= dt;
+    state.beacon.swapIn -= dt;
+    state.player.dashCooldown = Math.max(0, state.player.dashCooldown - dt);
+    state.player.dash = Math.max(0, state.player.dash - dt);
+    state.player.slow = Math.max(0, state.player.slow - dt);
+    state.beacon.flash = Math.max(0, state.beacon.flash - dt);
+    state.hitFlash = Math.max(0, state.hitFlash - dt);
+
+    if (state.time <= 0) {
+      state.time = 0;
+      state.mode = state.score >= targetScore ? "win" : "fail";
+      return;
+    }
+
+    if (state.score >= targetScore) {
+      state.mode = "win";
+      return;
+    }
+
+    if (state.beacon.swapIn <= 0) {
+      state.beacon = newBeacon();
+      while (state.motes.length < 8) spawnMote(false);
+    }
+
+    let mx = 0;
+    let my = 0;
+
+    if (keys.ArrowLeft || keys.KeyA) mx -= 1;
+    if (keys.ArrowRight || keys.KeyD) mx += 1;
+    if (keys.ArrowUp || keys.KeyW) my -= 1;
+    if (keys.ArrowDown || keys.KeyS) my += 1;
+
+    const moving = mx !== 0 || my !== 0;
+    if (moving) {
+      const len = Math.hypot(mx, my);
+      mx /= len;
+      my /= len;
+      state.player.facingX = mx;
+      state.player.facingY = my;
+    }
+
+    if ((keys.Space || keys.ShiftLeft || keys.ShiftRight) && state.player.dashCooldown <= 0 && moving) {
+      state.player.dash = 0.16;
+      state.player.dashCooldown = 1.35;
+      state.trails.push({ x: state.player.x, y: state.player.y, life: 0.35, max: 0.35 });
+    }
+
+    const dashBoost = state.player.dash > 0 ? 2.85 : 1;
+    const slowFactor = state.player.slow > 0 ? 0.55 : 1;
+    const speed = state.player.speed * dashBoost * slowFactor;
+
+    state.player.x = clamp(state.player.x + mx * speed * dt, 22, W - 22);
+    state.player.y = clamp(state.player.y + my * speed * dt, 22, H - 22);
+
+    if (state.player.dash > 0) {
+      state.trails.push({ x: state.player.x, y: state.player.y, life: 0.28, max: 0.28 });
+    }
+
+    for (const t of state.trails) t.life -= dt;
+    state.trails = state.trails.filter(t => t.life > 0);
+
+    const desiredMotes = state.time <= 10 ? 5 : state.time <= 30 ? 7 : 9;
+    const spawnGap = state.time <= 10 ? 1.25 : state.time <= 30 ? 0.85 : 0.55;
+    state.moteSpawn -= dt;
+    if (state.motes.length < desiredMotes && state.moteSpawn <= 0) {
+      spawnMote(false);
+      state.moteSpawn = spawnGap;
+    }
+
+    for (const mote of state.motes) {
+      mote.pulse += dt * 5;
+      mote.born += dt;
+    }
+
+    for (let i = state.motes.length - 1; i >= 0; i--) {
+      const mote = state.motes[i];
+      if (dist(state.player, mote) < 20 + mote.r) {
+        state.motes.splice(i, 1);
+        state.score += mote.value;
+        state.beacon.flash = 0.25;
+        state.trails.push({ x: mote.x, y: mote.y, life: 0.42, max: 0.42 });
+      }
+    }
+
+    state.wispSpawn -= dt;
+    const maxWisps = state.time <= 10 ? 7 : state.time <= 30 ? 6 : 4;
+    if (state.wisps.length < maxWisps && state.wispSpawn <= 0) {
+      spawnWisp();
+      state.wispSpawn = state.time <= 10 ? 1.4 : 2.2;
+    }
+
+    for (const w of state.wisps) {
+      w.wobble += dt * 3;
+      w.hitDelay = Math.max(0, w.hitDelay - dt);
+      w.x += (w.vx + Math.cos(w.wobble) * 16) * dt;
+      w.y += (w.vy + Math.sin(w.wobble * 0.8) * 16) * dt;
+
+      if (w.x < -70 || w.x > W + 70 || w.y < -70 || w.y > H + 70) {
+        w.x = rand(80, W - 80);
+        w.y = rand(80, H - 80);
+        const angle = rand(0, Math.PI * 2);
+        const speed = Math.hypot(w.vx, w.vy);
+        w.vx = Math.cos(angle) * speed;
+        w.vy = Math.sin(angle) * speed;
+      }
+
+      if (w.hitDelay <= 0 && dist(state.player, w) < 23 + w.r) {
+        state.score = Math.max(0, state.score - 2);
+        state.player.slow = 1.1;
+        state.hitFlash = 0.28;
+        w.hitDelay = 1.2;
+      }
+    }
+  }
+
+  function drawBackground() {
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#07131f");
+    g.addColorStop(0.55, "#071018");
+    g.addColorStop(1, "#0a1413");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.fillStyle = "rgba(75, 126, 88, 0.16)";
+    for (let i = 0; i < 18; i++) {
+      const x = (i * 83 + 41) % W;
+      const y = 390 + Math.sin(i * 1.7) * 34;
+      ctx.beginPath();
+      ctx.ellipse(x, y, 16 + (i % 4) * 5, 74 + (i % 3) * 14, Math.sin(i) * 0.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.strokeStyle = "rgba(178, 205, 174, 0.06)";
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 12; i++) {
+      const x = i * 90 + 20;
+      ctx.beginPath();
+      ctx.moveTo(x, H);
+      ctx.quadraticCurveTo(x + Math.sin(i) * 35, H - 120, x + 18, H - 230);
+      ctx.stroke();
+    }
+  }
+
+  function drawBeacon() {
+    const b = state.beacon;
+    const pulse = Math.sin(performance.now() * 0.005) * 0.5 + 0.5;
+    const flash = b.flash > 0 ? b.flash / 0.25 : 0;
+
+    const glow = ctx.createRadialGradient(b.x, b.y, 6, b.x, b.y, b.r * 2.4);
+    glow.addColorStop(0, `rgba(255, 238, 140, ${0.42 + flash * 0.35})`);
+    glow.addColorStop(0.32, `rgba(134, 218, 188, ${0.18 + pulse * 0.06})`);
+    glow.addColorStop(1, "rgba(134, 218, 188, 0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.r * 2.4, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = `rgba(255, 238, 160, ${0.5 + flash * 0.4})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.r + pulse * 4, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = `rgba(255, 236, 145, ${0.22 + flash * 0.28})`;
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, 14 + pulse * 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawMotes() {
+    for (const mote of state.motes) {
+      const p = Math.sin(mote.pulse) * 0.5 + 0.5;
+      ctx.fillStyle = `rgba(255, 239, 147, ${0.38 + p * 0.35})`;
+      ctx.beginPath();
+      ctx.arc(mote.x, mote.y, mote.r + 8 + p * 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#fff3a6";
+      ctx.beginPath();
+      ctx.arc(mote.x, mote.y, mote.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function drawWisps() {
+    for (const w of state.wisps) {
+      const p = Math.sin(w.wobble) * 0.5 + 0.5;
+      ctx.fillStyle = "rgba(24, 27, 46, 0.72)";
+      ctx.beginPath();
+      ctx.arc(w.x, w.y, w.r + p * 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "rgba(94, 107, 145, 0.45)";
+      ctx.beginPath();
+      ctx.arc(w.x - 5, w.y - 3, w.r * 0.45, 0, Math.PI * 2);
+      ctx.arc(w.x + 6, w.y + 4, w.r * 0.34, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function drawPlayer() {
+    for (const t of state.trails) {
+      const a = t.life / t.max;
+      ctx.fillStyle = `rgba(154, 240, 220, ${0.28 * a})`;
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, 20 + (1 - a) * 14, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    const p = state.player;
+    const angle = Math.atan2(p.facingY, p.facingX);
+
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(angle + Math.PI / 2);
+
+    ctx.fillStyle = "rgba(255, 246, 164, 0.26)";
+    ctx.beginPath();
+    ctx.arc(0, 0, 28, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (sprite.complete && sprite.naturalWidth > 0) {
+      ctx.drawImage(sprite, -24, -24, 48, 48);
+    } else {
+      ctx.fillStyle = "#f8e99b";
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 10, 17, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(150, 238, 218, 0.75)";
+      ctx.beginPath();
+      ctx.ellipse(-11, -2, 10, 16, -0.6, 0, Math.PI * 2);
+      ctx.ellipse(11, -2, 10, 16, 0.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
+  function drawUI() {
+    ctx.fillStyle = "rgba(4, 9, 14, 0.72)";
+    ctx.fillRect(0, 0, W, 54);
+
+    ctx.fillStyle = "#eef8ff";
+    ctx.font = "700 18px system-ui, sans-serif";
+    ctx.textBaseline = "middle";
+    ctx.fillText(`Light ${state.score}/${targetScore}`, 22, 27);
+    ctx.fillText(`Time ${Math.ceil(state.time)}`, 180, 27);
+
+    const barX = 315;
+    const barY = 19;
+    const barW = 170;
+    const barH = 14;
+    const ready = 1 - clamp(state.player.dashCooldown / 1.35, 0, 1);
+
+    ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
+    ctx.fillRect(barX, barY, barW, barH);
+    ctx.fillStyle = ready >= 1 ? "#91f3dc" : "#ffdd86";
+    ctx.fillRect(barX, barY, barW * ready, barH);
+    ctx.strokeStyle = "rgba(238, 248, 255, 0.5)";
+    ctx.strokeRect(barX, barY, barW, barH);
+
+    ctx.fillStyle = "rgba(238, 248, 255, 0.78)";
+    ctx.font = "600 13px system-ui, sans-serif";
+    ctx.fillText("Dash", barX + barW + 12, 26);
+
+    if (state.time <= 10 && state.mode === "play") {
+      ctx.fillStyle = "rgba(255, 110, 110, 0.88)";
+      ctx.font = "800 16px system-ui, sans-serif";
+      ctx.fillText("Final glow", W - 130, 27);
+    }
+  }
+
+  function drawHitFlash() {
+    if (state.hitFlash <= 0) return;
+    const a = state.hitFlash / 0.28;
+    ctx.strokeStyle = `rgba(22, 8, 22, ${0.65 * a})`;
+    ctx.lineWidth = 28;
+    ctx.strokeRect(14, 14, W - 28, H - 28);
+  }
+
+  function drawOverlay() {
+    if (state.mode === "play") return;
+
+    ctx.fillStyle = "rgba(3, 7, 12, 0.76)";
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = state.mode === "win" ? "#fff0a6" : "#d9e4ff";
+    ctx.font = "800 54px system-ui, sans-serif";
+    ctx.fillText(state.mode === "win" ? "Beacon Restored" : "Night Closed In", W / 2, H / 2 - 42);
+
+    ctx.fillStyle = "#eef8ff";
+    ctx.font = "700 22px system-ui, sans-serif";
+    ctx.fillText(`Light gathered: ${state.score}/${targetScore}`, W / 2, H / 2 + 18);
+
+    ctx.fillStyle = "rgba(238, 248, 255, 0.76)";
+    ctx.font = "600 16px system-ui, sans-serif";
+    ctx.fillText("Click or tap to restart", W / 2, H / 2 + 62);
+    ctx.textAlign = "start";
+  }
+
+  function render() {
+    drawBackground();
+    drawBeacon();
+    drawMotes();
+    drawWisps();
+    drawPlayer();
+    drawHitFlash();
+    drawUI();
+    drawOverlay();
+  }
+
+  function frame(now) {
+    const dt = Math.min(0.033, (now - state.last) / 1000);
+    state.last = now;
+    update(dt);
+    render();
+    requestAnimationFrame(frame);
+  }
+
+  window.addEventListener("keydown", event => {
+    if ([
+      "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+      "KeyA", "KeyD", "KeyW", "KeyS", "Space", "ShiftLeft", "ShiftRight"
+    ].includes(event.code)) {
+      event.preventDefault();
+      keys[event.code] = true;
+    }
+  });
+
+  window.addEventListener("keyup", event => {
+    keys[event.code] = false;
+  });
+
+  canvas.addEventListener("pointerdown", () => {
+    if (state.mode !== "play") resetGame();
+  });
+
+  resetGame();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

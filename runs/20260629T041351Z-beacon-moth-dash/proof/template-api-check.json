@@ -1,0 +1,20 @@
+{
+  "status": "in_scope",
+  "inScope": [
+    "single_screen_canvas",
+    "standalone_html",
+    "single_generated_sprite",
+    "sprite_draw_image",
+    "keyboard_input",
+    "pointer_restart",
+    "top_down_2d_movement",
+    "simple_dash_or_burst",
+    "simple_entities",
+    "simple_collision",
+    "score_timer_win_fail",
+    "basic_canvas_ui",
+    "basic_particle_or_motion_feedback",
+    "headless_snapshot"
+  ],
+  "flagged": []
+}
