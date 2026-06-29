@@ -1,0 +1,25 @@
+{
+  "runId": "20260629T033855Z-magnet-coin-dash",
+  "idea": "magnet coin dash",
+  "createdAt": "2026-06-29T03:38:55.189Z",
+  "codex": {
+    "gddThreadId": "019f1175-6b13-7bb3-88e7-5c7d00bc8d20",
+    "assetThreadId": "019f1175-c6dc-7381-a10f-0b777ec646a5",
+    "produceThreadId": "019f1176-f548-7db1-9a75-ae148dc266e5",
+    "assetSource": "/Users/godju/.codex/generated_images/019f1175-c6dc-7381-a10f-0b777ec646a5/ig_03b3bdc3972ca5c6016a41e8ee82ec8191a0925f1917ed2c97.png"
+  },
+  "outputs": {
+    "gdd": "runs/20260629T033855Z-magnet-coin-dash/gdd.md",
+    "rawAsset": "runs/20260629T033855Z-magnet-coin-dash/assets/codex-raw.png",
+    "sprite": "runs/20260629T033855Z-magnet-coin-dash/assets/codex-sprite.png",
+    "atlas": "runs/20260629T033855Z-magnet-coin-dash/assets/atlas.json",
+    "game": "runs/20260629T033855Z-magnet-coin-dash/game/index.html",
+    "snapshot": "runs/20260629T033855Z-magnet-coin-dash/proof/snapshot.png"
+  },
+  "proof": {
+    "usesCanvas": true,
+    "usesGeneratedAsset": true,
+    "usesDrawImage": true,
+    "snapshotCaptured": true
+  }
+}

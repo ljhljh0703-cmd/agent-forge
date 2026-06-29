@@ -7,6 +7,9 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
+    "orchestrator:build": "tsc -p orchestrator/tsconfig.json",
+    "orchestrator:type-check": "tsc -p orchestrator/tsconfig.json --noEmit",
+    "generate": "npm run orchestrator:build --silent && node orchestrator/dist/generate.js",
     "lint": "eslint src --ext .ts,.tsx"
   },
   "dependencies": {
@@ -20,6 +23,7 @@
     "typescript": "^5.3.3"
   },
   "devDependencies": {
+    "@types/node": "^20.19.0",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@typescript-eslint/eslint-plugin": "^7.18.0",

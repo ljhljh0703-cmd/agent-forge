@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magnet Coin Dash</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #111318;
+      display: grid;
+      place-items: center;
+      font-family: Arial, Helvetica, sans-serif;
+      color: white;
+    }
+
+    canvas {
+      width: min(96vw, 900px);
+      height: auto;
+      border: 3px solid #2f3542;
+      background: #171a21;
+      image-rendering: pixelated;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="game" width="800" height="520" aria-label="Magnet Coin Dash game canvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    const sprite = new Image();
+    sprite.src = "../assets/codex-sprite.png";
+
+    const W = canvas.width;
+    const H = canvas.height;
+
+    const keys = new Set();
+
+    const targetScore = 30;
+    const timeLimit = 60;
+    const coinCount = 18;
+
+    let lastTime = performance.now();
+    let score = 0;
+    let timeLeft = timeLimit;
+    let gameOver = false;
+    let resultText = "";
+    let dashTime = 0;
+    let dashCooldown = 0;
+    let lastDir = { x: 1, y: 0 };
+
+    const player = {
+      x: W / 2,
+      y: H / 2,
+      r: 21,
+      speed: 210,
+      dashSpeed: 560,
+      attractRadius: 92,
+      dashAttractRadius: 150
+    };
+
+    const coins = [];
+
+    function rand(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function spawnCoin(coin) {
+      coin.x = rand(42, W - 42);
+      coin.y = rand(72, H - 42);
+      coin.r = rand(7, 10);
+      coin.vx = rand(-10, 10);
+      coin.vy = rand(-10, 10);
+      coin.spin = rand(0, Math.PI * 2);
+    }
+
+    function resetGame() {
+      score = 0;
+      timeLeft = timeLimit;
+      gameOver = false;
+      resultText = "";
+      dashTime = 0;
+      dashCooldown = 0;
+      lastDir = { x: 1, y: 0 };
+      player.x = W / 2;
+      player.y = H / 2;
+      coins.length = 0;
+
+      for (let i = 0; i < coinCount; i++) {
+        const coin = {};
+        spawnCoin(coin);
+        coins.push(coin);
+      }
+
+      lastTime = performance.now();
+    }
+
+    function inputVector() {
+      let x = 0;
+      let y = 0;
+
+      if (keys.has("arrowleft") || keys.has("a")) x -= 1;
+      if (keys.has("arrowright") || keys.has("d")) x += 1;
+      if (keys.has("arrowup") || keys.has("w")) y -= 1;
+      if (keys.has("arrowdown") || keys.has("s")) y += 1;
+
+      const len = Math.hypot(x, y);
+      if (len > 0) {
+        x /= len;
+        y /= len;
+        lastDir = { x, y };
+      }
+
+      return { x, y };
+    }
+
+    function update(dt) {
+      if (gameOver) return;
+
+      timeLeft -= dt;
+      if (timeLeft <= 0) {
+        timeLeft = 0;
+        gameOver = true;
+        resultText = "Time Up";
+        return;
+      }
+
+      dashTime = Math.max(0, dashTime - dt);
+      dashCooldown = Math.max(0, dashCooldown - dt);
+
+      const input = inputVector();
+      const dashing = dashTime > 0;
+      const speed = dashing ? player.dashSpeed : player.speed;
+
+      player.x += input.x * speed * dt;
+      player.y += input.y * speed * dt;
+
+      player.x = Math.max(player.r, Math.min(W - player.r, player.x));
+      player.y = Math.max(58 + player.r, Math.min(H - player.r, player.y));
+
+      const attractRadius = dashing ? player.dashAttractRadius : player.attractRadius;
+      const attractPower = dashing ? 680 : 330;
+
+      for (const coin of coins) {
+        const dx = player.x - coin.x;
+        const dy = player.y - coin.y;
+        const dist = Math.hypot(dx, dy);
+
+        coin.spin += dt * 7;
+
+        if (dist < attractRadius && dist > 0.01) {
+          const pull = (1 - dist / attractRadius) * attractPower;
+          coin.vx += (dx / dist) * pull * dt;
+          coin.vy += (dy / dist) * pull * dt;
+        }
+
+        coin.vx *= Math.pow(0.88, dt * 60);
+        coin.vy *= Math.pow(0.88, dt * 60);
+
+        coin.x += coin.vx * dt;
+        coin.y += coin.vy * dt;
+
+        if (coin.x < coin.r || coin.x > W - coin.r) {
+          coin.vx *= -0.55;
+          coin.x = Math.max(coin.r, Math.min(W - coin.r, coin.x));
+        }
+
+        if (coin.y < 58 + coin.r || coin.y > H - coin.r) {
+          coin.vy *= -0.55;
+          coin.y = Math.max(58 + coin.r, Math.min(H - coin.r, coin.y));
+        }
+
+        if (dist < player.r + coin.r - 2) {
+          score += 1;
+          if (score >= targetScore) {
+            gameOver = true;
+            resultText = "You Win";
+          }
+          spawnCoin(coin);
+        }
+      }
+    }
+
+    function drawBackground() {
+      ctx.fillStyle = "#171a21";
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.strokeStyle = "#272d38";
+      ctx.lineWidth = 1;
+
+      for (let x = 0; x <= W; x += 40) {
+        ctx.beginPath();
+        ctx.moveTo(x, 58);
+        ctx.lineTo(x, H);
+        ctx.stroke();
+      }
+
+      for (let y = 58; y <= H; y += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(W, y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = "#202633";
+      ctx.fillRect(0, 0, W, 58);
+
+      ctx.strokeStyle = "#465064";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(1.5, 59.5, W - 3, H - 61);
+    }
+
+    function drawCoins() {
+      for (const coin of coins) {
+        ctx.save();
+        ctx.translate(coin.x, coin.y);
+        ctx.scale(0.75 + Math.abs(Math.sin(coin.spin)) * 0.25, 1);
+
+        ctx.fillStyle = "#f9c74f";
+        ctx.beginPath();
+        ctx.arc(0, 0, coin.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "#fff3a3";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, coin.r - 2, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+    }
+
+    function drawPlayer() {
+      const dashing = dashTime > 0;
+      const radius = dashing ? player.dashAttractRadius : player.attractRadius;
+
+      ctx.save();
+      ctx.globalAlpha = dashing ? 0.24 : 0.14;
+      ctx.fillStyle = dashing ? "#69dbff" : "#90e0ef";
+      ctx.beginPath();
+      ctx.arc(player.x, player.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      const size = dashing ? 72 : 64;
+      const angle = Math.atan2(lastDir.y, lastDir.x);
+
+      ctx.save();
+      ctx.translate(player.x, player.y);
+      ctx.rotate(angle);
+      ctx.globalAlpha = dashing ? 0.35 : 0.18;
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.moveTo(-26, -16);
+      ctx.lineTo(-56, 0);
+      ctx.lineTo(-26, 16);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      ctx.translate(player.x, player.y);
+
+      if (sprite.complete && sprite.naturalWidth > 0) {
+        ctx.drawImage(sprite, -size / 2, -size / 2, size, size);
+      } else {
+        ctx.lineWidth = 10;
+        ctx.strokeStyle = "#e63946";
+        ctx.beginPath();
+        ctx.arc(0, 0, 23, Math.PI * 0.25, Math.PI * 1.75);
+        ctx.stroke();
+
+        ctx.fillStyle = "#e63946";
+        ctx.fillRect(-28, -21, 14, 20);
+
+        ctx.fillStyle = "#457bff";
+        ctx.fillRect(-28, 1, 14, 20);
+      }
+
+      ctx.restore();
+    }
+
+    function drawUI() {
+      ctx.fillStyle = "#f8f9fb";
+      ctx.font = "700 24px Arial";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText("Score: " + score + " / " + targetScore, 24, 29);
+
+      ctx.textAlign = "right";
+      ctx.fillText("Time: " + Math.ceil(timeLeft), W - 24, 29);
+
+      const barW = 152;
+      const barH = 8;
+      const ready = dashCooldown <= 0;
+      const pct = ready ? 1 : 1 - dashCooldown / 0.9;
+
+      ctx.textAlign = "center";
+      ctx.font = "700 14px Arial";
+      ctx.fillStyle = ready ? "#9ef01a" : "#adb5bd";
+      ctx.fillText(ready ? "DASH READY" : "DASH CHARGING", W / 2, 20);
+
+      ctx.fillStyle = "#343a46";
+      ctx.fillRect(W / 2 - barW / 2, 34, barW, barH);
+
+      ctx.fillStyle = ready ? "#9ef01a" : "#4cc9f0";
+      ctx.fillRect(W / 2 - barW / 2, 34, barW * Math.max(0, Math.min(1, pct)), barH);
+    }
+
+    function drawOverlay() {
+      if (!gameOver) return;
+
+      ctx.save();
+      ctx.fillStyle = "rgba(10, 12, 17, 0.74)";
+      ctx.fillRect(0, 58, W, H - 58);
+
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      ctx.fillStyle = resultText === "You Win" ? "#9ef01a" : "#ff6b6b";
+      ctx.font = "800 64px Arial";
+      ctx.fillText(resultText, W / 2, H / 2 - 45);
+
+      ctx.fillStyle = "#f8f9fb";
+      ctx.font = "700 24px Arial";
+      ctx.fillText("Final Score: " + score + " / " + targetScore, W / 2, H / 2 + 18);
+
+      ctx.fillStyle = "#ffd166";
+      ctx.font = "700 20px Arial";
+      ctx.fillText("Press R or click to restart", W / 2, H / 2 + 64);
+
+      ctx.restore();
+    }
+
+    function render() {
+      ctx.imageSmoothingEnabled = false;
+      drawBackground();
+      drawCoins();
+      drawPlayer();
+      drawUI();
+      drawOverlay();
+    }
+
+    function loop(now) {
+      const dt = Math.min(0.033, (now - lastTime) / 1000);
+      lastTime = now;
+
+      update(dt);
+      render();
+
+      requestAnimationFrame(loop);
+    }
+
+    window.addEventListener("keydown", (event) => {
+      const key = event.key.toLowerCase();
+
+      if (["arrowup", "arrowdown", "arrowleft", "arrowright", " ", "space"].includes(key)) {
+        event.preventDefault();
+      }
+
+      keys.add(key);
+
+      if ((key === " " || key === "space") && !gameOver && dashCooldown <= 0) {
+        dashTime = 0.16;
+        dashCooldown = 0.9;
+      }
+
+      if (key === "r") {
+        resetGame();
+      }
+    });
+
+    window.addEventListener("keyup", (event) => {
+      keys.delete(event.key.toLowerCase());
+    });
+
+    canvas.addEventListener("click", () => {
+      if (gameOver) resetGame();
+    });
+
+    resetGame();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
