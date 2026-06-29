@@ -32,6 +32,25 @@ Agent Forge OS는 이 과정을 5명의 전문 AI 에이전트로 분담·단계
 
 ---
 
+## 진화 — vault 방법론으로 거듭 발전
+
+AgentForge는 작가가 vault에서 구축한 AI 게임 스튜디오 방법론을 구현·반영하며 발전해왔다.
+
+**모델 현실화** — 구세대(gemini-2.0/2.5/3.0) 박제 없이 현행 `gemini-3.5-flash` / `3.1-pro` 유지. 모델 전략 런타임 전환 가능(All Flash / Hybrid Pro / All Pro).
+
+**거버넌스 코어 강화** — Debt Score 폐루프(Auditor → loopback MAX 3)가 단순 자동생성을 넘는 *통제된 생산*의 핵심. HITL 승인 모드(수동 확정)로 인간 검토 통합.
+
+**UI 진화** — 초기 아이소메트릭 룸 → deep-blue 토큰 → **warm-terracotta 하이브리드 대시보드** (파이프라인 플로우 · 메트릭 카드 · 에이전트 Live Studio 위젯). 가독성·밀도 우선.
+
+**②Asset 스테이지 통합** — `agent-sprite-forge` 픽셀 파이프라인(Codex `image_gen` → magenta-key → 그리드 슬라이스 → atlas 조립, 레이어 분리)으로 스타터 팩 생성·검증 완료 [사실, 2026-06-28]:
+- 5 아틀라스 · 27프레임 (타일셋 · 플레이어 · 슬라임 · FX · 프롭)
+- `asset-loader.ts` (manifest + Canvas blit) · magenta 잔여 0 · 레이어 분리 · clean-room
+- AgentForge가 DOM 렌더 전용에서 *에셋 백드 게임 생성* 방향으로 확장
+
+> 정직 경계: 에셋 생성 파이프라인 자체는 **[사실·실재]**. 단 생성 게임에 에셋을 자동 적용하는 전 파이프라인 연결은 **[진행 중]** — 완료 전 "자동 완성" 주장 없음.
+
+---
+
 ## 아키텍처
 
 ```mermaid
@@ -52,7 +71,7 @@ flowchart LR
 | 스튜디오 단계 | AgentForge 대응 | 현황 |
 | --- | --- | --- |
 | ① Plan — 기획·GDD | Planner (Alex) | 구현 완료 |
-| ② Asset — 스프라이트·타일 생성 | agent-sprite-forge 방식 스타터 팩 + Canvas atlas loader | **씨앗 구현** |
+| ② Asset — 스프라이트·타일 생성 | agent-sprite-forge · Codex 픽셀 파이프라인 + `asset-loader.ts` | **통합 중 [사실·실재]** |
 | ③ Produce — 코드 생성 | Architect + Compiler + Worker | 구현 완료 |
 | ④ Verify — 폐루프 검증 | Auditor + iframe + Debt Score | 구현 완료 (핵심 강점) |
 | ⑤ Evolve — 패턴·실패 자동 누적 | — | **현재 범위 밖** |
@@ -142,7 +161,7 @@ npm run lint       # eslint src
 ## 정직·한계
 
 - **Debt Score·비용 수치** = `[측정전]`. 측정 완료 전 수치 주장 없음.
-- **에셋 생성(스프라이트·타일)** = agent-sprite-forge 방식의 스타터 팩과 Canvas atlas loader 씨앗 구현. 전 파이프라인 자동연결은 후속.
+- **에셋 생성(스프라이트·타일)** = **통합 중** — agent-sprite-forge 파이프라인(스타터 팩 5 아틀라스·27프레임·`asset-loader.ts`) 검증 완료 [사실]. 생성 게임에 에셋 자동 적용하는 전 파이프라인 연결은 [진행 중].
 - **자기진화(경험 누적·패턴 학습)** = 현재 구현 범위 밖. 향후 확장 여지.
 - **game-studio-pipeline** = 작가 vault 설계·진행 중(provisional). AgentForge는 그 사상을 공유하는 **독립적 웹 구현**이며 동일 프로젝트가 아님.
 - **본 도구 산출물** = slime-survivors 등 자체 생성 게임. 별도 프로젝트(ClaudeCraft 등)의 산출이 아님.

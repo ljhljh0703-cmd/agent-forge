@@ -32,6 +32,26 @@ Agent Forge OS distributes this process across 5 specialist AI agents and direct
 
 ---
 
+## Evolution — Advancing Through Vault Methodology
+
+AgentForge has evolved by implementing and reflecting the AI game studio methodology built in the author's vault.
+
+**Model updates** — No legacy model pinning (gemini-2.0/2.5/3.0 removed). Active models: `gemini-3.5-flash` / `3.1-pro`, switchable at runtime (All Flash / Hybrid Pro / All Pro).
+
+**Governance core** — Debt Score closed-loop (Auditor → loopback MAX 3) is the core of *controlled production* beyond mere auto-generation. HITL approval mode added for human review integration.
+
+**UI evolution** — Isometric room → deep-blue tokens → **warm-terracotta hybrid dashboard** (pipeline flow · metric cards · agent Live Studio widget). Readability and density-first.
+
+**②Asset stage integration** — `agent-sprite-forge` pixel pipeline (Codex `image_gen` → magenta-key → grid slice → atlas assembly, layer separation) verified [fact, 2026-06-28]:
+
+- 5 atlases · 27 frames (tileset · player · slime · FX · props)
+- `asset-loader.ts` (manifest + Canvas blit) · zero magenta residue · layer separation · clean-room
+- AgentForge expanding from DOM-only rendering toward *asset-backed game generation*
+
+> Honesty boundary: The asset generation pipeline itself is **[fact, verified]**. End-to-end auto-connection where generated games automatically use these assets is **[in progress]** — no "fully complete" claims until done.
+
+---
+
 ## Architecture
 
 ```mermaid
@@ -52,7 +72,7 @@ flowchart LR
 | Studio stage | AgentForge mapping | Status |
 | --- | --- | --- |
 | ① Plan — GDD, game design | Planner (Alex) | Implemented |
-| ② Asset — sprites, tiles | — | **Out of scope** |
+| ② Asset — sprites, tiles | agent-sprite-forge · Codex pixel pipeline + `asset-loader.ts` | **Integrating [fact, verified]** |
 | ③ Produce — code generation | Architect + Compiler + Worker | Implemented |
 | ④ Verify — closed-loop validation | Auditor + iframe + Debt Score | Implemented (core strength) |
 | ⑤ Evolve — pattern/failure accumulation | — | **Out of scope** |
@@ -142,7 +162,7 @@ npm run lint       # eslint src
 ## Honesty & Limitations
 
 - **Debt Score / cost figures** = `[not measured]`. No claims before measurement.
-- **Asset generation (sprites, tiles)** = out of current scope. Code is generated but art asset creation is not implemented.
+- **Asset generation (sprites, tiles)** = **Integrating** — agent-sprite-forge pipeline (5 atlases · 27 frames · `asset-loader.ts`) verified [fact]. End-to-end auto-connection in generated games is [in progress].
 - **Self-evolution (experience accumulation, pattern learning)** = out of current scope. Room for future extension.
 - **game-studio-pipeline** = author's vault design, in progress (provisional). AgentForge is an **independent web implementation** sharing the same philosophy — not the same project.
 - **This tool's outputs** = self-generated games (e.g. slime-survivors). Not outputs of separate projects (e.g. ClaudeCraft).
