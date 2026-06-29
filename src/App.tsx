@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
 import { WindowContextProvider, useWindowContext } from './context/WindowContext';
 import { DraggableWindow } from './components/DraggableWindow';
-import { OfficeSetting } from './components/OfficeSetting';
-import { EmployeeCard } from './components/EmployeeCard';
 import { Taskbar } from './components/Taskbar';
 import { PlannerWindow } from './components/windows/PlannerWindow';
 import { TerminalWindow } from './components/windows/TerminalWindow';
@@ -16,39 +14,22 @@ import { DashboardWindow } from './components/windows/DashboardWindow';
 import { ComparisonWindow } from './components/windows/ComparisonWindow';
 import { CodeInputWindow } from './components/windows/CodeInputWindow';
 import { AgentStatusPanel } from './components/AgentStatusPanel';
-import { getEmployees } from './config/employees';
+import { MainDashboard } from './components/MainDashboard';
 
 const AppContent: React.FC = () => {
-  const { addLog, agents, domainConfig } = useWindowContext();
-  const employees = getEmployees(domainConfig.employeeOverrides);
+  const { addLog } = useWindowContext();
 
   useEffect(() => {
-    addLog('⚙️ Agent Forge OS 초기화 중...', 'info');
-    addLog('✓ 5명의 에이전트 팀 준비 완료', 'success');
+    addLog('Agent Forge OS 초기화 완료', 'info');
   }, [addLog]);
 
   return (
-    <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#FFFFFF' }}>
-      {/* 메인 콘텐츠 */}
+    <div className="w-full h-full flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
       <div className="flex flex-1 overflow-hidden">
-        {/* 왼쪽: 오피스 뷰 */}
-        <div className="flex-1 overflow-hidden" style={{ backgroundColor: '#F8F8F8' }}>
-          <OfficeSetting>
-            {Object.values(employees).map((employee) => {
-              const agent = agents.find((a) => a.agentId === employee.id);
-              if (!agent) return null;
-              return (
-                <EmployeeCard
-                  key={employee.id}
-                  employee={employee}
-                  agent={agent}
-                  onClick={() => { console.log(`${employee.name} 클릭`); }}
-                />
-              );
-            })}
-          </OfficeSetting>
+        {/* 왼쪽: 대시보드 + 플로팅 창들 */}
+        <div className="flex-1 overflow-hidden" style={{ position: 'relative' }}>
+          <MainDashboard />
 
-          {/* 윈도우 패널들 */}
           <DraggableWindow id="planner" title="PLANNER">
             <PlannerWindow />
           </DraggableWindow>
@@ -84,7 +65,7 @@ const AppContent: React.FC = () => {
           </DraggableWindow>
         </div>
 
-        {/* 오른쪽: Agent Status Panel */}
+        {/* 오른쪽: Live Studio */}
         <AgentStatusPanel />
       </div>
 

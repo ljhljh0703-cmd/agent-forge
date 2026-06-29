@@ -128,7 +128,7 @@ export const PipelineProgressBar: React.FC = () => {
       className="px-4 py-3"
       style={{ borderBottom: '1px solid var(--line)' }}
     >
-      <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ink-soft)', marginBottom: '8px', display: 'block' }}>
+      <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink-soft)', marginBottom: '8px', display: 'block' }}>
         Pipeline
       </label>
 
@@ -190,20 +190,20 @@ export const PipelineProgressBar: React.FC = () => {
         {labels.map((label, idx) => (
           <div key={idx} style={{
             textAlign: 'center',
-            fontSize: '10px',
+            fontSize: '12px',
             fontWeight: stages[idx] === 'active' ? 700 : 500,
             color: stages[idx] === 'pending'
               ? 'var(--line)'
               : stages[idx] === 'error'
                 ? '#E01E5A'
                 : 'var(--ink-soft)',
-            lineHeight: '14px',
+            lineHeight: '16px',
             minWidth: '14px',
           }}>
             <div>{label}</div>
             {timings[idx] > 0 && (
               <div style={{
-                fontSize: '9px',
+                fontSize: '11px',
                 color: stages[idx] === 'active' ? 'var(--brand)' : 'var(--ink-soft)',
                 fontVariantNumeric: 'tabular-nums',
               }}>
