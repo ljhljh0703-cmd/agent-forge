@@ -1,0 +1,913 @@
+{
+  "schemaVersion": 1,
+  "id": "agentforge-starter-pack",
+  "pipeline": "agent-sprite-forge-methodology/codex-image-gen/raw-magenta-key-slice-atlas",
+  "approvalState": "STARTER_PACK_NOT_ACCEPTED",
+  "cleanRoom": {
+    "rawArt": "built-in image_gen",
+    "thirdPartyIp": false,
+    "secretsRequired": false,
+    "licenseIntent": "MIT-compatible original generated starter assets"
+  },
+  "methodology": {
+    "chromaKey": "#FF00FF",
+    "multiRowGrid": true,
+    "singleRowMultiCellSheets": false,
+    "bodyOnlySprites": true,
+    "fxSeparated": true,
+    "layerSeparation": true,
+    "propClassification": [
+      "compact_prop",
+      "wide_or_long",
+      "tall_or_large",
+      "collision_bearing",
+      "tileset_strip"
+    ]
+  },
+  "atlases": [
+    {
+      "schemaVersion": 1,
+      "id": "tileset",
+      "image": "/assets/agentforge/atlas/tileset.png",
+      "frameSize": {
+        "width": 16,
+        "height": 16
+      },
+      "atlasGrid": {
+        "columns": 2,
+        "rows": 2
+      },
+      "frames": [
+        {
+          "id": "tile_floor_stone",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 16,
+            "h": 16
+          },
+          "anchor": {
+            "x": 0,
+            "y": 0
+          },
+          "layer": "base",
+          "sourceCell": [
+            0,
+            0
+          ],
+          "collision": {
+            "solid": false,
+            "kind": "floor"
+          }
+        },
+        {
+          "id": "tile_floor_cracked",
+          "rect": {
+            "x": 16,
+            "y": 0,
+            "w": 16,
+            "h": 16
+          },
+          "anchor": {
+            "x": 0,
+            "y": 0
+          },
+          "layer": "base",
+          "sourceCell": [
+            1,
+            0
+          ],
+          "collision": {
+            "solid": false,
+            "kind": "floor"
+          }
+        },
+        {
+          "id": "tile_wall_block",
+          "rect": {
+            "x": 0,
+            "y": 16,
+            "w": 16,
+            "h": 16
+          },
+          "anchor": {
+            "x": 0,
+            "y": 0
+          },
+          "layer": "base",
+          "sourceCell": [
+            0,
+            1
+          ],
+          "collision": {
+            "solid": true,
+            "kind": "wall"
+          }
+        },
+        {
+          "id": "tile_wall_corner_dark",
+          "rect": {
+            "x": 16,
+            "y": 16,
+            "w": 16,
+            "h": 16
+          },
+          "anchor": {
+            "x": 0,
+            "y": 0
+          },
+          "layer": "base",
+          "sourceCell": [
+            1,
+            1
+          ],
+          "collision": {
+            "solid": true,
+            "kind": "wall"
+          }
+        }
+      ],
+      "animations": {},
+      "source": {
+        "raw": "/assets/agentforge/raw/tileset_raw.png",
+        "keyed": "/assets/agentforge/keyed/tileset_keyed.png",
+        "rawOrigin": "built-in image_gen, solid #FF00FF chroma key"
+      },
+      "metadata": "/assets/agentforge/atlas/tileset.json"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "player",
+      "image": "/assets/agentforge/atlas/player.png",
+      "frameSize": {
+        "width": 32,
+        "height": 32
+      },
+      "atlasGrid": {
+        "columns": 4,
+        "rows": 2
+      },
+      "frames": [
+        {
+          "id": "player_idle_1",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 30
+          },
+          "layer": "actor",
+          "sourceCell": [
+            0,
+            0
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 9,
+              "y": 10,
+              "w": 14,
+              "h": 20
+            }
+          }
+        },
+        {
+          "id": "player_idle_2",
+          "rect": {
+            "x": 32,
+            "y": 0,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 30
+          },
+          "layer": "actor",
+          "sourceCell": [
+            1,
+            0
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 9,
+              "y": 10,
+              "w": 14,
+              "h": 20
+            }
+          }
+        },
+        {
+          "id": "player_idle_3",
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 30
+          },
+          "layer": "actor",
+          "sourceCell": [
+            2,
+            0
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 9,
+              "y": 10,
+              "w": 14,
+              "h": 20
+            }
+          }
+        },
+        {
+          "id": "player_idle_4",
+          "rect": {
+            "x": 96,
+            "y": 0,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 30
+          },
+          "layer": "actor",
+          "sourceCell": [
+            3,
+            0
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 9,
+              "y": 10,
+              "w": 14,
+              "h": 20
+            }
+          }
+        },
+        {
+          "id": "player_walk_1",
+          "rect": {
+            "x": 0,
+            "y": 32,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 30
+          },
+          "layer": "actor",
+          "sourceCell": [
+            0,
+            1
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 9,
+              "y": 10,
+              "w": 14,
+              "h": 20
+            }
+          }
+        },
+        {
+          "id": "player_walk_2",
+          "rect": {
+            "x": 32,
+            "y": 32,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 30
+          },
+          "layer": "actor",
+          "sourceCell": [
+            1,
+            1
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 9,
+              "y": 10,
+              "w": 14,
+              "h": 20
+            }
+          }
+        },
+        {
+          "id": "player_walk_3",
+          "rect": {
+            "x": 64,
+            "y": 32,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 30
+          },
+          "layer": "actor",
+          "sourceCell": [
+            2,
+            1
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 9,
+              "y": 10,
+              "w": 14,
+              "h": 20
+            }
+          }
+        },
+        {
+          "id": "player_walk_4",
+          "rect": {
+            "x": 96,
+            "y": 32,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 30
+          },
+          "layer": "actor",
+          "sourceCell": [
+            3,
+            1
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 9,
+              "y": 10,
+              "w": 14,
+              "h": 20
+            }
+          }
+        }
+      ],
+      "animations": {
+        "player_idle": {
+          "frames": [
+            "player_idle_1",
+            "player_idle_2",
+            "player_idle_3",
+            "player_idle_4"
+          ],
+          "fps": 5,
+          "loop": true
+        },
+        "player_walk": {
+          "frames": [
+            "player_walk_1",
+            "player_walk_2",
+            "player_walk_3",
+            "player_walk_4"
+          ],
+          "fps": 8,
+          "loop": true
+        }
+      },
+      "source": {
+        "raw": "/assets/agentforge/raw/player_raw.png",
+        "keyed": "/assets/agentforge/keyed/player_keyed.png",
+        "rawOrigin": "built-in image_gen, solid #FF00FF chroma key"
+      },
+      "metadata": "/assets/agentforge/atlas/player.json"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "enemy_slime",
+      "image": "/assets/agentforge/atlas/enemy_slime.png",
+      "frameSize": {
+        "width": 32,
+        "height": 32
+      },
+      "atlasGrid": {
+        "columns": 4,
+        "rows": 2
+      },
+      "frames": [
+        {
+          "id": "slime_idle_1",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 28
+          },
+          "layer": "actor",
+          "sourceCell": [
+            0,
+            0
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 7,
+              "y": 15,
+              "w": 18,
+              "h": 13
+            }
+          }
+        },
+        {
+          "id": "slime_idle_2",
+          "rect": {
+            "x": 32,
+            "y": 0,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 28
+          },
+          "layer": "actor",
+          "sourceCell": [
+            1,
+            0
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 7,
+              "y": 15,
+              "w": 18,
+              "h": 13
+            }
+          }
+        },
+        {
+          "id": "slime_idle_3",
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 28
+          },
+          "layer": "actor",
+          "sourceCell": [
+            2,
+            0
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 7,
+              "y": 15,
+              "w": 18,
+              "h": 13
+            }
+          }
+        },
+        {
+          "id": "slime_idle_4",
+          "rect": {
+            "x": 96,
+            "y": 0,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 28
+          },
+          "layer": "actor",
+          "sourceCell": [
+            3,
+            0
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 7,
+              "y": 15,
+              "w": 18,
+              "h": 13
+            }
+          }
+        },
+        {
+          "id": "slime_move_1",
+          "rect": {
+            "x": 0,
+            "y": 32,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 28
+          },
+          "layer": "actor",
+          "sourceCell": [
+            0,
+            1
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 7,
+              "y": 15,
+              "w": 18,
+              "h": 13
+            }
+          }
+        },
+        {
+          "id": "slime_move_2",
+          "rect": {
+            "x": 32,
+            "y": 32,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 28
+          },
+          "layer": "actor",
+          "sourceCell": [
+            1,
+            1
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 7,
+              "y": 15,
+              "w": 18,
+              "h": 13
+            }
+          }
+        },
+        {
+          "id": "slime_move_3",
+          "rect": {
+            "x": 64,
+            "y": 32,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 28
+          },
+          "layer": "actor",
+          "sourceCell": [
+            2,
+            1
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 7,
+              "y": 15,
+              "w": 18,
+              "h": 13
+            }
+          }
+        },
+        {
+          "id": "slime_move_4",
+          "rect": {
+            "x": 96,
+            "y": 32,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 28
+          },
+          "layer": "actor",
+          "sourceCell": [
+            3,
+            1
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 7,
+              "y": 15,
+              "w": 18,
+              "h": 13
+            }
+          }
+        }
+      ],
+      "animations": {
+        "slime_idle": {
+          "frames": [
+            "slime_idle_1",
+            "slime_idle_2",
+            "slime_idle_3",
+            "slime_idle_4"
+          ],
+          "fps": 5,
+          "loop": true
+        },
+        "slime_move": {
+          "frames": [
+            "slime_move_1",
+            "slime_move_2",
+            "slime_move_3",
+            "slime_move_4"
+          ],
+          "fps": 8,
+          "loop": true
+        }
+      },
+      "source": {
+        "raw": "/assets/agentforge/raw/slime_raw.png",
+        "keyed": "/assets/agentforge/keyed/slime_keyed.png",
+        "rawOrigin": "built-in image_gen, solid #FF00FF chroma key"
+      },
+      "metadata": "/assets/agentforge/atlas/enemy_slime.json"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "fx",
+      "image": "/assets/agentforge/atlas/fx.png",
+      "frameSize": {
+        "width": 32,
+        "height": 32
+      },
+      "atlasGrid": {
+        "columns": 2,
+        "rows": 2
+      },
+      "frames": [
+        {
+          "id": "fx_projectile_1",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 16
+          },
+          "layer": "fx",
+          "sourceCell": [
+            0,
+            0
+          ],
+          "collision": {
+            "solid": false,
+            "hitbox": {
+              "x": 4,
+              "y": 12,
+              "w": 24,
+              "h": 8
+            }
+          }
+        },
+        {
+          "id": "fx_projectile_2",
+          "rect": {
+            "x": 32,
+            "y": 0,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 16
+          },
+          "layer": "fx",
+          "sourceCell": [
+            1,
+            0
+          ],
+          "collision": {
+            "solid": false,
+            "hitbox": {
+              "x": 3,
+              "y": 12,
+              "w": 26,
+              "h": 8
+            }
+          }
+        },
+        {
+          "id": "fx_impact_1",
+          "rect": {
+            "x": 0,
+            "y": 32,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 16
+          },
+          "layer": "fx",
+          "sourceCell": [
+            2,
+            0
+          ],
+          "collision": {
+            "solid": false,
+            "hitbox": {
+              "x": 7,
+              "y": 7,
+              "w": 18,
+              "h": 18
+            }
+          }
+        },
+        {
+          "id": "fx_impact_2",
+          "rect": {
+            "x": 32,
+            "y": 32,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 16
+          },
+          "layer": "fx",
+          "sourceCell": [
+            3,
+            0
+          ],
+          "collision": {
+            "solid": false,
+            "hitbox": {
+              "x": 4,
+              "y": 4,
+              "w": 24,
+              "h": 24
+            }
+          }
+        }
+      ],
+      "animations": {
+        "magic_projectile": {
+          "frames": [
+            "fx_projectile_1",
+            "fx_projectile_2"
+          ],
+          "fps": 10,
+          "loop": true
+        },
+        "magic_impact": {
+          "frames": [
+            "fx_impact_1",
+            "fx_impact_2"
+          ],
+          "fps": 12,
+          "loop": false
+        }
+      },
+      "source": {
+        "raw": "/assets/agentforge/raw/fx_props_raw.png",
+        "keyed": "/assets/agentforge/keyed/fx_props_keyed.png",
+        "rawOrigin": "built-in image_gen, solid #FF00FF chroma key"
+      },
+      "metadata": "/assets/agentforge/atlas/fx.json"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "props",
+      "image": "/assets/agentforge/atlas/props.png",
+      "frameSize": {
+        "width": 32,
+        "height": 32
+      },
+      "atlasGrid": {
+        "columns": 2,
+        "rows": 2
+      },
+      "frames": [
+        {
+          "id": "prop_crystal",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 29
+          },
+          "layer": "object",
+          "sourceCell": [
+            0,
+            1
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 10,
+              "y": 8,
+              "w": 12,
+              "h": 21
+            }
+          },
+          "classification": "compact_prop"
+        },
+        {
+          "id": "prop_chest",
+          "rect": {
+            "x": 32,
+            "y": 0,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 28
+          },
+          "layer": "object",
+          "sourceCell": [
+            1,
+            1
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 6,
+              "y": 12,
+              "w": 20,
+              "h": 14
+            }
+          },
+          "classification": "compact_prop"
+        },
+        {
+          "id": "prop_coin_pile",
+          "rect": {
+            "x": 0,
+            "y": 32,
+            "w": 32,
+            "h": 32
+          },
+          "anchor": {
+            "x": 16,
+            "y": 28
+          },
+          "layer": "object",
+          "sourceCell": [
+            2,
+            1
+          ],
+          "collision": {
+            "solid": false,
+            "body": {
+              "x": 8,
+              "y": 16,
+              "w": 17,
+              "h": 10
+            }
+          },
+          "classification": "compact_prop"
+        }
+      ],
+      "animations": {},
+      "source": {
+        "raw": "/assets/agentforge/raw/fx_props_raw.png",
+        "keyed": "/assets/agentforge/keyed/fx_props_keyed.png",
+        "rawOrigin": "built-in image_gen, solid #FF00FF chroma key"
+      },
+      "metadata": "/assets/agentforge/atlas/props.json"
+    }
+  ],
+  "collision": "/assets/agentforge/atlas/collision.json",
+  "sceneHooks": "/assets/agentforge/atlas/scene-hooks.json",
+  "qaPreview": "docs/asset-preview.png"
+}

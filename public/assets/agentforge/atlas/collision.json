@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "note": "Collision is metadata-only; no gameplay collision is baked into background pixels.",
+  "tiles": {
+    "tile_floor_stone": {
+      "solid": false,
+      "kind": "floor"
+    },
+    "tile_floor_cracked": {
+      "solid": false,
+      "kind": "floor"
+    },
+    "tile_wall_block": {
+      "solid": true,
+      "kind": "wall"
+    },
+    "tile_wall_corner_dark": {
+      "solid": true,
+      "kind": "wall"
+    }
+  },
+  "actors": {
+    "player_idle_1": {
+      "solid": false,
+      "body": {
+        "x": 9,
+        "y": 10,
+        "w": 14,
+        "h": 20
+      }
+    },
+    "player_idle_2": {
+      "solid": false,
+      "body": {
+        "x": 9,
+        "y": 10,
+        "w": 14,
+        "h": 20
+      }
+    },
+    "player_idle_3": {
+      "solid": false,
+      "body": {
+        "x": 9,
+        "y": 10,
+        "w": 14,
+        "h": 20
+      }
+    },
+    "player_idle_4": {
+      "solid": false,
+      "body": {
+        "x": 9,
+        "y": 10,
+        "w": 14,
+        "h": 20
+      }
+    },
+    "player_walk_1": {
+      "solid": false,
+      "body": {
+        "x": 9,
+        "y": 10,
+        "w": 14,
+        "h": 20
+      }
+    },
+    "player_walk_2": {
+      "solid": false,
+      "body": {
+        "x": 9,
+        "y": 10,
+        "w": 14,
+        "h": 20
+      }
+    },
+    "player_walk_3": {
+      "solid": false,
+      "body": {
+        "x": 9,
+        "y": 10,
+        "w": 14,
+        "h": 20
+      }
+    },
+    "player_walk_4": {
+      "solid": false,
+      "body": {
+        "x": 9,
+        "y": 10,
+        "w": 14,
+        "h": 20
+      }
+    },
+    "slime_idle_1": {
+      "solid": false,
+      "body": {
+        "x": 7,
+        "y": 15,
+        "w": 18,
+        "h": 13
+      }
+    },
+    "slime_idle_2": {
+      "solid": false,
+      "body": {
+        "x": 7,
+        "y": 15,
+        "w": 18,
+        "h": 13
+      }
+    },
+    "slime_idle_3": {
+      "solid": false,
+      "body": {
+        "x": 7,
+        "y": 15,
+        "w": 18,
+        "h": 13
+      }
+    },
+    "slime_idle_4": {
+      "solid": false,
+      "body": {
+        "x": 7,
+        "y": 15,
+        "w": 18,
+        "h": 13
+      }
+    },
+    "slime_move_1": {
+      "solid": false,
+      "body": {
+        "x": 7,
+        "y": 15,
+        "w": 18,
+        "h": 13
+      }
+    },
+    "slime_move_2": {
+      "solid": false,
+      "body": {
+        "x": 7,
+        "y": 15,
+        "w": 18,
+        "h": 13
+      }
+    },
+    "slime_move_3": {
+      "solid": false,
+      "body": {
+        "x": 7,
+        "y": 15,
+        "w": 18,
+        "h": 13
+      }
+    },
+    "slime_move_4": {
+      "solid": false,
+      "body": {
+        "x": 7,
+        "y": 15,
+        "w": 18,
+        "h": 13
+      }
+    }
+  },
+  "objects": {
+    "prop_crystal": {
+      "solid": false,
+      "body": {
+        "x": 10,
+        "y": 8,
+        "w": 12,
+        "h": 21
+      }
+    },
+    "prop_chest": {
+      "solid": false,
+      "body": {
+        "x": 6,
+        "y": 12,
+        "w": 20,
+        "h": 14
+      }
+    },
+    "prop_coin_pile": {
+      "solid": false,
+      "body": {
+        "x": 8,
+        "y": 16,
+        "w": 17,
+        "h": 10
+      }
+    }
+  },
+  "fx": {
+    "fx_projectile_1": {
+      "solid": false,
+      "hitbox": {
+        "x": 4,
+        "y": 12,
+        "w": 24,
+        "h": 8
+      }
+    },
+    "fx_projectile_2": {
+      "solid": false,
+      "hitbox": {
+        "x": 3,
+        "y": 12,
+        "w": 26,
+        "h": 8
+      }
+    },
+    "fx_impact_1": {
+      "solid": false,
+      "hitbox": {
+        "x": 7,
+        "y": 7,
+        "w": 18,
+        "h": 18
+      }
+    },
+    "fx_impact_2": {
+      "solid": false,
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      }
+    }
+  }
+}

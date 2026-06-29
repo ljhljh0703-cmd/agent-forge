@@ -1,0 +1,289 @@
+{
+  "schemaVersion": 1,
+  "id": "fx",
+  "image": "/assets/agentforge/atlas/fx.png",
+  "frameSize": {
+    "width": 32,
+    "height": 32
+  },
+  "atlasGrid": {
+    "columns": 2,
+    "rows": 2
+  },
+  "frames": [
+    {
+      "id": "fx_projectile_1",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 16
+      },
+      "layer": "fx",
+      "sourceCell": [
+        0,
+        0
+      ],
+      "collision": {
+        "solid": false,
+        "hitbox": {
+          "x": 4,
+          "y": 12,
+          "w": 24,
+          "h": 8
+        }
+      }
+    },
+    {
+      "id": "fx_projectile_2",
+      "rect": {
+        "x": 32,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 16
+      },
+      "layer": "fx",
+      "sourceCell": [
+        1,
+        0
+      ],
+      "collision": {
+        "solid": false,
+        "hitbox": {
+          "x": 3,
+          "y": 12,
+          "w": 26,
+          "h": 8
+        }
+      }
+    },
+    {
+      "id": "fx_impact_1",
+      "rect": {
+        "x": 0,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 16
+      },
+      "layer": "fx",
+      "sourceCell": [
+        2,
+        0
+      ],
+      "collision": {
+        "solid": false,
+        "hitbox": {
+          "x": 7,
+          "y": 7,
+          "w": 18,
+          "h": 18
+        }
+      }
+    },
+    {
+      "id": "fx_impact_2",
+      "rect": {
+        "x": 32,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 16
+      },
+      "layer": "fx",
+      "sourceCell": [
+        3,
+        0
+      ],
+      "collision": {
+        "solid": false,
+        "hitbox": {
+          "x": 4,
+          "y": 4,
+          "w": 24,
+          "h": 24
+        }
+      }
+    }
+  ],
+  "animations": {
+    "magic_projectile": {
+      "frames": [
+        "fx_projectile_1",
+        "fx_projectile_2"
+      ],
+      "fps": 10,
+      "loop": true
+    },
+    "magic_impact": {
+      "frames": [
+        "fx_impact_1",
+        "fx_impact_2"
+      ],
+      "fps": 12,
+      "loop": false
+    }
+  },
+  "source": {
+    "raw": "/assets/agentforge/raw/fx_props_raw.png",
+    "keyed": "/assets/agentforge/keyed/fx_props_keyed.png",
+    "rawOrigin": "built-in image_gen, solid #FF00FF chroma key"
+  },
+  "qc": {
+    "outputFrameRectDrift": 0,
+    "fixedAnchors": [
+      [
+        16,
+        16
+      ]
+    ],
+    "metrics": [
+      {
+        "id": "fx_projectile_1",
+        "sourceCell": [
+          0,
+          0
+        ],
+        "sourceCellSize": [
+          418,
+          470
+        ],
+        "sourceVisibleBox": [
+          95,
+          227,
+          334,
+          331
+        ],
+        "sourceVisibleSize": [
+          239,
+          104
+        ],
+        "normalizedVisibleSize": [
+          28,
+          12
+        ],
+        "normalizedOffset": [
+          2,
+          4
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "fx_projectile_2",
+        "sourceCell": [
+          1,
+          0
+        ],
+        "sourceCellSize": [
+          418,
+          470
+        ],
+        "sourceVisibleBox": [
+          66,
+          227,
+          355,
+          336
+        ],
+        "sourceVisibleSize": [
+          289,
+          109
+        ],
+        "normalizedVisibleSize": [
+          28,
+          11
+        ],
+        "normalizedOffset": [
+          2,
+          5
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "fx_impact_1",
+        "sourceCell": [
+          2,
+          0
+        ],
+        "sourceCellSize": [
+          418,
+          470
+        ],
+        "sourceVisibleBox": [
+          71,
+          158,
+          297,
+          397
+        ],
+        "sourceVisibleSize": [
+          226,
+          239
+        ],
+        "normalizedVisibleSize": [
+          26,
+          28
+        ],
+        "normalizedOffset": [
+          3,
+          0
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "fx_impact_2",
+        "sourceCell": [
+          3,
+          0
+        ],
+        "sourceCellSize": [
+          418,
+          470
+        ],
+        "sourceVisibleBox": [
+          23,
+          132,
+          321,
+          421
+        ],
+        "sourceVisibleSize": [
+          298,
+          289
+        ],
+        "normalizedVisibleSize": [
+          28,
+          27
+        ],
+        "normalizedOffset": [
+          2,
+          0
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      }
+    ]
+  }
+}

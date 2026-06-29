@@ -1,0 +1,533 @@
+{
+  "schemaVersion": 1,
+  "id": "enemy_slime",
+  "image": "/assets/agentforge/atlas/enemy_slime.png",
+  "frameSize": {
+    "width": 32,
+    "height": 32
+  },
+  "atlasGrid": {
+    "columns": 4,
+    "rows": 2
+  },
+  "frames": [
+    {
+      "id": "slime_idle_1",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 28
+      },
+      "layer": "actor",
+      "sourceCell": [
+        0,
+        0
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 7,
+          "y": 15,
+          "w": 18,
+          "h": 13
+        }
+      }
+    },
+    {
+      "id": "slime_idle_2",
+      "rect": {
+        "x": 32,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 28
+      },
+      "layer": "actor",
+      "sourceCell": [
+        1,
+        0
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 7,
+          "y": 15,
+          "w": 18,
+          "h": 13
+        }
+      }
+    },
+    {
+      "id": "slime_idle_3",
+      "rect": {
+        "x": 64,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 28
+      },
+      "layer": "actor",
+      "sourceCell": [
+        2,
+        0
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 7,
+          "y": 15,
+          "w": 18,
+          "h": 13
+        }
+      }
+    },
+    {
+      "id": "slime_idle_4",
+      "rect": {
+        "x": 96,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 28
+      },
+      "layer": "actor",
+      "sourceCell": [
+        3,
+        0
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 7,
+          "y": 15,
+          "w": 18,
+          "h": 13
+        }
+      }
+    },
+    {
+      "id": "slime_move_1",
+      "rect": {
+        "x": 0,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 28
+      },
+      "layer": "actor",
+      "sourceCell": [
+        0,
+        1
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 7,
+          "y": 15,
+          "w": 18,
+          "h": 13
+        }
+      }
+    },
+    {
+      "id": "slime_move_2",
+      "rect": {
+        "x": 32,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 28
+      },
+      "layer": "actor",
+      "sourceCell": [
+        1,
+        1
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 7,
+          "y": 15,
+          "w": 18,
+          "h": 13
+        }
+      }
+    },
+    {
+      "id": "slime_move_3",
+      "rect": {
+        "x": 64,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 28
+      },
+      "layer": "actor",
+      "sourceCell": [
+        2,
+        1
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 7,
+          "y": 15,
+          "w": 18,
+          "h": 13
+        }
+      }
+    },
+    {
+      "id": "slime_move_4",
+      "rect": {
+        "x": 96,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 28
+      },
+      "layer": "actor",
+      "sourceCell": [
+        3,
+        1
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 7,
+          "y": 15,
+          "w": 18,
+          "h": 13
+        }
+      }
+    }
+  ],
+  "animations": {
+    "slime_idle": {
+      "frames": [
+        "slime_idle_1",
+        "slime_idle_2",
+        "slime_idle_3",
+        "slime_idle_4"
+      ],
+      "fps": 5,
+      "loop": true
+    },
+    "slime_move": {
+      "frames": [
+        "slime_move_1",
+        "slime_move_2",
+        "slime_move_3",
+        "slime_move_4"
+      ],
+      "fps": 8,
+      "loop": true
+    }
+  },
+  "source": {
+    "raw": "/assets/agentforge/raw/slime_raw.png",
+    "keyed": "/assets/agentforge/keyed/slime_keyed.png",
+    "rawOrigin": "built-in image_gen, solid #FF00FF chroma key"
+  },
+  "qc": {
+    "outputFrameRectDrift": 0,
+    "fixedAnchors": [
+      [
+        16,
+        28
+      ]
+    ],
+    "metrics": [
+      {
+        "id": "slime_idle_1",
+        "sourceCell": [
+          0,
+          0
+        ],
+        "sourceCellSize": [
+          444,
+          444
+        ],
+        "sourceVisibleBox": [
+          121,
+          185,
+          366,
+          359
+        ],
+        "sourceVisibleSize": [
+          245,
+          174
+        ],
+        "normalizedVisibleSize": [
+          20,
+          14
+        ],
+        "normalizedOffset": [
+          6,
+          14
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "slime_idle_2",
+        "sourceCell": [
+          1,
+          0
+        ],
+        "sourceCellSize": [
+          443,
+          444
+        ],
+        "sourceVisibleBox": [
+          93,
+          193,
+          350,
+          359
+        ],
+        "sourceVisibleSize": [
+          257,
+          166
+        ],
+        "normalizedVisibleSize": [
+          21,
+          14
+        ],
+        "normalizedOffset": [
+          6,
+          14
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "slime_idle_3",
+        "sourceCell": [
+          2,
+          0
+        ],
+        "sourceCellSize": [
+          443,
+          444
+        ],
+        "sourceVisibleBox": [
+          84,
+          176,
+          330,
+          359
+        ],
+        "sourceVisibleSize": [
+          246,
+          183
+        ],
+        "normalizedVisibleSize": [
+          20,
+          15
+        ],
+        "normalizedOffset": [
+          6,
+          13
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "slime_idle_4",
+        "sourceCell": [
+          3,
+          0
+        ],
+        "sourceCellSize": [
+          444,
+          444
+        ],
+        "sourceVisibleBox": [
+          57,
+          203,
+          317,
+          359
+        ],
+        "sourceVisibleSize": [
+          260,
+          156
+        ],
+        "normalizedVisibleSize": [
+          21,
+          13
+        ],
+        "normalizedOffset": [
+          6,
+          15
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "slime_move_1",
+        "sourceCell": [
+          0,
+          1
+        ],
+        "sourceCellSize": [
+          444,
+          443
+        ],
+        "sourceVisibleBox": [
+          103,
+          139,
+          368,
+          294
+        ],
+        "sourceVisibleSize": [
+          265,
+          155
+        ],
+        "normalizedVisibleSize": [
+          22,
+          13
+        ],
+        "normalizedOffset": [
+          5,
+          15
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "slime_move_2",
+        "sourceCell": [
+          1,
+          1
+        ],
+        "sourceCellSize": [
+          443,
+          443
+        ],
+        "sourceVisibleBox": [
+          60,
+          130,
+          375,
+          294
+        ],
+        "sourceVisibleSize": [
+          315,
+          164
+        ],
+        "normalizedVisibleSize": [
+          26,
+          14
+        ],
+        "normalizedOffset": [
+          3,
+          14
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "slime_move_3",
+        "sourceCell": [
+          2,
+          1
+        ],
+        "sourceCellSize": [
+          443,
+          443
+        ],
+        "sourceVisibleBox": [
+          53,
+          157,
+          392,
+          294
+        ],
+        "sourceVisibleSize": [
+          339,
+          137
+        ],
+        "normalizedVisibleSize": [
+          28,
+          11
+        ],
+        "normalizedOffset": [
+          2,
+          17
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "slime_move_4",
+        "sourceCell": [
+          3,
+          1
+        ],
+        "sourceCellSize": [
+          444,
+          443
+        ],
+        "sourceVisibleBox": [
+          60,
+          139,
+          317,
+          294
+        ],
+        "sourceVisibleSize": [
+          257,
+          155
+        ],
+        "normalizedVisibleSize": [
+          21,
+          13
+        ],
+        "normalizedOffset": [
+          6,
+          15
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "checks": {
+    "public/assets/agentforge/atlas/enemy_slime.png": {
+      "mode": "RGBA",
+      "size": [
+        128,
+        64
+      ],
+      "visibleMagentaPixels": 0,
+      "transparentPixels": 6345
+    },
+    "public/assets/agentforge/atlas/fx.png": {
+      "mode": "RGBA",
+      "size": [
+        64,
+        64
+      ],
+      "visibleMagentaPixels": 0,
+      "transparentPixels": 3207
+    },
+    "public/assets/agentforge/atlas/tileset.png": {
+      "mode": "RGBA",
+      "size": [
+        32,
+        32
+      ],
+      "visibleMagentaPixels": 0,
+      "transparentPixels": 0
+    },
+    "public/assets/agentforge/atlas/player.png": {
+      "mode": "RGBA",
+      "size": [
+        128,
+        64
+      ],
+      "visibleMagentaPixels": 0,
+      "transparentPixels": 5640
+    },
+    "public/assets/agentforge/atlas/props.png": {
+      "mode": "RGBA",
+      "size": [
+        64,
+        64
+      ],
+      "visibleMagentaPixels": 0,
+      "transparentPixels": 2891
+    },
+    "public/assets/agentforge/keyed/fx_props_keyed.png": {
+      "mode": "RGBA",
+      "size": [
+        1672,
+        941
+      ],
+      "visibleMagentaPixels": 0,
+      "transparentPixels": 1409373
+    },
+    "public/assets/agentforge/keyed/tileset_keyed.png": {
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "visibleMagentaPixels": 0,
+      "transparentPixels": 528066
+    },
+    "public/assets/agentforge/keyed/slime_keyed.png": {
+      "mode": "RGBA",
+      "size": [
+        1774,
+        887
+      ],
+      "visibleMagentaPixels": 0,
+      "transparentPixels": 1300121
+    },
+    "public/assets/agentforge/keyed/player_keyed.png": {
+      "mode": "RGBA",
+      "size": [
+        1672,
+        941
+      ],
+      "visibleMagentaPixels": 0,
+      "transparentPixels": 1253415
+    }
+  }
+}

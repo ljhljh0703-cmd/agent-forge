@@ -52,7 +52,7 @@ flowchart LR
 | 스튜디오 단계 | AgentForge 대응 | 현황 |
 | --- | --- | --- |
 | ① Plan — 기획·GDD | Planner (Alex) | 구현 완료 |
-| ② Asset — 스프라이트·타일 생성 | — | **현재 범위 밖** |
+| ② Asset — 스프라이트·타일 생성 | agent-sprite-forge 방식 스타터 팩 + Canvas atlas loader | **씨앗 구현** |
 | ③ Produce — 코드 생성 | Architect + Compiler + Worker | 구현 완료 |
 | ④ Verify — 폐루프 검증 | Auditor + iframe + Debt Score | 구현 완료 (핵심 강점) |
 | ⑤ Evolve — 패턴·실패 자동 누적 | — | **현재 범위 밖** |
@@ -142,7 +142,7 @@ npm run lint       # eslint src
 ## 정직·한계
 
 - **Debt Score·비용 수치** = `[측정전]`. 측정 완료 전 수치 주장 없음.
-- **에셋 생성(스프라이트·타일)** = 현재 구현 범위 밖. 코드는 생성하나 아트 에셋 생성 미구현.
+- **에셋 생성(스프라이트·타일)** = agent-sprite-forge 방식의 스타터 팩과 Canvas atlas loader 씨앗 구현. 전 파이프라인 자동연결은 후속.
 - **자기진화(경험 누적·패턴 학습)** = 현재 구현 범위 밖. 향후 확장 여지.
 - **game-studio-pipeline** = 작가 vault 설계·진행 중(provisional). AgentForge는 그 사상을 공유하는 **독립적 웹 구현**이며 동일 프로젝트가 아님.
 - **본 도구 산출물** = slime-survivors 등 자체 생성 게임. 별도 프로젝트(ClaudeCraft 등)의 산출이 아님.

@@ -1,0 +1,252 @@
+{
+  "schemaVersion": 1,
+  "id": "tileset",
+  "image": "/assets/agentforge/atlas/tileset.png",
+  "frameSize": {
+    "width": 16,
+    "height": 16
+  },
+  "atlasGrid": {
+    "columns": 2,
+    "rows": 2
+  },
+  "frames": [
+    {
+      "id": "tile_floor_stone",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 16,
+        "h": 16
+      },
+      "anchor": {
+        "x": 0,
+        "y": 0
+      },
+      "layer": "base",
+      "sourceCell": [
+        0,
+        0
+      ],
+      "collision": {
+        "solid": false,
+        "kind": "floor"
+      }
+    },
+    {
+      "id": "tile_floor_cracked",
+      "rect": {
+        "x": 16,
+        "y": 0,
+        "w": 16,
+        "h": 16
+      },
+      "anchor": {
+        "x": 0,
+        "y": 0
+      },
+      "layer": "base",
+      "sourceCell": [
+        1,
+        0
+      ],
+      "collision": {
+        "solid": false,
+        "kind": "floor"
+      }
+    },
+    {
+      "id": "tile_wall_block",
+      "rect": {
+        "x": 0,
+        "y": 16,
+        "w": 16,
+        "h": 16
+      },
+      "anchor": {
+        "x": 0,
+        "y": 0
+      },
+      "layer": "base",
+      "sourceCell": [
+        0,
+        1
+      ],
+      "collision": {
+        "solid": true,
+        "kind": "wall"
+      }
+    },
+    {
+      "id": "tile_wall_corner_dark",
+      "rect": {
+        "x": 16,
+        "y": 16,
+        "w": 16,
+        "h": 16
+      },
+      "anchor": {
+        "x": 0,
+        "y": 0
+      },
+      "layer": "base",
+      "sourceCell": [
+        1,
+        1
+      ],
+      "collision": {
+        "solid": true,
+        "kind": "wall"
+      }
+    }
+  ],
+  "animations": {},
+  "source": {
+    "raw": "/assets/agentforge/raw/tileset_raw.png",
+    "keyed": "/assets/agentforge/keyed/tileset_keyed.png",
+    "rawOrigin": "built-in image_gen, solid #FF00FF chroma key"
+  },
+  "qc": {
+    "outputFrameRectDrift": 0,
+    "fixedAnchors": [
+      [
+        0,
+        0
+      ]
+    ],
+    "metrics": [
+      {
+        "id": "tile_floor_stone",
+        "sourceCell": [
+          0,
+          0
+        ],
+        "sourceCellSize": [
+          627,
+          627
+        ],
+        "sourceVisibleBox": [
+          76,
+          75,
+          586,
+          588
+        ],
+        "sourceVisibleSize": [
+          510,
+          513
+        ],
+        "normalizedVisibleSize": [
+          16,
+          16
+        ],
+        "normalizedOffset": [
+          0,
+          0
+        ],
+        "outputFrameSize": [
+          16,
+          16
+        ]
+      },
+      {
+        "id": "tile_floor_cracked",
+        "sourceCell": [
+          1,
+          0
+        ],
+        "sourceCellSize": [
+          627,
+          627
+        ],
+        "sourceVisibleBox": [
+          41,
+          75,
+          551,
+          588
+        ],
+        "sourceVisibleSize": [
+          510,
+          513
+        ],
+        "normalizedVisibleSize": [
+          16,
+          16
+        ],
+        "normalizedOffset": [
+          0,
+          0
+        ],
+        "outputFrameSize": [
+          16,
+          16
+        ]
+      },
+      {
+        "id": "tile_wall_block",
+        "sourceCell": [
+          0,
+          1
+        ],
+        "sourceCellSize": [
+          627,
+          627
+        ],
+        "sourceVisibleBox": [
+          76,
+          41,
+          586,
+          552
+        ],
+        "sourceVisibleSize": [
+          510,
+          511
+        ],
+        "normalizedVisibleSize": [
+          16,
+          16
+        ],
+        "normalizedOffset": [
+          0,
+          0
+        ],
+        "outputFrameSize": [
+          16,
+          16
+        ]
+      },
+      {
+        "id": "tile_wall_corner_dark",
+        "sourceCell": [
+          1,
+          1
+        ],
+        "sourceCellSize": [
+          627,
+          627
+        ],
+        "sourceVisibleBox": [
+          41,
+          41,
+          551,
+          552
+        ],
+        "sourceVisibleSize": [
+          510,
+          511
+        ],
+        "normalizedVisibleSize": [
+          16,
+          16
+        ],
+        "normalizedOffset": [
+          0,
+          0
+        ],
+        "outputFrameSize": [
+          16,
+          16
+        ]
+      }
+    ]
+  }
+}

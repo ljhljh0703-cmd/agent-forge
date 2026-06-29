@@ -1,0 +1,533 @@
+{
+  "schemaVersion": 1,
+  "id": "player",
+  "image": "/assets/agentforge/atlas/player.png",
+  "frameSize": {
+    "width": 32,
+    "height": 32
+  },
+  "atlasGrid": {
+    "columns": 4,
+    "rows": 2
+  },
+  "frames": [
+    {
+      "id": "player_idle_1",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 30
+      },
+      "layer": "actor",
+      "sourceCell": [
+        0,
+        0
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 9,
+          "y": 10,
+          "w": 14,
+          "h": 20
+        }
+      }
+    },
+    {
+      "id": "player_idle_2",
+      "rect": {
+        "x": 32,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 30
+      },
+      "layer": "actor",
+      "sourceCell": [
+        1,
+        0
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 9,
+          "y": 10,
+          "w": 14,
+          "h": 20
+        }
+      }
+    },
+    {
+      "id": "player_idle_3",
+      "rect": {
+        "x": 64,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 30
+      },
+      "layer": "actor",
+      "sourceCell": [
+        2,
+        0
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 9,
+          "y": 10,
+          "w": 14,
+          "h": 20
+        }
+      }
+    },
+    {
+      "id": "player_idle_4",
+      "rect": {
+        "x": 96,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 30
+      },
+      "layer": "actor",
+      "sourceCell": [
+        3,
+        0
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 9,
+          "y": 10,
+          "w": 14,
+          "h": 20
+        }
+      }
+    },
+    {
+      "id": "player_walk_1",
+      "rect": {
+        "x": 0,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 30
+      },
+      "layer": "actor",
+      "sourceCell": [
+        0,
+        1
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 9,
+          "y": 10,
+          "w": 14,
+          "h": 20
+        }
+      }
+    },
+    {
+      "id": "player_walk_2",
+      "rect": {
+        "x": 32,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 30
+      },
+      "layer": "actor",
+      "sourceCell": [
+        1,
+        1
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 9,
+          "y": 10,
+          "w": 14,
+          "h": 20
+        }
+      }
+    },
+    {
+      "id": "player_walk_3",
+      "rect": {
+        "x": 64,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 30
+      },
+      "layer": "actor",
+      "sourceCell": [
+        2,
+        1
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 9,
+          "y": 10,
+          "w": 14,
+          "h": 20
+        }
+      }
+    },
+    {
+      "id": "player_walk_4",
+      "rect": {
+        "x": 96,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 30
+      },
+      "layer": "actor",
+      "sourceCell": [
+        3,
+        1
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 9,
+          "y": 10,
+          "w": 14,
+          "h": 20
+        }
+      }
+    }
+  ],
+  "animations": {
+    "player_idle": {
+      "frames": [
+        "player_idle_1",
+        "player_idle_2",
+        "player_idle_3",
+        "player_idle_4"
+      ],
+      "fps": 5,
+      "loop": true
+    },
+    "player_walk": {
+      "frames": [
+        "player_walk_1",
+        "player_walk_2",
+        "player_walk_3",
+        "player_walk_4"
+      ],
+      "fps": 8,
+      "loop": true
+    }
+  },
+  "source": {
+    "raw": "/assets/agentforge/raw/player_raw.png",
+    "keyed": "/assets/agentforge/keyed/player_keyed.png",
+    "rawOrigin": "built-in image_gen, solid #FF00FF chroma key"
+  },
+  "qc": {
+    "outputFrameRectDrift": 0,
+    "fixedAnchors": [
+      [
+        16,
+        30
+      ]
+    ],
+    "metrics": [
+      {
+        "id": "player_idle_1",
+        "sourceCell": [
+          0,
+          0
+        ],
+        "sourceCellSize": [
+          418,
+          470
+        ],
+        "sourceVisibleBox": [
+          218,
+          103,
+          383,
+          417
+        ],
+        "sourceVisibleSize": [
+          165,
+          314
+        ],
+        "normalizedVisibleSize": [
+          15,
+          28
+        ],
+        "normalizedOffset": [
+          8,
+          2
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "player_idle_2",
+        "sourceCell": [
+          1,
+          0
+        ],
+        "sourceCellSize": [
+          418,
+          470
+        ],
+        "sourceVisibleBox": [
+          154,
+          103,
+          318,
+          417
+        ],
+        "sourceVisibleSize": [
+          164,
+          314
+        ],
+        "normalizedVisibleSize": [
+          15,
+          28
+        ],
+        "normalizedOffset": [
+          8,
+          2
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "player_idle_3",
+        "sourceCell": [
+          2,
+          0
+        ],
+        "sourceCellSize": [
+          418,
+          470
+        ],
+        "sourceVisibleBox": [
+          91,
+          103,
+          255,
+          417
+        ],
+        "sourceVisibleSize": [
+          164,
+          314
+        ],
+        "normalizedVisibleSize": [
+          15,
+          28
+        ],
+        "normalizedOffset": [
+          8,
+          2
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "player_idle_4",
+        "sourceCell": [
+          3,
+          0
+        ],
+        "sourceCellSize": [
+          418,
+          470
+        ],
+        "sourceVisibleBox": [
+          27,
+          103,
+          190,
+          417
+        ],
+        "sourceVisibleSize": [
+          163,
+          314
+        ],
+        "normalizedVisibleSize": [
+          15,
+          28
+        ],
+        "normalizedOffset": [
+          8,
+          2
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "player_walk_1",
+        "sourceCell": [
+          0,
+          1
+        ],
+        "sourceCellSize": [
+          418,
+          471
+        ],
+        "sourceVisibleBox": [
+          208,
+          51,
+          391,
+          365
+        ],
+        "sourceVisibleSize": [
+          183,
+          314
+        ],
+        "normalizedVisibleSize": [
+          16,
+          28
+        ],
+        "normalizedOffset": [
+          8,
+          2
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "player_walk_2",
+        "sourceCell": [
+          1,
+          1
+        ],
+        "sourceCellSize": [
+          418,
+          471
+        ],
+        "sourceVisibleBox": [
+          143,
+          51,
+          324,
+          365
+        ],
+        "sourceVisibleSize": [
+          181,
+          314
+        ],
+        "normalizedVisibleSize": [
+          16,
+          28
+        ],
+        "normalizedOffset": [
+          8,
+          2
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "player_walk_3",
+        "sourceCell": [
+          2,
+          1
+        ],
+        "sourceCellSize": [
+          418,
+          471
+        ],
+        "sourceVisibleBox": [
+          78,
+          51,
+          262,
+          365
+        ],
+        "sourceVisibleSize": [
+          184,
+          314
+        ],
+        "normalizedVisibleSize": [
+          16,
+          28
+        ],
+        "normalizedOffset": [
+          8,
+          2
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "player_walk_4",
+        "sourceCell": [
+          3,
+          1
+        ],
+        "sourceCellSize": [
+          418,
+          471
+        ],
+        "sourceVisibleBox": [
+          14,
+          51,
+          199,
+          365
+        ],
+        "sourceVisibleSize": [
+          185,
+          314
+        ],
+        "normalizedVisibleSize": [
+          16,
+          28
+        ],
+        "normalizedOffset": [
+          8,
+          2
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      }
+    ]
+  }
+}

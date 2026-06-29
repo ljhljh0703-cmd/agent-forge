@@ -1,0 +1,219 @@
+{
+  "schemaVersion": 1,
+  "id": "props",
+  "image": "/assets/agentforge/atlas/props.png",
+  "frameSize": {
+    "width": 32,
+    "height": 32
+  },
+  "atlasGrid": {
+    "columns": 2,
+    "rows": 2
+  },
+  "frames": [
+    {
+      "id": "prop_crystal",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 29
+      },
+      "layer": "object",
+      "sourceCell": [
+        0,
+        1
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 10,
+          "y": 8,
+          "w": 12,
+          "h": 21
+        }
+      },
+      "classification": "compact_prop"
+    },
+    {
+      "id": "prop_chest",
+      "rect": {
+        "x": 32,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 28
+      },
+      "layer": "object",
+      "sourceCell": [
+        1,
+        1
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 6,
+          "y": 12,
+          "w": 20,
+          "h": 14
+        }
+      },
+      "classification": "compact_prop"
+    },
+    {
+      "id": "prop_coin_pile",
+      "rect": {
+        "x": 0,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "anchor": {
+        "x": 16,
+        "y": 28
+      },
+      "layer": "object",
+      "sourceCell": [
+        2,
+        1
+      ],
+      "collision": {
+        "solid": false,
+        "body": {
+          "x": 8,
+          "y": 16,
+          "w": 17,
+          "h": 10
+        }
+      },
+      "classification": "compact_prop"
+    }
+  ],
+  "animations": {},
+  "source": {
+    "raw": "/assets/agentforge/raw/fx_props_raw.png",
+    "keyed": "/assets/agentforge/keyed/fx_props_keyed.png",
+    "rawOrigin": "built-in image_gen, solid #FF00FF chroma key"
+  },
+  "qc": {
+    "outputFrameRectDrift": 0,
+    "fixedAnchors": [
+      [
+        16,
+        28
+      ],
+      [
+        16,
+        29
+      ]
+    ],
+    "metrics": [
+      {
+        "id": "prop_crystal",
+        "sourceCell": [
+          0,
+          1
+        ],
+        "sourceCellSize": [
+          418,
+          471
+        ],
+        "sourceVisibleBox": [
+          137,
+          74,
+          287,
+          317
+        ],
+        "sourceVisibleSize": [
+          150,
+          243
+        ],
+        "normalizedVisibleSize": [
+          17,
+          28
+        ],
+        "normalizedOffset": [
+          8,
+          1
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "prop_chest",
+        "sourceCell": [
+          1,
+          1
+        ],
+        "sourceCellSize": [
+          418,
+          471
+        ],
+        "sourceVisibleBox": [
+          85,
+          115,
+          324,
+          317
+        ],
+        "sourceVisibleSize": [
+          239,
+          202
+        ],
+        "normalizedVisibleSize": [
+          28,
+          24
+        ],
+        "normalizedOffset": [
+          2,
+          4
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      },
+      {
+        "id": "prop_coin_pile",
+        "sourceCell": [
+          2,
+          1
+        ],
+        "sourceCellSize": [
+          418,
+          471
+        ],
+        "sourceVisibleBox": [
+          80,
+          155,
+          285,
+          305
+        ],
+        "sourceVisibleSize": [
+          205,
+          150
+        ],
+        "normalizedVisibleSize": [
+          28,
+          20
+        ],
+        "normalizedOffset": [
+          2,
+          8
+        ],
+        "outputFrameSize": [
+          32,
+          32
+        ]
+      }
+    ]
+  }
+}

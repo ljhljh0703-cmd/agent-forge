@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "note": "Example hook metadata for AgentForge generated games; base layer terrain is separate from runtime object layers.",
+  "layers": [
+    {
+      "id": "base",
+      "kind": "tilemap",
+      "contains": [
+        "floor",
+        "wall"
+      ],
+      "bakedGameplayObjects": false
+    },
+    {
+      "id": "objects",
+      "kind": "runtime-object-layer",
+      "contains": [
+        "compact_prop",
+        "pickup"
+      ],
+      "bakedIntoBase": false
+    },
+    {
+      "id": "actors",
+      "kind": "runtime-actor-layer",
+      "contains": [
+        "player",
+        "enemy"
+      ],
+      "bakedIntoBase": false
+    },
+    {
+      "id": "fx",
+      "kind": "runtime-fx-layer",
+      "contains": [
+        "projectile",
+        "impact"
+      ],
+      "bakedIntoBase": false
+    }
+  ],
+  "sampleScene": {
+    "tileSize": 16,
+    "baseTiles": [
+      {
+        "id": "tile_floor_stone",
+        "x": 1,
+        "y": 1
+      },
+      {
+        "id": "tile_floor_cracked",
+        "x": 2,
+        "y": 1
+      },
+      {
+        "id": "tile_wall_block",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "tile_wall_corner_dark",
+        "x": 3,
+        "y": 0
+      }
+    ],
+    "objects": [
+      {
+        "id": "prop_crystal",
+        "x": 3,
+        "y": 2,
+        "layer": "objects"
+      },
+      {
+        "id": "prop_chest",
+        "x": 5,
+        "y": 2,
+        "layer": "objects"
+      }
+    ],
+    "actors": [
+      {
+        "id": "player_idle_1",
+        "x": 2,
+        "y": 3,
+        "layer": "actors"
+      },
+      {
+        "id": "slime_idle_1",
+        "x": 6,
+        "y": 3,
+        "layer": "actors"
+      }
+    ]
+  }
+}
