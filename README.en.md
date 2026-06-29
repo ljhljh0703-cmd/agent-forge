@@ -2,11 +2,11 @@
 
 [한국어](README.md) | **English**
 
-A 5-agent AI pipeline that automatically generates web games — from idea to code to verification.
+An AI game studio that runs a single idea through a Codex CLI pipeline: **Plan → Asset → Produce → Verify → Evolve**.
 
-[![Working Prototype](https://img.shields.io/badge/status-working_prototype-blue)](.)
-[![BYOK](https://img.shields.io/badge/AI-Gemini_3.5_Flash%2F3.1_Pro(BYOK)-orange)](.)
-[![Debt Score](https://img.shields.io/badge/Debt_Score-not_measured-lightgrey)](.)
+[![v2 Codex Orchestrator](https://img.shields.io/badge/engine-Codex_CLI_Orchestrator-black)](.)
+[![Proof-First](https://img.shields.io/badge/verify-proof--first_reachability-blue)](.)
+[![Self-Evolving](https://img.shields.io/badge/memory-studio--memory_evolution-green)](.)
 [![TS Strict](https://img.shields.io/badge/TypeScript-5.3_strict-3178C6)](.)
 [![MIT](https://img.shields.io/badge/license-MIT-green)](.)
 
@@ -14,41 +14,25 @@ A 5-agent AI pipeline that automatically generates web games — from idea to co
 
 ## Problem Statement
 
-Vibe-coding a game makes the process opaque. You can't tell where it got stuck, what decisions the AI made, or whether the generated code actually runs in a browser.
+Vibe-coding a game leaves the process opaque and uncontrolled.
 
-Agent Forge OS distributes this process across 5 specialist AI agents and directly runs the final code inside an iframe sandbox for verification. Every reasoning step (GDD→SPEC→code) and the Debt Score are exposed in real time.
+- You can't tell where it got stuck or what decisions the AI made.
+- There's no real verification that the generated code is *actually playable*.
+- Every session starts from scratch — repeated mistakes don't accumulate into knowledge.
+
+Agent Forge OS addresses all three: a **Codex CLI orchestrator** structures the pipeline, *proof-first* verification checks playability before merging, and a *self-evolving* studio memory grows with every game built.
 
 ---
 
 ## Key Differentiators
 
-**ⓐ 5-stage closed-loop pipeline** — Planner→Architect→Compiler→Worker→Auditor. Each stage's output is the next stage's input. Auditor verdicts trigger automatic loopback to Worker or Compiler (MAX 3 times).
+**ⓐ Codex CLI single pipeline** — A Node orchestrator drives `codex exec --json` for both code generation and `image_gen` asset creation in one flow. Browser-based Gemini direct calls are deprecated. Source: `orchestrator/src/generate.ts`.
 
-**ⓑ iframe sandbox execution + Debt Score** — Generated code runs in an isolated iframe. A Probe collects DOM count, gameLoop presence, and runtime errors; the Auditor produces a Debt Score (0–10). Whether code "works" is validated by execution, not assertion.
+**ⓑ Proof-first reachability** — An observation digest (`window.__af { status, score, playerMoved, playerPos, frame }`) and command surface (`window.__afStep(input, dt)`) are used to headlessly verify that the game is *actually playable*: playerMoves, scoreChanges, win/fail reachable. **Dead screens are hard-blocked — zero false passes.** Source: `orchestrator/src/reachability.ts`.
 
-**ⓒ Per-model-strategy cost measurement** — Switch between All Flash / Hybrid Pro / All Pro at runtime and watch per-agent token and USD spend in the live dashboard.
+**ⓒ Self-evolving studio memory** — Completed games are distilled into reusable scaffolds (Template), and repeated errors (≥3 occurrences) are promoted to pre-check rule *candidates* (Debug Generalizer). Only verified fixes are recorded; **rule activation requires HITL** (author confirmation). Source: `orchestrator/src/evolution.ts`, `studio-memory/`.
 
-> A **web auto-generation instance** of the AI game studio pipeline (plan→produce→verify) — governance and HITL beyond mere auto-generation is what differentiates this tool.
-
----
-
-## Evolution — Advancing Through Vault Methodology
-
-AgentForge has evolved by implementing and reflecting the AI game studio methodology built in the author's vault.
-
-**Model updates** — No legacy model pinning (gemini-2.0/2.5/3.0 removed). Active models: `gemini-3.5-flash` / `3.1-pro`, switchable at runtime (All Flash / Hybrid Pro / All Pro).
-
-**Governance core** — Debt Score closed-loop (Auditor → loopback MAX 3) is the core of *controlled production* beyond mere auto-generation. HITL approval mode added for human review integration.
-
-**UI evolution** — Isometric room → deep-blue tokens → **warm-terracotta hybrid dashboard** (pipeline flow · metric cards · agent Live Studio widget). Readability and density-first.
-
-**②Asset stage integration** — `agent-sprite-forge` pixel pipeline (Codex `image_gen` → magenta-key → grid slice → atlas assembly, layer separation) verified [fact, 2026-06-28]:
-
-- 5 atlases · 27 frames (tileset · player · slime · FX · props)
-- `asset-loader.ts` (manifest + Canvas blit) · zero magenta residue · layer separation · clean-room
-- AgentForge expanding from DOM-only rendering toward *asset-backed game generation*
-
-> Honesty boundary: The asset generation pipeline itself is **[fact, verified]**. End-to-end auto-connection where generated games automatically use these assets is **[in progress]** — no "fully complete" claims until done.
+> The combination of Codex CLI orchestration + proof-first + self-evolution is the core of a game studio that gets easier to use the more you build with it.
 
 ---
 
@@ -56,65 +40,52 @@ AgentForge has evolved by implementing and reflecting the AI game studio methodo
 
 ```mermaid
 flowchart LR
-    U([User idea]) --> A
-    A["Planner · Alex\nOutput: GDD"] --> B
-    B["Architect · Sam\nOutput: SPEC"] --> C
-    C["Compiler · Jordan\nOutput: ExecutionPlan JSON"] --> D
-    D["Worker · Casey\nOutput: code (streaming)"] --> E
-    E["Auditor · Morgan\nOutput: AuditResult\nDebt Score 0-10"]
-    E -->|"fix-worker (MAX 3)"| D
-    E -->|"fix-compiler (MAX 3)"| C
-    E -->|pass| OUT([Final output])
+    U([Idea]) --> P1
+    P1["① Plan\nDual-Knowledge GDD\ndesign_rules + template_api constraints"] --> P2
+    P2["② Asset\nCodex image_gen\n→ magenta-key → Canvas sprite"] --> P3
+    P3["③ Produce\nCodex CLI code gen\nPR-sized slices"] --> P4
+    P4["④ Verify\nproof-first reachability\nheadless check"] --> P5
+    P5["⑤ Evolve\nTemplate accumulation\nDebug Generalizer HITL"] --> OUT
+    OUT(["runs/<id>/\nGDD · assets · game · proof · meta"])
 ```
 
-**AI game studio 5-stage mapping** (provisional — author's vault design, in progress):
+**Vault 5-stage implementation mapping** (provisional — author's vault design, in progress):
 
-| Studio stage | AgentForge mapping | Status |
+| Stage | Implementation | Status |
 | --- | --- | --- |
-| ① Plan — GDD, game design | Planner (Alex) | Implemented |
-| ② Asset — sprites, tiles | agent-sprite-forge · Codex pixel pipeline + `asset-loader.ts` | **Integrating [fact, verified]** |
-| ③ Produce — code generation | Architect + Compiler + Worker | Implemented |
-| ④ Verify — closed-loop validation | Auditor + iframe + Debt Score | Implemented (core strength) |
-| ⑤ Evolve — pattern/failure accumulation | — | **Out of scope** |
+| ① Plan — Dual-Knowledge GDD | `template_api` constraints injected into GDD to bound design to buildable scope | **Implemented [fact, verified]** |
+| ② Asset — Codex image_gen → Canvas sprite | magenta-key transparency → grid slice → atlas assembly | **Implemented [fact, verified]** |
+| ③ Produce — Codex CLI code generation | `codex exec --json` orchestration, PR-sized slices | **Implemented [fact, verified]** |
+| ④ Verify — proof-first reachability | headless playerMoves·scoreChanges·terminal check, dead-screen hard-block | **Implemented [fact, verified]** |
+| ⑤ Evolve — Template·Debug self-evolution | Template stability accumulation + Debug Generalizer HITL candidate promotion | **Implemented [fact, verified]** / cumulative effect [not yet measured] |
 
-### iframe Verification Flow
+### runs/<id>/ output structure
 
 ```text
-Worker-generated code
-      ↓
-  iframe sandbox (allow-scripts)
-      ↓
-  Probe injected (rAF/setInterval detection, console override, window.onerror)
-      ↓
-  RuntimeReport collected after 3s
-  ├─ DOM element count
-  ├─ gameLoop detected (rAF/setInterval ≤100ms → true)
-  └─ forced termination after 5s timeout
-      ↓
-  Auditor → Debt Score 0-10
-  (0-4: pass / 5-10: fix loopback, MAX_AUDIT_LOOPS=3)
+runs/<runId>/
+├── gdd.md                     # Dual-Knowledge GDD
+├── game/index.html            # Standalone HTML5 Canvas game
+├── assets/
+│   ├── codex-raw.png          # Raw Codex image_gen output
+│   ├── codex-sprite.png       # Magenta-keyed sprite
+│   └── atlas.json             # Grid slice coordinates
+├── proof/
+│   ├── template-api-check.json   # in_scope / flagged classification
+│   ├── reachability.json         # playerMoves·scoreChanges·win/fail
+│   ├── dead-reachability.json    # Dead-screen block evidence
+│   └── snapshot.png              # Headless screenshot
+└── meta.json                  # Full pipeline meta + evolution record
 ```
 
-### E2E Measurement Results
+### studio-memory/ structure
 
-> Fields below are auto-populated by running `npm run dev`, completing the pipeline, clicking Dashboard "Save Results", then running `node scripts/fill-metrics.mjs`.
-
-| Metric | Value |
-| --- | --- |
-| Debt Score (slime-survivors) | [not measured] |
-| Loopback count | [not measured] |
-| DOM element count | [not measured] |
-| gameLoop detected | [not measured] |
-| iframe load time | [not measured] ms |
-| Total pipeline duration | [not measured] |
-
-### Cost Case Study (by model strategy)
-
-| Strategy | Total USD | Total tokens | Duration |
-| --- | --- | --- | --- |
-| All Flash (gemini-3.5-flash) | [not measured] | [not measured] | [not measured] |
-| Hybrid Pro | [not measured] | [not measured] | [not measured] |
-| All Pro (gemini-3.1-pro) | [not measured] | [not measured] | [not measured] |
+```text
+studio-memory/
+├── templates.json         # Reusable scaffolds (stability N/5, HITL stable threshold)
+├── rule-candidates.json   # Rule candidates (active=false, awaiting HITL)
+├── debug-log.json         # Repeated error log
+└── active-rules.json      # Active rules (moved here after HITL confirmation)
+```
 
 ---
 
@@ -122,53 +93,64 @@ Worker-generated code
 
 | Component | Version / Notes |
 | --- | --- |
-| React | 18 |
-| TypeScript | 5.3 (strict) |
-| Vite | 5 |
-| Tailwind CSS | 3.4 |
-| iframe sandbox | `allow-scripts` isolated execution + Probe validation |
-| AI models | Gemini 3.5 Flash / 3.1 Pro (BYOK, `src/config/model-strategy.ts`) |
-| Cost tracking | MetricsCollector + CostCalculator (per-agent token/USD) |
-| Domain modes | Game / Software / Docs |
-
-### Model Strategies
-
-| Strategy | Planner | Architect | Worker | Auditor | Profile |
-| --- | --- | --- | --- | --- | --- |
-| All Flash | Flash | Flash | Flash | Flash | Fast · low cost |
-| Hybrid Pro | Flash | Pro | Flash | Pro | Pro for design/review |
-| All Pro | Pro | Pro | Pro | Pro | Highest quality |
+| Orchestrator | Node.js / TypeScript 5.3, `orchestrator/src/` |
+| Code & asset generation | Codex CLI (`codex exec --json`, built-in `image_gen`) |
+| Canvas game output | Standalone HTML5 Canvas, `game/index.html` |
+| Headless proof | Chrome (Playwright iframe-based reachability) |
+| Monitor dashboard | React 18 / Vite 5 / Tailwind CSS 3.4 |
+| Evolution memory | `studio-memory/` (templates · rule-candidates · debug-log) |
+| v1 legacy (deprecated) | Browser Gemini direct calls (`ai-client.ts`) — accessible via toggle, inactive by default |
 
 ---
 
 ## Quick Start
 
 ```bash
+# Prerequisite: Codex Desktop installed and authenticated
+# https://codex.com/desktop  (generate step requires Codex CLI)
+
 npm install
 
-# Set Gemini API Key (BYOK — runtime only, not bundled into dist)
-cp .env.example .env
-# .env: VITE_AI_API_KEY=<your-gemini-key>
+# Generate a game (one-line idea)
+npm run generate -- "slime swarm survival"
+# → creates runs/<id>/ (GDD · assets · Canvas game · proof · meta)
+# → auto-updates studio-memory/ (Template accumulation · Debug candidates)
 
+# Monitor dashboard (visualise runs/ + studio-memory/)
 npm run dev        # http://localhost:5173
+
+# Type check
 npm run type-check # tsc --noEmit
-npm run lint       # eslint src
+
+# Seed evolution debug log (sample data)
+npm run evolve:seed-debug
 ```
 
-**Auto-populate metrics**: After a pipeline run → Dashboard "Save Results" → `docs/last-run-metrics.json` → `node scripts/fill-metrics.mjs`.
+**After generation — key paths to check:**
+
+- `runs/<id>/game/index.html` — open directly in browser to play
+- `runs/<id>/proof/reachability.json` — playerMoves·scoreChanges verification result
+- `studio-memory/templates.json` — reusable scaffold stability
+- `studio-memory/rule-candidates.json` — HITL-pending rule candidates
 
 ---
 
 ## Honesty & Limitations
 
-- **Debt Score / cost figures** = `[not measured]`. No claims before measurement.
-- **Asset generation (sprites, tiles)** = **Integrating** — agent-sprite-forge pipeline (5 atlases · 27 frames · `asset-loader.ts`) verified [fact]. End-to-end auto-connection in generated games is [in progress].
-- **Self-evolution (experience accumulation, pattern learning)** = out of current scope. Room for future extension.
+- **Asset generation, Canvas games, proof-first, self-evolution mechanism** = **[fact, verified]** — `orchestrator/src/`, `runs/` (6 run evidence), `studio-memory/` all present in repo.
+- **"Gets easier to use the more you build" actual productivity effect** = **[not yet measured]** — mechanism and code pass; effect evaluation pending N+ game accumulation.
+- **Codex CLI required** → no instant browser demo. Compensated by `runs/` sample games and dashboard screenshots.
+- **image_gen fixed at 1254px, single-sprite slice** — multi-frame slicer is a follow-up.
+- **Chrome headless dependency** — Chrome required to run proof step.
+- **Rule candidate activation = HITL** — zero automated promotion without author confirmation.
+- **v1 browser Gemini engine (deprecated)** — `ai-client.ts` accessible via legacy toggle; main UI defaults to v2 monitor.
 - **game-studio-pipeline** = author's vault design, in progress (provisional). AgentForge is an **independent web implementation** sharing the same philosophy — not the same project.
-- **This tool's outputs** = self-generated games (e.g. slime-survivors). Not outputs of separate projects (e.g. ClaudeCraft).
+- **Separate projects (e.g. ClaudeCraft)** = cited as asset pipeline proof-of-concept only. Not AgentForge outputs.
 
 ---
 
 ## License
 
 MIT © 2026
+
+> Sample games in `runs/` can be opened directly in a browser. The monitor dashboard (`npm run dev`) lets you browse runs and studio-memory visually.
