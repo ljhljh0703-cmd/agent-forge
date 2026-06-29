@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "source": "codex-cli-image_gen",
+  "raw": "./codex-raw.png",
+  "image": "./codex-sprite.png",
+  "frameSize": {
+    "width": 96,
+    "height": 96
+  },
+  "frames": [
+    {
+      "id": "player_coin",
+      "x": 0,
+      "y": 0,
+      "w": 96,
+      "h": 96,
+      "anchor": {
+        "x": 48,
+        "y": 48
+      }
+    }
+  ],
+  "notes": "P1 one-sprite atlas. Raw art came from Codex CLI -> built-in image_gen; chroma-key removal is local post-processing."
+}

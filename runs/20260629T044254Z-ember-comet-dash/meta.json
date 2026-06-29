@@ -1,0 +1,66 @@
+{
+  "runId": "20260629T044254Z-ember-comet-dash",
+  "idea": "ember comet dash",
+  "createdAt": "2026-06-29T04:42:54.308Z",
+  "codex": {
+    "gddThreadId": "019f11b0-0410-7b20-a440-56b8355360e1",
+    "assetThreadId": "019f11b0-5d68-7401-83c0-ae95df11158c",
+    "produceThreadId": "019f11b1-a60f-7300-a5d5-f6f328a4b590",
+    "assetSource": "/Users/godju/.codex/generated_images/019f11b0-5d68-7401-83c0-ae95df11158c/ig_03ed8f637f967e82016a41f7f6d9048191bc27b3e660e01a27.png"
+  },
+  "outputs": {
+    "gdd": "runs/20260629T044254Z-ember-comet-dash/gdd.md",
+    "rawAsset": "runs/20260629T044254Z-ember-comet-dash/assets/codex-raw.png",
+    "sprite": "runs/20260629T044254Z-ember-comet-dash/assets/codex-sprite.png",
+    "atlas": "runs/20260629T044254Z-ember-comet-dash/assets/atlas.json",
+    "game": "runs/20260629T044254Z-ember-comet-dash/game/index.html",
+    "snapshot": "runs/20260629T044254Z-ember-comet-dash/proof/snapshot.png",
+    "templateApiCheck": "runs/20260629T044254Z-ember-comet-dash/proof/template-api-check.json",
+    "proofTarget": "runs/20260629T044254Z-ember-comet-dash/proof/target.json",
+    "reachability": "runs/20260629T044254Z-ember-comet-dash/proof/reachability.json",
+    "deadReachability": "runs/20260629T044254Z-ember-comet-dash/proof/dead-reachability.json"
+  },
+  "templateApiCheck": {
+    "status": "in_scope",
+    "inScope": [
+      "single_screen_canvas",
+      "standalone_html",
+      "single_generated_sprite",
+      "sprite_draw_image",
+      "keyboard_input",
+      "pointer_restart",
+      "top_down_2d_movement",
+      "simple_dash_or_burst",
+      "simple_entities",
+      "simple_collision",
+      "score_timer_win_fail",
+      "basic_canvas_ui",
+      "basic_particle_or_motion_feedback",
+      "headless_snapshot"
+    ],
+    "flagged": []
+  },
+  "reachabilityProof": {
+    "pass": true,
+    "playerMoves": true,
+    "scoreChanges": true,
+    "winReachable": false,
+    "failReachable": true,
+    "terminalReachable": true,
+    "flagged": []
+  },
+  "deadFixtureProof": {
+    "pass": false,
+    "flagged": [
+      "playerMoves",
+      "scoreChanges",
+      "terminalReachable"
+    ]
+  },
+  "proof": {
+    "usesCanvas": true,
+    "usesGeneratedAsset": true,
+    "usesDrawImage": true,
+    "snapshotCaptured": true
+  }
+}

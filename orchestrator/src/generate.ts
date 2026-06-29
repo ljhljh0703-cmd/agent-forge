@@ -4,6 +4,13 @@ import { constants } from 'node:fs';
 import { basename, join, relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { codexHome, finalAgentMessage, runCodexExec } from './codex-cli.js';
+import {
+  deriveProofTarget,
+  runDeadFixtureProof,
+  runReachabilityProof,
+  type ProofTarget,
+  type ReachabilityProof,
+} from './reachability.js';
 import { checkTemplateApi, formatTemplateApiCheck, type TemplateApiCheck } from './template-api.js';
 
 interface RunMeta {
@@ -24,8 +31,16 @@ interface RunMeta {
     game: string;
     snapshot: string;
     templateApiCheck: string;
+    proofTarget: string;
+    reachability: string;
+    deadReachability: string;
   };
   templateApiCheck: TemplateApiCheck;
+  reachabilityProof: Pick<
+    ReachabilityProof,
+    'pass' | 'playerMoves' | 'scoreChanges' | 'winReachable' | 'failReachable' | 'terminalReachable' | 'flagged'
+  >;
+  deadFixtureProof: Pick<ReachabilityProof, 'pass' | 'flagged'>;
   proof: {
     usesCanvas: boolean;
     usesGeneratedAsset: boolean;
@@ -80,6 +95,9 @@ async function main(): Promise<void> {
   await writeFile(gddPath, checkedGdd, 'utf8');
   const templateApiCheckPath = join(proofDir, 'template-api-check.json');
   await writeJson(templateApiCheckPath, templateApiCheck);
+  const proofTarget = deriveProofTarget(idea, checkedGdd);
+  const proofTargetPath = join(proofDir, 'target.json');
+  await writeJson(proofTargetPath, proofTarget);
 
   const assetResult = await runCodexExec(assetPrompt(idea), {
     cwd: repoRoot,
@@ -112,10 +130,10 @@ async function main(): Promise<void> {
   });
 
   const assetRelativeFromGame = `../assets/${basename(spritePath)}`;
-  const produceResult = await runCodexExec(producePrompt(idea, checkedGdd, assetRelativeFromGame, templateApiCheck), {
+  const produceResult = await runCodexExec(producePrompt(idea, checkedGdd, assetRelativeFromGame, templateApiCheck, proofTarget), {
     cwd: repoRoot,
     sandbox: 'read-only',
-    timeoutMs: 180_000,
+    timeoutMs: 420_000,
   });
   if (produceResult.code !== 0) {
     throw new Error(`Codex game production failed with code ${produceResult.code}: ${produceResult.stderr}`);
@@ -128,6 +146,8 @@ async function main(): Promise<void> {
 
   const snapshotPath = join(proofDir, 'snapshot.png');
   await captureSnapshot(gamePath, snapshotPath);
+  const reachabilityProof = await runReachabilityProof(gamePath, proofDir, proofTarget);
+  const deadFixtureProof = await runDeadFixtureProof(proofDir, proofTarget);
 
   const meta: RunMeta = {
     runId,
@@ -147,8 +167,24 @@ async function main(): Promise<void> {
       game: toRepoRelative(gamePath),
       snapshot: toRepoRelative(snapshotPath),
       templateApiCheck: toRepoRelative(templateApiCheckPath),
+      proofTarget: toRepoRelative(proofTargetPath),
+      reachability: toRepoRelative(join(proofDir, 'reachability.json')),
+      deadReachability: toRepoRelative(join(proofDir, 'dead-reachability.json')),
     },
     templateApiCheck,
+    reachabilityProof: {
+      pass: reachabilityProof.pass,
+      playerMoves: reachabilityProof.playerMoves,
+      scoreChanges: reachabilityProof.scoreChanges,
+      winReachable: reachabilityProof.winReachable,
+      failReachable: reachabilityProof.failReachable,
+      terminalReachable: reachabilityProof.terminalReachable,
+      flagged: reachabilityProof.flagged,
+    },
+    deadFixtureProof: {
+      pass: deadFixtureProof.pass,
+      flagged: deadFixtureProof.flagged,
+    },
     proof: {
       usesCanvas: /<canvas[\s>]/i.test(html),
       usesGeneratedAsset: html.includes(assetRelativeFromGame),
@@ -167,6 +203,7 @@ function gddPrompt(gameIdea: string, templateApi: string, designRules: string): 
     'Do not edit files and do not run shell commands.',
     'Use the provided DESIGN_RULES and TEMPLATE_API as hard constraints.',
     'Keep scope to one screen, one controllable actor, one win/score loop, and one generated sprite asset.',
+    'For P3 reachability proof, choose a score/win target between 1 and 3 and a fail timer reachable within 8-12 seconds with no input.',
     'If the user idea asks for unsupported TEMPLATE_API features, explicitly add an "Out-of-scope / Downscope" section and redesign the game into the supported Canvas slice.',
     'Do not silently accept unsupported features.',
     'TEMPLATE_API:',
@@ -189,7 +226,13 @@ function assetPrompt(gameIdea: string): string {
   ].join('\n');
 }
 
-function producePrompt(gameIdea: string, gdd: string, assetPath: string, templateApiCheck: TemplateApiCheck): string {
+function producePrompt(
+  gameIdea: string,
+  gdd: string,
+  assetPath: string,
+  templateApiCheck: TemplateApiCheck,
+  proofTarget: ProofTarget
+): string {
   return [
     'Return one complete standalone HTML document only. No markdown fences.',
     'The game must use a <canvas> element and JavaScript CanvasRenderingContext2D.',
@@ -197,6 +240,15 @@ function producePrompt(gameIdea: string, gdd: string, assetPath: string, templat
     'Do not use DOM sprites for gameplay. Do not reference external CDNs or remote assets.',
     'Implement keyboard movement and a visible score or survival timer.',
     'Stay inside the P1 Template API. Do not add unsupported features.',
+    'Expose a minimal read-only test-facing digest at window.__af and update it every animation frame.',
+    'The digest shape must be exactly: { status, score, winTarget, playerMoved, playerPos: { x, y }, frame }.',
+    'status must be one of play, win, fail. playerMoved becomes true only after actual player position changes.',
+    'Expose a thin test-facing command surface window.__afStep(input, dt) that advances the same update/render path by dt seconds and returns window.__af.',
+    'input uses booleans { left, right, up, down, dash }. __afStep must not directly set score/status except through the normal gameplay update/collision rules.',
+    'Do not expose full internal state and do not use test-only win shortcuts.',
+    `Proof target: ${JSON.stringify(proofTarget)}.`,
+    'The proof harness will hold ArrowRight + ArrowDown and pulse Space for the move scenario; arrange the first scoring object so this normal player-shaped input can move, score, and reach win within the proof window.',
+    'The proof harness will reload and provide no input for the fail scenario; fail must be reachable within the proof window.',
     `Template API status: ${templateApiCheck.status}`,
     `Flagged unsupported capabilities: ${templateApiCheck.flagged.map((flag) => flag.capability).join(', ') || 'none'}`,
     `Game idea: ${gameIdea}`,
@@ -220,6 +272,8 @@ function validateGameHtml(html: string, assetPath: string): void {
     [/<canvas[\s>]/i.test(html), 'missing <canvas>'],
     [html.includes(assetPath), `missing generated asset path ${assetPath}`],
     [/drawImage\s*\(/.test(html), 'missing ctx.drawImage(...) usage'],
+    [/window\.__af/.test(html), 'missing window.__af digest'],
+    [/window\.__afStep/.test(html), 'missing window.__afStep command surface'],
   ];
   const failures = checks.filter(([pass]) => !pass).map(([, label]) => label);
   if (failures.length > 0) {

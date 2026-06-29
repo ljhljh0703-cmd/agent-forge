@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ember Comet Dash</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #120f14;
+    color: #fff7e6;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  body {
+    display: grid;
+    place-items: center;
+  }
+  canvas {
+    width: 800px;
+    height: 520px;
+    max-width: 100vw;
+    max-height: 100vh;
+    background: #17131d;
+    display: block;
+  }
+</style>
+</head>
+<body>
+<canvas id="game" width="800" height="520" aria-label="Ember Comet Dash game canvas"></canvas>
+<script>
+(function () {
+  "use strict";
+
+  var canvas = document.getElementById("game");
+  var ctx = canvas.getContext("2d");
+
+  var sprite = new Image();
+  sprite.src = "../assets/codex-sprite.png";
+
+  var W = canvas.width;
+  var H = canvas.height;
+  var winTarget = 2;
+
+  var keys = {
+    left: false,
+    right: false,
+    up: false,
+    down: false,
+    dash: false
+  };
+
+  var game;
+
+  function makeGame() {
+    return {
+      status: "play",
+      score: 0,
+      timer: 10,
+      frame: 0,
+      playerMoved: false,
+      player: {
+        x: 160,
+        y: 170,
+        r: 22,
+        speed: 175,
+        dashSpeed: 380,
+        dashTime: 0,
+        dashCooldown: 0,
+        lastX: 160,
+        lastY: 170
+      },
+      cores: [
+        { x: 260, y: 250, r: 18, collected: false },
+        { x: 475, y: 390, r: 18, collected: false }
+      ],
+      trail: []
+    };
+  }
+
+  function resetGame() {
+    game = makeGame();
+    syncDigest();
+    render();
+  }
+
+  function syncDigest() {
+    window.__af = {
+      status: game.status,
+      score: game.score,
+      winTarget: winTarget,
+      playerMoved: game.playerMoved,
+      playerPos: {
+        x: Math.round(game.player.x * 100) / 100,
+        y: Math.round(game.player.y * 100) / 100
+      },
+      frame: game.frame
+    };
+  }
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function overlaps(a, b) {
+    var dx = a.x - b.x;
+    var dy = a.y - b.y;
+    var rr = a.r + b.r;
+    return dx * dx + dy * dy <= rr * rr;
+  }
+
+  function normalizeInput(input) {
+    input = input || {};
+    return {
+      left: !!input.left,
+      right: !!input.right,
+      up: !!input.up,
+      down: !!input.down,
+      dash: !!input.dash
+    };
+  }
+
+  function update(input, dt) {
+    dt = Math.max(0, Math.min(0.1, Number(dt) || 0));
+    input = normalizeInput(input);
+
+    game.frame += 1;
+
+    if (game.status === "play") {
+      var p = game.player;
+      p.lastX = p.x;
+      p.lastY = p.y;
+
+      p.dashCooldown = Math.max(0, p.dashCooldown - dt);
+      p.dashTime = Math.max(0, p.dashTime - dt);
+
+      if (input.dash && p.dashCooldown <= 0) {
+        p.dashTime = 0.22;
+        p.dashCooldown = 0.78;
+      }
+
+      var dx = 0;
+      var dy = 0;
+      if (input.left) dx -= 1;
+      if (input.right) dx += 1;
+      if (input.up) dy -= 1;
+      if (input.down) dy += 1;
+
+      if (dx !== 0 || dy !== 0) {
+        var len = Math.sqrt(dx * dx + dy * dy);
+        dx /= len;
+        dy /= len;
+        var speed = p.dashTime > 0 ? p.dashSpeed : p.speed;
+        p.x += dx * speed * dt;
+        p.y += dy * speed * dt;
+      }
+
+      p.x = clamp(p.x, p.r + 8, W - p.r - 8);
+      p.y = clamp(p.y, 70, H - p.r - 48);
+
+      if (p.x !== p.lastX || p.y !== p.lastY) {
+        game.playerMoved = true;
+        game.trail.push({
+          x: p.lastX,
+          y: p.lastY,
+          life: p.dashTime > 0 ? 0.32 : 0.18,
+          max: p.dashTime > 0 ? 0.32 : 0.18
+        });
+      }
+
+      for (var i = 0; i < game.cores.length; i += 1) {
+        var core = game.cores[i];
+        if (!core.collected && overlaps(p, core)) {
+          core.collected = true;
+          game.score += 1;
+          if (game.score >= winTarget) {
+            game.status = "win";
+          }
+        }
+      }
+
+      if (game.status === "play") {
+        game.timer -= dt;
+        if (game.timer <= 0) {
+          game.timer = 0;
+          game.status = "fail";
+        }
+      }
+    }
+
+    for (var t = game.trail.length - 1; t >= 0; t -= 1) {
+      game.trail[t].life -= dt;
+      if (game.trail[t].life <= 0) {
+        game.trail.splice(t, 1);
+      }
+    }
+
+    syncDigest();
+  }
+
+  function drawBackground() {
+    ctx.fillStyle = "#17131d";
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.strokeStyle = "rgba(255, 128, 48, 0.11)";
+    ctx.lineWidth = 1;
+    for (var x = 40; x < W; x += 40) {
+      ctx.beginPath();
+      ctx.moveTo(x, 64);
+      ctx.lineTo(x, H - 42);
+      ctx.stroke();
+    }
+    for (var y = 80; y < H - 40; y += 40) {
+      ctx.beginPath();
+      ctx.moveTo(18, y);
+      ctx.lineTo(W - 18, y);
+      ctx.stroke();
+    }
+  }
+
+  function drawCore(core) {
+    if (core.collected) return;
+
+    var glow = ctx.createRadialGradient(core.x, core.y, 2, core.x, core.y, 42);
+    glow.addColorStop(0, "rgba(255, 229, 128, 0.95)");
+    glow.addColorStop(0.42, "rgba(255, 112, 38, 0.56)");
+    glow.addColorStop(1, "rgba(255, 112, 38, 0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(core.x, core.y, 42, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#ffd57a";
+    ctx.beginPath();
+    ctx.arc(core.x, core.y, core.r, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "#fff1bf";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(core.x, core.y, core.r - 3, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  function drawPlayer() {
+    var p = game.player;
+
+    for (var i = 0; i < game.trail.length; i += 1) {
+      var tr = game.trail[i];
+      var alpha = Math.max(0, tr.life / tr.max);
+      ctx.fillStyle = "rgba(255, 94, 35, " + (0.28 * alpha) + ")";
+      ctx.beginPath();
+      ctx.arc(tr.x, tr.y, p.r * (0.75 + alpha * 0.35), 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    if (sprite.complete && sprite.naturalWidth > 0) {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.drawImage(sprite, -32, -32, 64, 64);
+      ctx.restore();
+    } else {
+      ctx.fillStyle = "#ff7a2e";
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#fff0a8";
+      ctx.beginPath();
+      ctx.arc(p.x + 5, p.y - 4, p.r * 0.45, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function drawHud() {
+    ctx.fillStyle = "#fff7e6";
+    ctx.font = "700 22px Arial, Helvetica, sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText("Score " + game.score + " / " + winTarget, 24, 38);
+
+    ctx.textAlign = "right";
+    ctx.fillText(game.timer.toFixed(1), W - 24, 38);
+
+    var p = game.player;
+    var barX = 240;
+    var barY = H - 28;
+    var barW = 320;
+    var barH = 10;
+    var ready = 1 - clamp(p.dashCooldown / 0.78, 0, 1);
+
+    ctx.fillStyle = "rgba(255, 247, 230, 0.18)";
+    ctx.fillRect(barX, barY, barW, barH);
+    ctx.fillStyle = p.dashCooldown <= 0 ? "#ffd27a" : "#ff702c";
+    ctx.fillRect(barX, barY, barW * ready, barH);
+    ctx.strokeStyle = "rgba(255, 247, 230, 0.5)";
+    ctx.strokeRect(barX, barY, barW, barH);
+  }
+
+  function drawOverlay() {
+    if (game.status === "play") return;
+
+    ctx.fillStyle = "rgba(18, 15, 20, 0.72)";
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.fillStyle = "#fff7e6";
+    ctx.textAlign = "center";
+    ctx.font = "700 46px Arial, Helvetica, sans-serif";
+    ctx.fillText(game.status === "win" ? "EMBER CORES WON" : "EMBER FADED", W / 2, H / 2 - 22);
+
+    ctx.font = "20px Arial, Helvetica, sans-serif";
+    ctx.fillText("Click or tap to restart", W / 2, H / 2 + 24);
+  }
+
+  function render() {
+    drawBackground();
+    for (var i = 0; i < game.cores.length; i += 1) {
+      drawCore(game.cores[i]);
+    }
+    drawPlayer();
+    drawHud();
+    drawOverlay();
+  }
+
+  function step(input, dt) {
+    update(input, dt);
+    render();
+    return window.__af;
+  }
+
+  window.__afStep = function (input, dt) {
+    return step(input, dt);
+  };
+
+  window.addEventListener("keydown", function (event) {
+    if (event.key === "ArrowLeft" || event.key === "a" || event.key === "A") keys.left = true;
+    if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") keys.right = true;
+    if (event.key === "ArrowUp" || event.key === "w" || event.key === "W") keys.up = true;
+    if (event.key === "ArrowDown" || event.key === "s" || event.key === "S") keys.down = true;
+    if (event.key === " ") keys.dash = true;
+    if (event.key === " ") event.preventDefault();
+  });
+
+  window.addEventListener("keyup", function (event) {
+    if (event.key === "ArrowLeft" || event.key === "a" || event.key === "A") keys.left = false;
+    if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") keys.right = false;
+    if (event.key === "ArrowUp" || event.key === "w" || event.key === "W") keys.up = false;
+    if (event.key === "ArrowDown" || event.key === "s" || event.key === "S") keys.down = false;
+    if (event.key === " ") keys.dash = false;
+  });
+
+  canvas.addEventListener("pointerdown", function () {
+    if (game.status !== "play") {
+      resetGame();
+    }
+  });
+
+  var last = performance.now();
+
+  function loop(now) {
+    var dt = (now - last) / 1000;
+    last = now;
+    step(keys, dt);
+    requestAnimationFrame(loop);
+  }
+
+  resetGame();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

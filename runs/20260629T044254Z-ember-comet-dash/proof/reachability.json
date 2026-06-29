@@ -1,0 +1,333 @@
+{
+  "target": {
+    "source": "gdd",
+    "coreVerb": "dash",
+    "requestedScoreTarget": 2,
+    "proofScoreTarget": 2,
+    "movementKeys": [
+      "ArrowRight",
+      "ArrowDown",
+      " "
+    ],
+    "moveScenarioMs": 12000,
+    "failScenarioMs": 15000,
+    "assertions": [
+      "playerMoves",
+      "scoreChanges",
+      "terminalReachable"
+    ]
+  },
+  "pass": true,
+  "playerMoves": true,
+  "scoreChanges": true,
+  "winReachable": false,
+  "failReachable": true,
+  "terminalReachable": true,
+  "flagged": [],
+  "move": {
+    "initial": {
+      "status": "play",
+      "score": 0,
+      "winTarget": 2,
+      "playerMoved": false,
+      "playerPos": {
+        "x": 160,
+        "y": 170
+      },
+      "frame": 2
+    },
+    "final": {
+      "status": "fail",
+      "score": 1,
+      "winTarget": 2,
+      "playerMoved": true,
+      "playerPos": {
+        "x": 238.73,
+        "y": 169.82
+      },
+      "frame": 368
+    },
+    "maxScore": 1,
+    "samples": [
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 2,
+        "playerMoved": true,
+        "playerPos": {
+          "x": 168.96,
+          "y": 178.96
+        },
+        "frame": 3
+      },
+      {
+        "status": "play",
+        "score": 1,
+        "winTarget": 2,
+        "playerMoved": true,
+        "playerPos": {
+          "x": 355.52,
+          "y": 365.52
+        },
+        "frame": 33
+      },
+      {
+        "status": "play",
+        "score": 1,
+        "winTarget": 2,
+        "playerMoved": true,
+        "playerPos": {
+          "x": 513.08,
+          "y": 450
+        },
+        "frame": 63
+      },
+      {
+        "status": "play",
+        "score": 1,
+        "winTarget": 2,
+        "playerMoved": true,
+        "playerPos": {
+          "x": 670.65,
+          "y": 450
+        },
+        "frame": 93
+      },
+      {
+        "status": "play",
+        "score": 1,
+        "winTarget": 2,
+        "playerMoved": true,
+        "playerPos": {
+          "x": 770,
+          "y": 450
+        },
+        "frame": 123
+      },
+      {
+        "status": "play",
+        "score": 1,
+        "winTarget": 2,
+        "playerMoved": true,
+        "playerPos": {
+          "x": 770,
+          "y": 290.31
+        },
+        "frame": 153
+      },
+      {
+        "status": "play",
+        "score": 1,
+        "winTarget": 2,
+        "playerMoved": true,
+        "playerPos": {
+          "x": 770,
+          "y": 132.74
+        },
+        "frame": 183
+      },
+      {
+        "status": "play",
+        "score": 1,
+        "winTarget": 2,
+        "playerMoved": true,
+        "playerPos": {
+          "x": 741.13,
+          "y": 70
+        },
+        "frame": 213
+      },
+      {
+        "status": "play",
+        "score": 1,
+        "winTarget": 2,
+        "playerMoved": true,
+        "playerPos": {
+          "x": 578.73,
+          "y": 70
+        },
+        "frame": 243
+      },
+      {
+        "status": "play",
+        "score": 1,
+        "winTarget": 2,
+        "playerMoved": true,
+        "playerPos": {
+          "x": 392.17,
+          "y": 70
+        },
+        "frame": 273
+      },
+      {
+        "status": "fail",
+        "score": 1,
+        "winTarget": 2,
+        "playerMoved": true,
+        "playerPos": {
+          "x": 238.73,
+          "y": 169.82
+        },
+        "frame": 303
+      },
+      {
+        "status": "fail",
+        "score": 1,
+        "winTarget": 2,
+        "playerMoved": true,
+        "playerPos": {
+          "x": 238.73,
+          "y": 169.82
+        },
+        "frame": 333
+      }
+    ]
+  },
+  "fail": {
+    "final": {
+      "status": "fail",
+      "score": 0,
+      "winTarget": 2,
+      "playerMoved": false,
+      "playerPos": {
+        "x": 160,
+        "y": 170
+      },
+      "frame": 301
+    },
+    "samples": [
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 2,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 170
+        },
+        "frame": 1
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 2,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 170
+        },
+        "frame": 26
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 2,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 170
+        },
+        "frame": 51
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 2,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 170
+        },
+        "frame": 76
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 2,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 170
+        },
+        "frame": 101
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 2,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 170
+        },
+        "frame": 126
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 2,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 170
+        },
+        "frame": 151
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 2,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 170
+        },
+        "frame": 176
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 2,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 170
+        },
+        "frame": 201
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 2,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 170
+        },
+        "frame": 226
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 2,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 170
+        },
+        "frame": 251
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 2,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 170
+        },
+        "frame": 276
+      }
+    ]
+  }
+}
