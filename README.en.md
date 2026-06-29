@@ -10,6 +10,9 @@ An AI game studio that runs a single idea through a Codex CLI pipeline: **Plan �
 [![TS Strict](https://img.shields.io/badge/TypeScript-5.3_strict-3178C6)](.)
 [![MIT](https://img.shields.io/badge/license-MIT-green)](.)
 
+> 🎮 **Live showcase — [play the actually-generated games right now](https://ljhljh0703-cmd.github.io/agent-forge/portfolio.html)**
+> Two pipeline-generated games run in the browser (generating games requires Codex CLI; playing them does not).
+
 ---
 
 ## Problem Statement

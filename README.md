@@ -10,6 +10,9 @@
 [![TS Strict](https://img.shields.io/badge/TypeScript-5.3_strict-3178C6)](.)
 [![MIT](https://img.shields.io/badge/license-MIT-green)](.)
 
+> 🎮 **라이브 쇼케이스 — [실제 생성된 게임을 바로 플레이](https://ljhljh0703-cmd.github.io/agent-forge/portfolio.html)**
+> 파이프라인이 만든 게임 2종이 브라우저에서 바로 돌아갑니다(게임 생성에는 Codex CLI 필요, 플레이는 불필요).
+
 ---
 
 ## 문제정의
