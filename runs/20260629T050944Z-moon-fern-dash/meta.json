@@ -1,0 +1,96 @@
+{
+  "runId": "20260629T050944Z-moon-fern-dash",
+  "idea": "moon fern dash",
+  "createdAt": "2026-06-29T05:09:44.737Z",
+  "codex": {
+    "gddThreadId": "019f11c8-96a7-7d53-bc5d-988c11523664",
+    "assetThreadId": "019f11c8-e0b4-7d11-a7bb-41cb119b11e7",
+    "produceThreadId": "019f11c9-a1e8-7103-9439-005c9f6c3c83",
+    "assetSource": "/Users/godju/.codex/generated_images/019f11c8-e0b4-7d11-a7bb-41cb119b11e7/ig_0c28ebcc58bc227d016a41fe398d848191ae67fda18ce94d34.png"
+  },
+  "outputs": {
+    "gdd": "runs/20260629T050944Z-moon-fern-dash/gdd.md",
+    "rawAsset": "runs/20260629T050944Z-moon-fern-dash/assets/codex-raw.png",
+    "sprite": "runs/20260629T050944Z-moon-fern-dash/assets/codex-sprite.png",
+    "atlas": "runs/20260629T050944Z-moon-fern-dash/assets/atlas.json",
+    "game": "runs/20260629T050944Z-moon-fern-dash/game/index.html",
+    "snapshot": "runs/20260629T050944Z-moon-fern-dash/proof/snapshot.png",
+    "templateApiCheck": "runs/20260629T050944Z-moon-fern-dash/proof/template-api-check.json",
+    "proofTarget": "runs/20260629T050944Z-moon-fern-dash/proof/target.json",
+    "reachability": "runs/20260629T050944Z-moon-fern-dash/proof/reachability.json",
+    "deadReachability": "runs/20260629T050944Z-moon-fern-dash/proof/dead-reachability.json"
+  },
+  "templateApiCheck": {
+    "status": "in_scope",
+    "inScope": [
+      "single_screen_canvas",
+      "standalone_html",
+      "single_generated_sprite",
+      "sprite_draw_image",
+      "keyboard_input",
+      "pointer_restart",
+      "top_down_2d_movement",
+      "simple_dash_or_burst",
+      "simple_entities",
+      "simple_collision",
+      "score_timer_win_fail",
+      "basic_canvas_ui",
+      "basic_particle_or_motion_feedback",
+      "headless_snapshot"
+    ],
+    "flagged": []
+  },
+  "usedTemplates": [
+    {
+      "id": "template-top-down-2d-dash-collectible-score-fail-timer-dash-input",
+      "description": "top-down-2d Canvas scaffold with dash, collectible-score, fail-timer, dash-input",
+      "stabilityAtUse": 1,
+      "statusAtUse": "candidate",
+      "sourceRuns": [
+        "20260629T050716Z-crystal-fox-dash"
+      ]
+    }
+  ],
+  "evolution": {
+    "templateExtracted": {
+      "id": "template-top-down-2d-dash-collectible-score-fail-timer-dash-input",
+      "description": "top-down-2d Canvas scaffold with dash, collectible-score, fail-timer, dash-input",
+      "stability": 2,
+      "status": "candidate",
+      "sourceRuns": [
+        "20260629T050716Z-crystal-fox-dash",
+        "20260629T050944Z-moon-fern-dash"
+      ]
+    },
+    "memoryPaths": {
+      "templates": "studio-memory/templates.json",
+      "debugLog": "studio-memory/debug-log.json",
+      "ruleCandidates": "studio-memory/rule-candidates.json",
+      "activeRules": "studio-memory/active-rules.json"
+    },
+    "activeRules": []
+  },
+  "reachabilityProof": {
+    "pass": true,
+    "playerMoves": true,
+    "scoreChanges": true,
+    "winReachable": true,
+    "failReachable": true,
+    "terminalReachable": true,
+    "flagged": []
+  },
+  "deadFixtureProof": {
+    "pass": false,
+    "flagged": [
+      "playerMoves",
+      "scoreChanges",
+      "terminalReachable"
+    ]
+  },
+  "proof": {
+    "usesCanvas": true,
+    "usesGeneratedAsset": true,
+    "usesDrawImage": true,
+    "snapshotCaptured": true
+  }
+}

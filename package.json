@@ -9,6 +9,7 @@
     "type-check": "tsc --noEmit",
     "orchestrator:build": "tsc -p orchestrator/tsconfig.json",
     "orchestrator:type-check": "tsc -p orchestrator/tsconfig.json --noEmit",
+    "evolve:seed-debug": "npm run orchestrator:build --silent && node orchestrator/dist/evolution-seed.js",
     "generate": "npm run orchestrator:build --silent && node orchestrator/dist/generate.js",
     "lint": "eslint src --ext .ts,.tsx"
   },

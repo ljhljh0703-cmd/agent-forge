@@ -1,0 +1,18 @@
+{
+  "source": "gdd",
+  "coreVerb": "dash",
+  "requestedScoreTarget": 2,
+  "proofScoreTarget": 2,
+  "movementKeys": [
+    "ArrowRight",
+    "ArrowDown",
+    " "
+  ],
+  "moveScenarioMs": 12000,
+  "failScenarioMs": 15000,
+  "assertions": [
+    "playerMoves",
+    "scoreChanges",
+    "terminalReachable"
+  ]
+}

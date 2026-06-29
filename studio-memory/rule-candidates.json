@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "notes": "Rule candidates are staged only. Human approval must copy/promote a candidate into active-rules.json before it affects generation gates.",
+  "candidates": [
+    {
+      "id": "rule-static-validation-missing-window-afstep",
+      "errorSignature": "static_validation:missing-window-afstep",
+      "occurrences": 3,
+      "proposedRule": "Before accepting produced HTML, statically require window.__afStep(input, dt) and then run reachability proof against that command surface.",
+      "checkTiming": "post-produce",
+      "status": "candidate",
+      "active": false,
+      "requiresHitl": true,
+      "createdAt": "2026-06-29T05:12:13.126Z",
+      "updatedAt": "2026-06-29T05:12:13.126Z",
+      "evidenceEntryIds": [
+        "static-validation-missing-window-afstep-20260629051213-1",
+        "static-validation-missing-window-afstep-20260629051213-2",
+        "static-validation-missing-window-afstep-20260629051213-3"
+      ],
+      "activationNote": "Staged only. Do not activate this rule until command-center Gate 3 and author confirmation promote it into studio-memory/active-rules.json."
+    }
+  ]
+}

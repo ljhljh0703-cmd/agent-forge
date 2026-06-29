@@ -1,0 +1,337 @@
+{
+  "target": {
+    "source": "gdd",
+    "coreVerb": "dash",
+    "requestedScoreTarget": 2,
+    "proofScoreTarget": 2,
+    "movementKeys": [
+      "ArrowRight",
+      "ArrowDown",
+      " "
+    ],
+    "moveScenarioMs": 12000,
+    "failScenarioMs": 15000,
+    "assertions": [
+      "playerMoves",
+      "scoreChanges",
+      "terminalReachable"
+    ]
+  },
+  "pass": false,
+  "playerMoves": false,
+  "scoreChanges": false,
+  "winReachable": false,
+  "failReachable": false,
+  "terminalReachable": false,
+  "flagged": [
+    "playerMoves",
+    "scoreChanges",
+    "terminalReachable"
+  ],
+  "move": {
+    "initial": {
+      "status": "play",
+      "score": 0,
+      "winTarget": 1,
+      "playerMoved": false,
+      "playerPos": {
+        "x": 160,
+        "y": 90
+      },
+      "frame": 3
+    },
+    "final": {
+      "status": "play",
+      "score": 0,
+      "winTarget": 1,
+      "playerMoved": false,
+      "playerPos": {
+        "x": 160,
+        "y": 90
+      },
+      "frame": 124
+    },
+    "maxScore": 0,
+    "samples": [
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 3
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 13
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 23
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 33
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 42
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 52
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 62
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 72
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 82
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 92
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 102
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 112
+      }
+    ]
+  },
+  "fail": {
+    "final": {
+      "status": "play",
+      "score": 0,
+      "winTarget": 1,
+      "playerMoved": false,
+      "playerPos": {
+        "x": 160,
+        "y": 90
+      },
+      "frame": 153
+    },
+    "samples": [
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 3
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 15
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 27
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 40
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 52
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 64
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 76
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 88
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 101
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 113
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 125
+      },
+      {
+        "status": "play",
+        "score": 0,
+        "winTarget": 1,
+        "playerMoved": false,
+        "playerPos": {
+          "x": 160,
+          "y": 90
+        },
+        "frame": 137
+      }
+    ]
+  }
+}

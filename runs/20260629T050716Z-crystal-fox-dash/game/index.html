@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crystal Fox Dash</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #07131f;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body {
+      display: grid;
+      place-items: center;
+    }
+    canvas {
+      width: min(100vw, 960px);
+      height: auto;
+      max-height: 100vh;
+      background: #0b1d2c;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<canvas id="game" width="800" height="520"></canvas>
+<script>
+(() => {
+  "use strict";
+
+  const canvas = document.getElementById("game");
+  const ctx = canvas.getContext("2d");
+
+  const W = canvas.width;
+  const H = canvas.height;
+  const winTarget = 2;
+  const failTime = 10;
+
+  const sprite = new Image();
+  sprite.src = "../assets/codex-sprite.png";
+
+  const keys = Object.create(null);
+  let lastTime = performance.now();
+  let running = true;
+
+  const state = {
+    status: "play",
+    score: 0,
+    timer: failTime,
+    frame: 0,
+    playerMoved: false,
+    player: {
+      x: 132,
+      y: 186,
+      r: 22,
+      speed: 154,
+      dashSpeed: 420,
+      dashTime: 0,
+      dashCooldown: 0
+    },
+    crystal: {
+      x: 292,
+      y: 304,
+      r: 24
+    },
+    shards: [],
+    trail: []
+  };
+
+  function reset() {
+    state.status = "play";
+    state.score = 0;
+    state.timer = failTime;
+    state.frame = 0;
+    state.playerMoved = false;
+    state.player.x = 132;
+    state.player.y = 186;
+    state.player.dashTime = 0;
+    state.player.dashCooldown = 0;
+    state.crystal.x = 292;
+    state.crystal.y = 304;
+    state.shards.length = 0;
+    state.trail.length = 0;
+    publishDigest();
+  }
+
+  function publishDigest() {
+    window.__af = {
+      status: state.status,
+      score: state.score,
+      winTarget: winTarget,
+      playerMoved: state.playerMoved,
+      playerPos: {
+        x: state.player.x,
+        y: state.player.y
+      },
+      frame: state.frame
+    };
+  }
+
+  function readInput(extra) {
+    return {
+      left: !!(keys.ArrowLeft || keys.KeyA || (extra && extra.left)),
+      right: !!(keys.ArrowRight || keys.KeyD || (extra && extra.right)),
+      up: !!(keys.ArrowUp || keys.KeyW || (extra && extra.up)),
+      down: !!(keys.ArrowDown || keys.KeyS || (extra && extra.down)),
+      dash: !!(keys.Space || keys.ShiftLeft || keys.ShiftRight || (extra && extra.dash))
+    };
+  }
+
+  function spawnCrystal() {
+    if (state.score === 1) {
+      state.crystal.x = 682;
+      state.crystal.y = 446;
+    } else {
+      state.crystal.x = 292;
+      state.crystal.y = 304;
+    }
+  }
+
+  function addShards(x, y) {
+    for (let i = 0; i < 12; i++) {
+      const a = (Math.PI * 2 * i) / 12;
+      state.shards.push({
+        x,
+        y,
+        vx: Math.cos(a) * (70 + i * 5),
+        vy: Math.sin(a) * (70 + i * 5),
+        life: 0.42
+      });
+    }
+  }
+
+  function update(input, dt) {
+    dt = Math.max(0, Math.min(dt || 0, 0.05));
+
+    if (state.status === "play") {
+      state.timer -= dt;
+      if (state.timer <= 0) {
+        state.timer = 0;
+        state.status = "fail";
+      }
+    }
+
+    const p = state.player;
+
+    if (state.status === "play") {
+      if (p.dashCooldown > 0) p.dashCooldown = Math.max(0, p.dashCooldown - dt);
+      if (p.dashTime > 0) p.dashTime = Math.max(0, p.dashTime - dt);
+
+      let dx = 0;
+      let dy = 0;
+      if (input.left) dx -= 1;
+      if (input.right) dx += 1;
+      if (input.up) dy -= 1;
+      if (input.down) dy += 1;
+
+      if (input.dash && p.dashCooldown <= 0 && (dx !== 0 || dy !== 0)) {
+        p.dashTime = 0.22;
+        p.dashCooldown = 1.05;
+      }
+
+      if (dx !== 0 || dy !== 0) {
+        const len = Math.hypot(dx, dy);
+        dx /= len;
+        dy /= len;
+
+        const beforeX = p.x;
+        const beforeY = p.y;
+        const speed = p.dashTime > 0 ? p.dashSpeed : p.speed;
+
+        p.x = Math.max(p.r, Math.min(W - p.r, p.x + dx * speed * dt));
+        p.y = Math.max(p.r, Math.min(H - p.r, p.y + dy * speed * dt));
+
+        if (p.x !== beforeX || p.y !== beforeY) {
+          state.playerMoved = true;
+          state.trail.push({ x: beforeX, y: beforeY, life: 0.22 });
+          if (state.trail.length > 18) state.trail.shift();
+        }
+      }
+
+      const c = state.crystal;
+      if (Math.hypot(p.x - c.x, p.y - c.y) <= p.r + c.r) {
+        state.score += 1;
+        addShards(c.x, c.y);
+        if (state.score >= winTarget) {
+          state.status = "win";
+        } else {
+          spawnCrystal();
+        }
+      }
+    }
+
+    for (let i = state.trail.length - 1; i >= 0; i--) {
+      state.trail[i].life -= dt;
+      if (state.trail[i].life <= 0) state.trail.splice(i, 1);
+    }
+
+    for (let i = state.shards.length - 1; i >= 0; i--) {
+      const s = state.shards[i];
+      s.life -= dt;
+      s.x += s.vx * dt;
+      s.y += s.vy * dt;
+      s.vx *= 0.96;
+      s.vy *= 0.96;
+      if (s.life <= 0) state.shards.splice(i, 1);
+    }
+
+    state.frame += 1;
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, W, H);
+
+    const bg = ctx.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, "#09243a");
+    bg.addColorStop(1, "#111827");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.strokeStyle = "rgba(125, 211, 252, 0.13)";
+    ctx.lineWidth = 1;
+    for (let x = 40; x < W; x += 40) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, H);
+      ctx.stroke();
+    }
+    for (let y = 40; y < H; y += 40) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
+      ctx.stroke();
+    }
+
+    const c = state.crystal;
+    if (state.status === "play") {
+      const pulse = 1 + Math.sin(state.frame * 0.12) * 0.08;
+      ctx.save();
+      ctx.translate(c.x, c.y);
+      ctx.scale(pulse, pulse);
+      ctx.shadowColor = "#67e8f9";
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = "#a7f3d0";
+      ctx.beginPath();
+      ctx.moveTo(0, -c.r);
+      ctx.lineTo(c.r * 0.75, 0);
+      ctx.lineTo(0, c.r);
+      ctx.lineTo(-c.r * 0.75, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "#22d3ee";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    for (const t of state.trail) {
+      ctx.globalAlpha = Math.max(0, t.life / 0.22) * 0.55;
+      ctx.fillStyle = "#67e8f9";
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, 18, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    for (const s of state.shards) {
+      ctx.globalAlpha = Math.max(0, s.life / 0.42);
+      ctx.fillStyle = "#cffafe";
+      ctx.fillRect(s.x - 3, s.y - 3, 6, 6);
+    }
+    ctx.globalAlpha = 1;
+
+    const p = state.player;
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    if (p.dashTime > 0) {
+      ctx.shadowColor = "#67e8f9";
+      ctx.shadowBlur = 24;
+    }
+
+    if (sprite.complete && sprite.naturalWidth > 0) {
+      ctx.drawImage(sprite, -28, -28, 56, 56);
+    } else {
+      ctx.fillStyle = "#7dd3fc";
+      ctx.beginPath();
+      ctx.arc(0, 0, p.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#e0f2fe";
+      ctx.beginPath();
+      ctx.moveTo(12, 0);
+      ctx.lineTo(-14, -12);
+      ctx.lineTo(-8, 0);
+      ctx.lineTo(-14, 12);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+
+    ctx.fillStyle = "#e5f6ff";
+    ctx.font = "700 22px system-ui, sans-serif";
+    ctx.fillText("Crystals: " + state.score + " / " + winTarget, 24, 38);
+
+    ctx.textAlign = "right";
+    ctx.fillText("Storm: " + state.timer.toFixed(1), W - 24, 38);
+    ctx.textAlign = "left";
+
+    const barW = 240;
+    const barH = 12;
+    const barX = (W - barW) / 2;
+    const barY = H - 34;
+    const ready = 1 - Math.min(1, state.player.dashCooldown / 1.05);
+
+    ctx.fillStyle = "rgba(226, 232, 240, 0.18)";
+    ctx.fillRect(barX, barY, barW, barH);
+    ctx.fillStyle = ready >= 1 ? "#67e8f9" : "#38bdf8";
+    ctx.fillRect(barX, barY, barW * ready, barH);
+    ctx.strokeStyle = "rgba(226, 232, 240, 0.7)";
+    ctx.strokeRect(barX, barY, barW, barH);
+
+    if (state.status !== "play") {
+      ctx.fillStyle = "rgba(2, 6, 23, 0.72)";
+      ctx.fillRect(0, 0, W, H);
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#f8fafc";
+      ctx.font = "800 48px system-ui, sans-serif";
+      ctx.fillText(state.status === "win" ? "Crystal Storm Cleared" : "Storm Took The Trail", W / 2, H / 2 - 22);
+      ctx.font = "500 20px system-ui, sans-serif";
+      ctx.fillText("Click or tap to restart", W / 2, H / 2 + 24);
+      ctx.textAlign = "left";
+    }
+  }
+
+  function step(input, dt) {
+    update(input || readInput(), dt);
+    render();
+    publishDigest();
+    return window.__af;
+  }
+
+  function loop(now) {
+    if (!running) return;
+    const dt = (now - lastTime) / 1000;
+    lastTime = now;
+    step(readInput(), dt);
+    requestAnimationFrame(loop);
+  }
+
+  window.__afStep = function(input, dt) {
+    return step(readInput(input || {}), typeof dt === "number" ? dt : 0);
+  };
+
+  window.addEventListener("keydown", (e) => {
+    if (
+      e.code === "ArrowLeft" || e.code === "ArrowRight" ||
+      e.code === "ArrowUp" || e.code === "ArrowDown" ||
+      e.code === "KeyA" || e.code === "KeyD" ||
+      e.code === "KeyW" || e.code === "KeyS" ||
+      e.code === "Space" || e.code === "ShiftLeft" || e.code === "ShiftRight"
+    ) {
+      keys[e.code] = true;
+      e.preventDefault();
+    }
+  });
+
+  window.addEventListener("keyup", (e) => {
+    keys[e.code] = false;
+  });
+
+  canvas.addEventListener("pointerdown", () => {
+    if (state.status !== "play") reset();
+  });
+
+  sprite.onload = () => {
+    render();
+  };
+
+  publishDigest();
+  render();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

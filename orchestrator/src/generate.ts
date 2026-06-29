@@ -5,6 +5,17 @@ import { basename, join, relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { codexHome, finalAgentMessage, runCodexExec } from './codex-cli.js';
 import {
+  classifyErrorSignature,
+  loadEvolutionContext,
+  recordDebugEvents,
+  recordSuccessfulRun,
+  templateApiDebugEvents,
+  usedTemplatesFromContext,
+  type DebugEventInput,
+  type SuccessfulRunEvolution,
+  type UsedTemplate,
+} from './evolution.js';
+import {
   deriveProofTarget,
   runDeadFixtureProof,
   runReachabilityProof,
@@ -36,6 +47,12 @@ interface RunMeta {
     deadReachability: string;
   };
   templateApiCheck: TemplateApiCheck;
+  usedTemplates: UsedTemplate[];
+  evolution: {
+    templateExtracted: SuccessfulRunEvolution['template'];
+    memoryPaths: SuccessfulRunEvolution['memoryPaths'];
+    activeRules: string[];
+  };
   reachabilityProof: Pick<
     ReachabilityProof,
     'pass' | 'playerMoves' | 'scoreChanges' | 'winReachable' | 'failReachable' | 'terminalReachable' | 'flagged'
@@ -70,138 +87,213 @@ async function main(): Promise<void> {
   const gameDir = join(runDir, 'game');
   const proofDir = join(runDir, 'proof');
   const knowledgeDir = join(repoRoot, 'orchestrator', 'knowledge');
+  const pendingDebugEvents: DebugEventInput[] = [];
+  let stage = 'init';
   const [templateApi, designRules] = await Promise.all([
     readFile(join(knowledgeDir, 'template_api.md'), 'utf8'),
     readFile(join(knowledgeDir, 'design_rules.md'), 'utf8'),
   ]);
+  const evolutionContext = await loadEvolutionContext(repoRoot);
+  const usedTemplates = usedTemplatesFromContext(evolutionContext);
 
-  await mkdir(assetDir, { recursive: true });
-  await mkdir(gameDir, { recursive: true });
-  await mkdir(proofDir, { recursive: true });
+  try {
+    await mkdir(assetDir, { recursive: true });
+    await mkdir(gameDir, { recursive: true });
+    await mkdir(proofDir, { recursive: true });
 
-  const gddResult = await runCodexExec(gddPrompt(idea, templateApi, designRules), {
-    cwd: repoRoot,
-    sandbox: 'read-only',
-    timeoutMs: 180_000,
-  });
-  if (gddResult.code !== 0) {
-    throw new Error(`Codex GDD generation failed with code ${gddResult.code}: ${gddResult.stderr}`);
-  }
-  const gdd = finalAgentMessage(gddResult);
-  if (!gdd) throw new Error('Codex GDD generation returned no agent message');
-  const templateApiCheck = checkTemplateApi(idea, gdd);
-  const gddPath = join(runDir, 'gdd.md');
-  const checkedGdd = `${gdd.trim()}\n\n---\n\n## Deterministic Template API Check\n\n${formatTemplateApiCheck(templateApiCheck)}\n`;
-  await writeFile(gddPath, checkedGdd, 'utf8');
-  const templateApiCheckPath = join(proofDir, 'template-api-check.json');
-  await writeJson(templateApiCheckPath, templateApiCheck);
-  const proofTarget = deriveProofTarget(idea, checkedGdd);
-  const proofTargetPath = join(proofDir, 'target.json');
-  await writeJson(proofTargetPath, proofTarget);
+    stage = 'gdd';
+    const gddResult = await runCodexExec(gddPrompt(idea, templateApi, designRules, evolutionContext.promptText), {
+      cwd: repoRoot,
+      sandbox: 'read-only',
+      timeoutMs: 180_000,
+    });
+    if (gddResult.code !== 0) {
+      throw new Error(`Codex GDD generation failed with code ${gddResult.code}: ${gddResult.stderr}`);
+    }
+    const gdd = finalAgentMessage(gddResult);
+    if (!gdd) throw new Error('Codex GDD generation returned no agent message');
+    const templateApiCheck = checkTemplateApi(idea, gdd);
+    const gddPath = join(runDir, 'gdd.md');
+    const checkedGdd = `${gdd.trim()}\n\n---\n\n## Deterministic Template API Check\n\n${formatTemplateApiCheck(templateApiCheck)}\n`;
+    await writeFile(gddPath, checkedGdd, 'utf8');
+    const templateApiCheckPath = join(proofDir, 'template-api-check.json');
+    await writeJson(templateApiCheckPath, templateApiCheck);
+    const proofTarget = deriveProofTarget(idea, checkedGdd);
+    const proofTargetPath = join(proofDir, 'target.json');
+    await writeJson(proofTargetPath, proofTarget);
 
-  const assetResult = await runCodexExec(assetPrompt(idea), {
-    cwd: repoRoot,
-    sandbox: 'workspace-write',
-    timeoutMs: 300_000,
-  });
-  if (assetResult.code !== 0) {
-    throw new Error(`Codex image generation failed with code ${assetResult.code}: ${assetResult.stderr}`);
-  }
-  const generatedImage = assetResult.generatedImages[0];
-  if (!generatedImage) {
-    throw new Error(
-      `Codex image_gen did not leave a PNG under ${codexHome()}/generated_images/${assetResult.threadId ?? '<no-thread-id>'}`
+    stage = 'asset';
+    const assetResult = await runCodexExec(assetPrompt(idea), {
+      cwd: repoRoot,
+      sandbox: 'workspace-write',
+      timeoutMs: 300_000,
+    });
+    if (assetResult.code !== 0) {
+      throw new Error(`Codex image generation failed with code ${assetResult.code}: ${assetResult.stderr}`);
+    }
+    const generatedImage = assetResult.generatedImages[0];
+    if (!generatedImage) {
+      throw new Error(
+        `Codex image_gen did not leave a PNG under ${codexHome()}/generated_images/${assetResult.threadId ?? '<no-thread-id>'}`
+      );
+    }
+
+    const rawAssetPath = join(assetDir, 'codex-raw.png');
+    const spritePath = join(assetDir, 'codex-sprite.png');
+    const atlasPath = join(assetDir, 'atlas.json');
+    await copyFile(generatedImage.path, rawAssetPath);
+    await removeChromaKey(rawAssetPath, spritePath);
+    await writeJson(atlasPath, {
+      schemaVersion: 1,
+      source: 'codex-cli-image_gen',
+      raw: './codex-raw.png',
+      image: './codex-sprite.png',
+      frameSize: { width: 96, height: 96 },
+      frames: [{ id: 'player_coin', x: 0, y: 0, w: 96, h: 96, anchor: { x: 48, y: 48 } }],
+      notes: 'P1 one-sprite atlas. Raw art came from Codex CLI -> built-in image_gen; chroma-key removal is local post-processing.',
+    });
+
+    stage = 'produce';
+    const assetRelativeFromGame = `../assets/${basename(spritePath)}`;
+    const produceResult = await runCodexExec(
+      producePrompt(
+        idea,
+        checkedGdd,
+        assetRelativeFromGame,
+        templateApiCheck,
+        proofTarget,
+        evolutionContext.promptText
+      ),
+      {
+        cwd: repoRoot,
+        sandbox: 'read-only',
+        timeoutMs: 420_000,
+      }
     );
+    if (produceResult.code !== 0) {
+      throw new Error(`Codex game production failed with code ${produceResult.code}: ${produceResult.stderr}`);
+    }
+    const html = extractHtml(finalAgentMessage(produceResult));
+    validateGameHtml(html, assetRelativeFromGame);
+
+    const gamePath = join(gameDir, 'index.html');
+    await writeFile(gamePath, html, 'utf8');
+
+    stage = 'verify';
+    const snapshotPath = join(proofDir, 'snapshot.png');
+    await captureSnapshot(gamePath, snapshotPath);
+    const reachabilityProof = await runReachabilityProof(gamePath, proofDir, proofTarget);
+    const deadFixtureProof = await runDeadFixtureProof(proofDir, proofTarget);
+    if (deadFixtureProof.pass) {
+      throw new Error('Dead fixture proof unexpectedly passed; reachability gate is not discriminating dead paths');
+    }
+    if (!reachabilityProof.pass) {
+      pendingDebugEvents.push({
+        errorSignature: 'reachability:proof-failed',
+        rootCause: 'Generated game did not satisfy the movement/score/terminal reachability contract.',
+        stage: 'verify-reachability',
+        source: 'generate',
+        runId,
+        evidence: `flagged=${reachabilityProof.flagged.join(',') || 'none'}`,
+      });
+      throw new Error(`Reachability proof failed: ${reachabilityProof.flagged.join(', ') || 'unknown'}`);
+    }
+
+    const verifiedFix =
+      templateApiCheck.flagged.length > 0
+        ? {
+            summary:
+              'Unsupported Template API request was downscoped and the resulting run passed the reachability proof.',
+            verifiedAt: new Date().toISOString(),
+            runId,
+            evidence: [toRepoRelative(join(proofDir, 'template-api-check.json')), toRepoRelative(join(proofDir, 'reachability.json'))],
+          }
+        : undefined;
+    pendingDebugEvents.push(...templateApiDebugEvents(runId, templateApiCheck.flagged, verifiedFix));
+    if (pendingDebugEvents.length > 0) {
+      await recordDebugEvents(repoRoot, pendingDebugEvents);
+    }
+
+    const evolution = await recordSuccessfulRun(repoRoot, {
+      runId,
+      idea,
+      gdd: checkedGdd,
+      html,
+      proofTarget,
+      templateApiCheck,
+      reachabilityProof,
+    });
+
+    const meta: RunMeta = {
+      runId,
+      idea,
+      createdAt,
+      codex: {
+        gddThreadId: gddResult.threadId,
+        assetThreadId: assetResult.threadId,
+        produceThreadId: produceResult.threadId,
+        assetSource: generatedImage.path,
+      },
+      outputs: {
+        gdd: toRepoRelative(gddPath),
+        rawAsset: toRepoRelative(rawAssetPath),
+        sprite: toRepoRelative(spritePath),
+        atlas: toRepoRelative(atlasPath),
+        game: toRepoRelative(gamePath),
+        snapshot: toRepoRelative(snapshotPath),
+        templateApiCheck: toRepoRelative(templateApiCheckPath),
+        proofTarget: toRepoRelative(proofTargetPath),
+        reachability: toRepoRelative(join(proofDir, 'reachability.json')),
+        deadReachability: toRepoRelative(join(proofDir, 'dead-reachability.json')),
+      },
+      templateApiCheck,
+      usedTemplates,
+      evolution: {
+        templateExtracted: evolution.template,
+        memoryPaths: evolution.memoryPaths,
+        activeRules: evolutionContext.activeRules.map((rule) => rule.id),
+      },
+      reachabilityProof: {
+        pass: reachabilityProof.pass,
+        playerMoves: reachabilityProof.playerMoves,
+        scoreChanges: reachabilityProof.scoreChanges,
+        winReachable: reachabilityProof.winReachable,
+        failReachable: reachabilityProof.failReachable,
+        terminalReachable: reachabilityProof.terminalReachable,
+        flagged: reachabilityProof.flagged,
+      },
+      deadFixtureProof: {
+        pass: deadFixtureProof.pass,
+        flagged: deadFixtureProof.flagged,
+      },
+      proof: {
+        usesCanvas: /<canvas[\s>]/i.test(html),
+        usesGeneratedAsset: html.includes(assetRelativeFromGame),
+        usesDrawImage: /drawImage\s*\(/.test(html),
+        snapshotCaptured: true,
+      },
+    };
+    await writeJson(join(runDir, 'meta.json'), meta);
+
+    console.log(JSON.stringify(meta, null, 2));
+  } catch (error) {
+    await recordDebugEvents(repoRoot, [
+      ...pendingDebugEvents,
+      {
+        ...classifyErrorSignature(stage, error),
+        runId,
+      },
+    ]);
+    throw error;
   }
-
-  const rawAssetPath = join(assetDir, 'codex-raw.png');
-  const spritePath = join(assetDir, 'codex-sprite.png');
-  const atlasPath = join(assetDir, 'atlas.json');
-  await copyFile(generatedImage.path, rawAssetPath);
-  await removeChromaKey(rawAssetPath, spritePath);
-  await writeJson(atlasPath, {
-    schemaVersion: 1,
-    source: 'codex-cli-image_gen',
-    raw: './codex-raw.png',
-    image: './codex-sprite.png',
-    frameSize: { width: 96, height: 96 },
-    frames: [{ id: 'player_coin', x: 0, y: 0, w: 96, h: 96, anchor: { x: 48, y: 48 } }],
-    notes: 'P1 one-sprite atlas. Raw art came from Codex CLI -> built-in image_gen; chroma-key removal is local post-processing.',
-  });
-
-  const assetRelativeFromGame = `../assets/${basename(spritePath)}`;
-  const produceResult = await runCodexExec(producePrompt(idea, checkedGdd, assetRelativeFromGame, templateApiCheck, proofTarget), {
-    cwd: repoRoot,
-    sandbox: 'read-only',
-    timeoutMs: 420_000,
-  });
-  if (produceResult.code !== 0) {
-    throw new Error(`Codex game production failed with code ${produceResult.code}: ${produceResult.stderr}`);
-  }
-  const html = extractHtml(finalAgentMessage(produceResult));
-  validateGameHtml(html, assetRelativeFromGame);
-
-  const gamePath = join(gameDir, 'index.html');
-  await writeFile(gamePath, html, 'utf8');
-
-  const snapshotPath = join(proofDir, 'snapshot.png');
-  await captureSnapshot(gamePath, snapshotPath);
-  const reachabilityProof = await runReachabilityProof(gamePath, proofDir, proofTarget);
-  const deadFixtureProof = await runDeadFixtureProof(proofDir, proofTarget);
-
-  const meta: RunMeta = {
-    runId,
-    idea,
-    createdAt,
-    codex: {
-      gddThreadId: gddResult.threadId,
-      assetThreadId: assetResult.threadId,
-      produceThreadId: produceResult.threadId,
-      assetSource: generatedImage.path,
-    },
-    outputs: {
-      gdd: toRepoRelative(gddPath),
-      rawAsset: toRepoRelative(rawAssetPath),
-      sprite: toRepoRelative(spritePath),
-      atlas: toRepoRelative(atlasPath),
-      game: toRepoRelative(gamePath),
-      snapshot: toRepoRelative(snapshotPath),
-      templateApiCheck: toRepoRelative(templateApiCheckPath),
-      proofTarget: toRepoRelative(proofTargetPath),
-      reachability: toRepoRelative(join(proofDir, 'reachability.json')),
-      deadReachability: toRepoRelative(join(proofDir, 'dead-reachability.json')),
-    },
-    templateApiCheck,
-    reachabilityProof: {
-      pass: reachabilityProof.pass,
-      playerMoves: reachabilityProof.playerMoves,
-      scoreChanges: reachabilityProof.scoreChanges,
-      winReachable: reachabilityProof.winReachable,
-      failReachable: reachabilityProof.failReachable,
-      terminalReachable: reachabilityProof.terminalReachable,
-      flagged: reachabilityProof.flagged,
-    },
-    deadFixtureProof: {
-      pass: deadFixtureProof.pass,
-      flagged: deadFixtureProof.flagged,
-    },
-    proof: {
-      usesCanvas: /<canvas[\s>]/i.test(html),
-      usesGeneratedAsset: html.includes(assetRelativeFromGame),
-      usesDrawImage: /drawImage\s*\(/.test(html),
-      snapshotCaptured: true,
-    },
-  };
-  await writeJson(join(runDir, 'meta.json'), meta);
-
-  console.log(JSON.stringify(meta, null, 2));
 }
 
-function gddPrompt(gameIdea: string, templateApi: string, designRules: string): string {
+function gddPrompt(gameIdea: string, templateApi: string, designRules: string, evolutionMemory: string): string {
   return [
     'Return a concise markdown GDD for a tiny browser Canvas game.',
     'Do not edit files and do not run shell commands.',
     'Use the provided DESIGN_RULES and TEMPLATE_API as hard constraints.',
+    'Use EVOLUTION_MEMORY to reuse prior verified scaffold candidates when compatible.',
     'Keep scope to one screen, one controllable actor, one win/score loop, and one generated sprite asset.',
     'For P3 reachability proof, choose a score/win target between 1 and 3 and a fail timer reachable within 8-12 seconds with no input.',
     'If the user idea asks for unsupported TEMPLATE_API features, explicitly add an "Out-of-scope / Downscope" section and redesign the game into the supported Canvas slice.',
@@ -210,6 +302,7 @@ function gddPrompt(gameIdea: string, templateApi: string, designRules: string): 
     templateApi,
     'DESIGN_RULES:',
     designRules,
+    evolutionMemory,
     `Idea: ${gameIdea}`,
   ].join('\n');
 }
@@ -231,7 +324,8 @@ function producePrompt(
   gdd: string,
   assetPath: string,
   templateApiCheck: TemplateApiCheck,
-  proofTarget: ProofTarget
+  proofTarget: ProofTarget,
+  evolutionMemory: string
 ): string {
   return [
     'Return one complete standalone HTML document only. No markdown fences.',
@@ -251,6 +345,7 @@ function producePrompt(
     'The proof harness will reload and provide no input for the fail scenario; fail must be reachable within the proof window.',
     `Template API status: ${templateApiCheck.status}`,
     `Flagged unsupported capabilities: ${templateApiCheck.flagged.map((flag) => flag.capability).join(', ') || 'none'}`,
+    evolutionMemory,
     `Game idea: ${gameIdea}`,
     'GDD:',
     gdd.slice(0, 4000),

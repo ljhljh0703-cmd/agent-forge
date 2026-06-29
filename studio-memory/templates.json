@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "stableThresholdProjects": 5,
+  "notes": "Repo-local P4 Template memory. stability is the number of distinct source runs; status becomes stable at 5 projects/runs.",
+  "templates": [
+    {
+      "id": "template-top-down-2d-dash-collectible-score-fail-timer-dash-input",
+      "description": "top-down-2d Canvas scaffold with dash, collectible-score, fail-timer, dash-input",
+      "contract": {
+        "archetype": "top-down-2d",
+        "gameplayLoop": [
+          "dash",
+          "collectible-score",
+          "fail-timer",
+          "dash-input"
+        ],
+        "observationDigest": "window.__af { status, score, winTarget, playerMoved, playerPos, frame }",
+        "commandSurface": "window.__afStep(input, dt) advances the same update/render path",
+        "assetPattern": "single generated sprite loaded via Image and drawn with ctx.drawImage",
+        "proofPattern": "reachability target dash; terminalReachable=true"
+      },
+      "sourceRuns": [
+        "20260629T050716Z-crystal-fox-dash",
+        "20260629T050944Z-moon-fern-dash"
+      ],
+      "stability": 2,
+      "status": "candidate",
+      "createdAt": "2026-06-29T05:09:31.078Z",
+      "updatedAt": "2026-06-29T05:12:02.231Z"
+    }
+  ]
+}

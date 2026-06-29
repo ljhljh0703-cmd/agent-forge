@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<body>
+<canvas id="game" width="320" height="180"></canvas>
+<script>
+window.__af = {
+  status: 'play',
+  score: 0,
+  winTarget: 1,
+  playerMoved: false,
+  playerPos: { x: 160, y: 90 },
+  frame: 0
+};
+setInterval(() => { window.__af.frame += 1; }, 100);
+</script>
+</body>
+</html>
