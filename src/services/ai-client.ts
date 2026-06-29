@@ -45,13 +45,12 @@ export class AIClient {
   async complete(request: AIRequest): Promise<AIResponse> {
     const start = Date.now();
     const model = request.model ?? this.config.model;
-    const url = `/api/google/v1beta/models/${model}:generateContent`;
+    const url = `/api/google/v1beta/models/${model}:generateContent?key=${encodeURIComponent(this.config.apiKey)}`;
 
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-goog-api-key': this.config.apiKey,
       },
       body: JSON.stringify(this.geminiBody(request)),
       signal: request.signal,
@@ -99,13 +98,12 @@ export class AIClient {
     const start = Date.now();
     const model = request.model ?? this.config.model;
     const url =
-      `/api/google/v1beta/models/${model}:streamGenerateContent?alt=sse`;
+      `/api/google/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${encodeURIComponent(this.config.apiKey)}`;
 
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-goog-api-key': this.config.apiKey,
       },
       body: JSON.stringify(this.geminiBody(request)),
       signal: request.signal,
@@ -186,10 +184,11 @@ export function resetAIClient(): void {
 
 export function getAIClient(): AIClient {
   if (!_client) {
-    const apiKey =
+    const apiKey = (
       import.meta.env.VITE_AI_API_KEY ||
       localStorage.getItem('ai_api_key') ||
-      '';
+      ''
+    ).trim();
     if (!apiKey) {
       throw new Error('API Key가 설정되지 않았습니다. 우측 패널 상단에서 API Key를 입력하세요.');
     }

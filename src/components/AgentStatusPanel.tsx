@@ -6,6 +6,7 @@ import { getMetricsCollector, AgentSummary } from '../services/metrics-collector
 import { formatCost, formatTokens, formatLatency } from '../services/cost-calculator';
 import { ModelStrategy, MODEL_STRATEGIES } from '../config/model-strategy';
 import { PipelineProgressBar } from './PipelineProgressBar';
+import { useMonitor } from '../context/MonitorContext';
 
 // 2-letter initials per agent
 const AGENT_INITIALS: Record<string, string> = {
@@ -46,12 +47,34 @@ const INK    = 'var(--ink)';
 const SOFT   = 'var(--ink-soft)';
 const DIV    = '1px solid var(--line)';
 
+const V2_STAGES = [
+  { key: 'plan',    label: 'Plan',    desc: 'GDD' },
+  { key: 'asset',   label: 'Asset',   desc: 'Codex sprite' },
+  { key: 'produce', label: 'Produce', desc: 'game/index.html' },
+  { key: 'verify',  label: 'Verify',  desc: 'Reachability proof' },
+  { key: 'evolve',  label: 'Evolve',  desc: 'Template extracted' },
+] as const;
+
+function getV2StageStatus(key: string, run: { gddText?: string; proof?: { usesGeneratedAsset?: boolean }; outputs?: { game?: string }; reachabilityProof?: { pass?: boolean }; evolution?: { templateExtracted?: unknown } }): 'done' | 'fail' | 'pending' {
+  switch (key) {
+    case 'plan':    return run.gddText ? 'done' : 'pending';
+    case 'asset':   return run.proof?.usesGeneratedAsset ? 'done' : 'pending';
+    case 'produce': return run.outputs?.game ? 'done' : 'pending';
+    case 'verify':  return run.reachabilityProof?.pass === true ? 'done' : run.reachabilityProof?.pass === false ? 'fail' : 'pending';
+    case 'evolve':  return run.evolution?.templateExtracted ? 'done' : 'pending';
+    default:        return 'pending';
+  }
+}
+
 export const AgentStatusPanel: React.FC = () => {
   const { agents, addLog, modelStrategy, setModelStrategy } = useWindowContext();
+  const { runs, selectedRunId } = useMonitor();
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('ai_api_key') ?? '');
   const [saved,  setSaved]  = useState(!!localStorage.getItem('ai_api_key'));
   const [metricsByAgent, setMetricsByAgent] = useState<Record<string, AgentSummary>>(computeByAgent);
   const [collapsed, setCollapsed] = useState(false);
+
+  const selectedRun = runs.find(r => r.runId === selectedRunId) ?? null;
 
   useEffect(() => {
     const unsub = getMetricsCollector().subscribe('api-call', () => {
@@ -221,7 +244,33 @@ export const AgentStatusPanel: React.FC = () => {
       {/* ── Pipeline Progress ── */}
       <PipelineProgressBar />
 
-      {/* ── 에이전트 타일 ── */}
+      {/* ── v2 Run Stage (선택된 run 기반) ── */}
+      {selectedRun && (
+        <div style={{ padding: '10px 14px', borderBottom: DIV }}>
+          <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '1.5px', color: 'var(--brand)', marginBottom: '10px', textTransform: 'uppercase' }}>
+            {selectedRun.idea.replace(/\b\w/g, c => c.toUpperCase())}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+            {V2_STAGES.map(stage => {
+              const s = getV2StageStatus(stage.key, selectedRun as Parameters<typeof getV2StageStatus>[1]);
+              const color = s === 'done' ? 'var(--ok)' : s === 'fail' ? '#E01E5A' : 'var(--line)';
+              return (
+                <div key={stage.key} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: color, flexShrink: 0 }} />
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: s === 'done' ? 'var(--ok)' : s === 'fail' ? '#E01E5A' : SOFT, width: '52px', flexShrink: 0 }}>
+                    {stage.label}
+                  </span>
+                  <span style={{ fontSize: '11px', color: SOFT, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {s === 'done' ? stage.desc : s === 'fail' ? 'fail' : '—'}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── 에이전트 타일 (v1) ── */}
       <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
         {agents.map((agent) => {
           const employee = EMPLOYEES[agent.agentId as keyof typeof EMPLOYEES];

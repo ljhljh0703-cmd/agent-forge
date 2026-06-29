@@ -3,6 +3,10 @@ import { useWindowContext } from '../context/WindowContext';
 import { getMetricsCollector } from '../services/metrics-collector';
 import { formatCost, formatTokens } from '../services/cost-calculator';
 import type { DomainMode } from '../config/domain-mode';
+import { useMonitor } from '../context/MonitorContext';
+import { RunsList } from './monitor/RunsList';
+import { RunDetail } from './monitor/RunDetail';
+import { EvolutionLibrary } from './monitor/EvolutionLibrary';
 
 const STAGE_LABELS: Record<DomainMode, string[]> = {
   game:     ['GDD',   'SPEC',     'Plan', 'Code',   'QA'],
@@ -295,12 +299,76 @@ const ErrorPanel: React.FC = () => {
   );
 };
 
+type MonitorTab = 'runs' | 'evolution';
+
+// ── v2 모니터 워크스페이스 ──────────────────────────────────────
+const V2Monitor: React.FC = () => {
+  const { selectedRunId, refresh } = useMonitor();
+  const [tab, setTab] = useState<MonitorTab>('runs');
+
+  const TabBtn: React.FC<{ t: MonitorTab; label: string }> = ({ t, label }) => (
+    <button
+      onClick={() => setTab(t)}
+      style={{
+        fontSize: '12px', fontWeight: tab === t ? 700 : 500, padding: '4px 14px',
+        borderRadius: '4px',
+        border: `1px solid ${tab === t ? 'var(--brand)' : 'var(--line)'}`,
+        backgroundColor: tab === t ? 'var(--brand-50)' : 'transparent',
+        color: tab === t ? 'var(--brand)' : 'var(--ink-soft)',
+        cursor: 'pointer', transition: 'all 0.15s',
+      }}
+    >
+      {label}
+    </button>
+  );
+
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', flexShrink: 0 }}>
+        <TabBtn t="runs" label="Runs" />
+        <TabBtn t="evolution" label="Evolution Library" />
+        <button
+          onClick={refresh}
+          style={{
+            marginLeft: 'auto', fontSize: '11px', padding: '4px 10px',
+            border: '1px solid var(--line)', borderRadius: '4px',
+            backgroundColor: 'transparent', color: 'var(--ink-soft)', cursor: 'pointer',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--brand)'; e.currentTarget.style.color = 'var(--brand)'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.color = 'var(--ink-soft)'; }}
+        >
+          새로고침
+        </button>
+      </div>
+
+      <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+        {tab === 'runs' && (
+          selectedRunId ? (
+            <div style={{ height: '100%', display: 'flex', gap: '14px', overflow: 'hidden' }}>
+              <div style={{ width: '220px', flexShrink: 0, overflow: 'hidden' }}>
+                <RunsList />
+              </div>
+              <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+                <RunDetail />
+              </div>
+            </div>
+          ) : (
+            <RunsList />
+          )
+        )}
+        {tab === 'evolution' && <EvolutionLibrary />}
+      </div>
+    </div>
+  );
+};
+
 // ── MainDashboard (메인) ──────────────────────────────────────
 export const MainDashboard: React.FC = () => {
   const { agents, pipeline, domainMode } = useWindowContext();
   const labels = STAGE_LABELS[domainMode];
   const [totalCost,   setTotalCost]   = useState(computeTotalCost);
   const [totalTokens, setTotalTokens] = useState(computeTotalTokens);
+  const [showV1,      setShowV1]      = useState(false);
 
   useEffect(() => {
     const unsub = getMetricsCollector().subscribe('api-call', () => {
@@ -461,17 +529,50 @@ export const MainDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* ── 3) 워크스페이스 — 나머지 공간 채움 ── */}
+      {/* ── 3) 워크스페이스 — v2 모니터 (기본) / v1 레거시 (토글) ── */}
       <div style={{ flex: 1, minHeight: 0, margin: '0 28px 20px' }}>
         <div style={{
-          height: '100%',
-          backgroundColor: 'var(--surface)',
-          border: '1px solid var(--line)',
-          borderRadius: '12px',
-          overflow: 'hidden',
-          padding: '20px 24px',
+          height: '100%', backgroundColor: 'var(--surface)',
+          border: `1px solid ${showV1 ? 'oklch(80% 0.04 60)' : 'var(--line)'}`,
+          borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column',
         }}>
-          <WorkspaceContent />
+          {/* 워크스페이스 헤더 */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '10px 18px', borderBottom: '1px solid var(--line)', flexShrink: 0,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '1.5px', color: 'var(--ink-soft)', textTransform: 'uppercase' }}>
+                {showV1 ? 'v1 레거시 엔진' : 'v2 Monitor'}
+              </span>
+              {showV1 && (
+                <span style={{
+                  fontSize: '10px', fontWeight: 700, padding: '1px 7px', borderRadius: '10px',
+                  backgroundColor: 'oklch(96% 0.025 60)', color: 'oklch(55% 0.1 60)',
+                }}>
+                  DEPRECATED
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => setShowV1(v => !v)}
+              style={{
+                fontSize: '11px', padding: '3px 10px',
+                border: '1px solid var(--line)', borderRadius: '4px',
+                backgroundColor: 'transparent',
+                color: showV1 ? 'var(--brand)' : 'var(--ink-soft)',
+                cursor: 'pointer', transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--brand)'; e.currentTarget.style.color = 'var(--brand)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.color = showV1 ? 'var(--brand)' : 'var(--ink-soft)'; }}
+            >
+              {showV1 ? 'v2 모니터로' : 'v1 레거시'}
+            </button>
+          </div>
+          {/* 콘텐츠 */}
+          <div style={{ flex: 1, minHeight: 0, padding: '16px 18px', overflow: 'hidden' }}>
+            {showV1 ? <WorkspaceContent /> : <V2Monitor />}
+          </div>
         </div>
       </div>
     </div>

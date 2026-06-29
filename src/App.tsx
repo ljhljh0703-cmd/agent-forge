@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { WindowContextProvider, useWindowContext } from './context/WindowContext';
+import { MonitorContextProvider } from './context/MonitorContext';
 import { DraggableWindow } from './components/DraggableWindow';
 import { Taskbar } from './components/Taskbar';
 import { PlannerWindow } from './components/windows/PlannerWindow';
@@ -78,7 +79,9 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <WindowContextProvider>
-      <AppContent />
+      <MonitorContextProvider>
+        <AppContent />
+      </MonitorContextProvider>
     </WindowContextProvider>
   );
 };
