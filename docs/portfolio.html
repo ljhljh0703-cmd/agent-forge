@@ -176,7 +176,7 @@
   <div class="wrap">
     <div class="eyebrow">AI 게임 스튜디오 · Codex CLI 오케스트레이션</div>
     <h1>아이디어 한 줄을 입력하면,<br>파이프라인이 게임을 만든다</h1>
-    <p class="lead">기획 → 에셋 → 코드 → 검증 → 자기진화. 단일 게임이 아니라 <b>게임을 만드는 생산 시스템</b> 자체가 산출물입니다.</p>
+    <p class="lead">기획 → 에셋 → 코드 → 검증 → 자기진화. 게임 하나가 아니라 <b>게임을 만드는 생산 시스템</b> 자체가 결과물이에요.</p>
     <div class="meta">
       <span class="chip on">작동 프로토타입</span>
       <span class="chip">Codex CLI 오케스트레이션</span>
@@ -214,7 +214,7 @@
   <div class="wrap rv">
     <div class="secnum">01 — 문제</div>
     <h2>바이브코딩 게임 생성의 두 구멍</h2>
-    <p class="intro">AI로 게임을 만들 때 두 가지가 늘 막힙니다. 하나, <b>과정이 불투명</b>합니다 — 어디서 막혔는지, AI가 실제로 뭘 했는지, 만든 코드가 정말 도는지 보이지 않습니다. 둘, <b>매번 처음부터</b> 짭니다 — 어제 만든 걸 오늘이 재활용하지 못합니다. AgentForge는 생성을 단계로 쪼개 들여다보게 하고, 바꾸기 전에 플레이 가능성을 증명하며, 지을수록 메모리가 쌓이는 “통제된·진화하는 생산”을 지향합니다.</p>
+    <p class="intro">AI로 게임을 만들 때 두 가지가 늘 막혀요. 하나, <b>과정이 안 보여요</b> — 어디서 막혔는지, AI가 실제로 뭘 했는지, 만든 코드가 진짜 도는지 알 수 없어요. 둘, <b>매번 처음부터</b> 짜요 — 어제 만든 걸 오늘이 재활용하지 못해요. AgentForge는 생성을 단계로 쪼개 들여다보고, 바꾸기 전에 플레이 가능성을 증명하고, 지을수록 메모리가 쌓이는 “통제된·진화하는 생산”을 지향해요.</p>
   </div>
 </section>
 
@@ -222,7 +222,7 @@
   <div class="wrap rv">
     <div class="secnum">02 — 어떻게 도나</div>
     <h2>Codex CLI 5단계 파이프라인</h2>
-    <p class="intro"><code class="mono">npm run generate -- "&lt;아이디어&gt;"</code> 한 줄이면, Node 오케스트레이터가 Codex CLI(<span class="mono">codex exec --json</span> · 내장 <span class="mono">image_gen</span>)를 단계별로 호출합니다. 코드와 이미지가 한 흐름이고(브라우저 직접호출 폐기), 산출은 <span class="mono">runs/&lt;id&gt;/</span>에 영속됩니다.</p>
+    <p class="intro"><code class="mono">npm run generate -- "&lt;아이디어&gt;"</code> 한 줄이면, Node 오케스트레이터가 Codex CLI(<span class="mono">codex exec --json</span> · 내장 <span class="mono">image_gen</span>)를 단계별로 불러요. 코드와 이미지가 한 흐름이고(브라우저 직접호출은 폐기했어요), 결과는 <span class="mono">runs/&lt;id&gt;/</span>에 그대로 남아요.</p>
 
     <div class="figure">
       <svg viewBox="0 0 880 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Codex CLI 5단계 파이프라인">
@@ -276,26 +276,26 @@
   <div class="wrap rv">
     <div class="secnum">03 — 설계 결정</div>
     <h2>라벨이 아니라, 작동하는 코드로</h2>
-    <p class="intro">vault에 설계로만 있던 게임 스튜디오 이론(자가진화·proof-first·Dual-Knowledge)을 <b>실제 작동 코드</b>로 옮겼습니다. 다섯 결정 전부 공개 repo ③Gate에서 재현됩니다.</p>
+    <p class="intro">vault에 설계로만 있던 게임 스튜디오 이론(자가진화·proof-first·Dual-Knowledge)을 <b>실제 작동 코드</b>로 옮겼어요. 다섯 결정 전부 공개 repo의 ③Gate에서 재현돼요.</p>
     <div class="steps">
       <div class="step">
         <div class="n">결정 1</div><h3>엔진 = Codex CLI 오케스트레이션</h3>
-        <p>Node가 <span class="mono">codex exec --json</span>으로 코드와 <span class="mono">image_gen</span>을 한 파이프라인에 묶습니다. 이미지 파일은 에이전트 텍스트를 믿지 않고 JSONL <span class="mono">thread_id</span>로 회수합니다.</p>
+        <p>Node가 <span class="mono">codex exec --json</span>으로 코드와 <span class="mono">image_gen</span>을 한 파이프라인에 묶어요. 이미지 파일은 에이전트가 한 말을 믿지 않고 JSONL <span class="mono">thread_id</span>로 직접 회수해요.</p>
         <span class="trace">codex-cli.ts · P1 ③Gate · [사실, 실재]</span>
       </div>
       <div class="step">
         <div class="n">결정 2</div><h3>기획 = Dual-Knowledge GDD</h3>
-        <p><span class="mono">design_rules</span>(재미)와 <span class="mono">template_api</span>(엔진이 실제 할 수 있는 것) 두 관점을 함께 주입해, 디자인을 구현 가능 범위로 제약합니다. “3D MMO” 같은 범위 밖은 조용히 버리지 않고 다운스코프 플래그를 답니다.</p>
+        <p><span class="mono">design_rules</span>(재미)와 <span class="mono">template_api</span>(엔진이 실제 할 수 있는 것)를 함께 넣어서, 디자인을 구현 가능한 범위로 묶어요. “3D MMO” 같은 범위 밖은 조용히 버리지 않고 다운스코프 플래그를 달아요.</p>
         <span class="trace">template-api.ts · P2 ③Gate · [사실, 실재]</span>
       </div>
       <div class="step">
         <div class="n">결정 3</div><h3>검증 = proof-first</h3>
-        <p>관찰 digest(<span class="mono">window.__af</span>)와 command surface(<span class="mono">__afStep</span>)로 게임이 실제로 움직이고 점수가 바뀌고 승/패에 도달하는지 headless로 확인합니다. <b>멈춘 화면은 pass:false로 차단</b>합니다.</p>
+        <p>관찰 digest(<span class="mono">window.__af</span>)와 command surface(<span class="mono">__afStep</span>)로 게임이 실제로 움직이고 점수가 바뀌고 승/패에 닿는지 headless로 확인해요. <b>멈춘 화면은 pass:false로 차단</b>해요.</p>
         <span class="trace">reachability.ts · P3 ③Gate(dead fixture pass:false) · [사실, 실재]</span>
       </div>
       <div class="step">
         <div class="n">결정 4</div><h3>진화 = 자기진화 (크라운주얼)</h3>
-        <p>완성 게임은 재사용 스캐폴드로 누적되고, 같은 에러가 3번 이상이면 사전 체크 룰 <b>후보</b>가 됩니다. 검증된 fix만 기록하고(환각 0), 룰 활성화는 작가 컨펌(HITL) — AI가 스스로 merge하지 않습니다.</p>
+        <p>완성한 게임은 재사용 스캐폴드로 쌓이고, 같은 에러가 3번 이상이면 사전 체크 룰 <b>후보</b>가 돼요. 검증된 fix만 기록하고(환각 0), 룰 활성화는 작가 컨펌(HITL)을 거쳐요 — AI가 스스로 merge하지 않아요.</p>
         <span class="trace">evolution.ts · studio-memory · P4 ③Gate(provenance·active=false) · [사실, 실재]</span>
       </div>
     </div>
@@ -307,7 +307,7 @@
   <div class="wrap rv">
     <div class="secnum">04 — proof-first</div>
     <h2>“그럴듯한 화면”이 아니라, 실제로 플레이되는가</h2>
-    <p class="intro">생성된 게임이 보기엔 멀쩡해도 실제론 멈춰 있는 경우가 흔합니다. AgentForge는 생성 <b>전에</b> GDD에서 proof 타깃을 뽑고, 생성 후 headless로 도달 가능성을 검증합니다. 통과 못 하면 배포되지 않습니다.</p>
+    <p class="intro">생성된 게임이 보기엔 멀쩡해도 실제론 멈춰 있는 경우가 많아요. AgentForge는 생성 <b>전에</b> GDD에서 proof 타깃을 뽑고, 생성 뒤 headless로 도달 가능성을 검증해요. 통과 못 하면 배포되지 않아요.</p>
     <table>
       <thead><tr><th>검증 항목</th><th>의미</th><th>결과</th></tr></thead>
       <tbody>
@@ -325,22 +325,22 @@
   <div class="wrap rv">
     <div class="secnum">05 — 자기진화</div>
     <h2>지을수록 쌓이는 메모리</h2>
-    <p class="intro">한 번 짜고 끝나는 게 아니라, 완성한 게임이 다음 게임의 재료가 됩니다. 두 번째 생성이 첫 번째가 만든 템플릿을 <b>실제로 재사용</b>한 흔적(provenance)이 남고, 반복된 에러는 사전 체크 룰 후보로 적립됩니다.</p>
+    <p class="intro">한 번 짜고 끝나는 게 아니라, 완성한 게임이 다음 게임의 재료가 돼요. 두 번째 생성이 첫 번째가 만든 템플릿을 <b>실제로 재사용</b>한 흔적(provenance)이 남고, 반복된 에러는 사전 체크 룰 후보로 쌓여요.</p>
     <div class="grid3">
       <div class="card">
         <div class="lab">Template 재사용</div>
         <h3>혈통이 meta에 남는다</h3>
-        <p><b>crystal-fox-dash</b>에서 추출된 대시 템플릿(stability 1)을 <b>moon-fern-dash</b>가 물려받아 재사용 → 이후 stability 2로 누적. provenance가 <span class="mono">meta.json</span>의 <span class="mono">usedTemplates.sourceRuns</span>에 기록됩니다.</p>
+        <p><b>crystal-fox-dash</b>에서 뽑은 대시 템플릿(stability 1)을 <b>moon-fern-dash</b>가 물려받아 재사용해요 → 이후 stability 2로 누적돼요. provenance는 <span class="mono">meta.json</span>의 <span class="mono">usedTemplates.sourceRuns</span>에 남아요.</p>
       </div>
       <div class="card">
         <div class="lab">Debug Generalizer</div>
         <h3>반복 에러 → 룰 후보</h3>
-        <p>같은 에러 ≥3회 → 사전 체크 룰 <b>후보</b> 생성. 검증된 fix만 기록(환각 0).</p>
+        <p>같은 에러 ≥3회 → 사전 체크 룰 <b>후보</b>를 만들어요. 검증된 fix만 기록해요(환각 0).</p>
       </div>
       <div class="card">
         <div class="lab">HITL 게이트</div>
         <h3>활성화는 사람이</h3>
-        <p>룰 후보는 <span class="pill hold">active: false · HITL 대기</span> 상태. 작가 컨펌 전엔 적용되지 않습니다. 자동 승격 0.</p>
+        <p>룰 후보는 <span class="pill hold">active: false · HITL 대기</span> 상태예요. 작가 컨펌 전엔 적용되지 않아요. 자동 승격은 0이에요.</p>
       </div>
     </div>
     <div class="note">출처: 각 run <span class="mono">meta.json</span>(usedTemplates · evolution.templateExtracted) · studio-memory. 성숙의 흔적 — genesis인 crystal-fox는 <span class="mono">winReachable:false</span>(승리 도달 못 함)였지만, 그 템플릿을 물려받은 moon-fern은 <span class="mono">winReachable:true</span>. 단 <b>“지을수록 쉬워지는” 누적 <i>효과</i>는 [측정전]</b> — 메커니즘·코드는 검증, 효과는 게임이 더 쌓인 뒤 측정.</div>
@@ -351,7 +351,7 @@
   <div class="wrap rv">
     <div class="secnum">06 — 생성 결과</div>
     <h2>실제로 만들어진 게임</h2>
-    <p class="intro">생성에는 Codex CLI가 필요하지만, <b>플레이는 standalone Canvas라 아무 브라우저에서나 됩니다.</b> 아래 둘은 실제 생성된 게임을 <b>그 자리에서 플레이</b>하는 임베드입니다 — 가장 이른 P1(magnet-coin-dash)과 proof 완전통과 run(moon-fern-dash).</p>
+    <p class="intro">생성에는 Codex CLI가 필요하지만, <b>플레이는 standalone Canvas라 아무 브라우저에서나 돼요.</b> 아래 둘은 실제 생성된 게임을 <b>그 자리에서 플레이</b>하는 임베드예요 — 가장 이른 P1(magnet-coin-dash)과 proof 완전통과 run(moon-fern-dash).</p>
     <div class="gamegrid">
       <div class="gameframe">
         <div class="gamehead"><span class="t">moon-fern-dash</span><span class="pill pass">플레이 가능 · pass:true</span></div>
@@ -364,7 +364,7 @@
         <div class="gamemeta">코인 30개 · 60초. 가장 이른 run(03:38) — Canvas·생성 스프라이트·drawImage 증명. 진화 시스템 이전이라 reachability 블록 없음(정직 표기). [사실, 실재 — meta.json]</div>
       </div>
     </div>
-    <div class="note">두 게임은 <b>실제 생성물</b>입니다(repo <span class="mono">agent-forge</span>의 runs). 게임 화면을 클릭해 포커스한 뒤 조작하세요. 스프라이트 PNG 없이도 게임 내장 폴백 도형으로 동작합니다(날조 0). ※ 두 게임은 서로 템플릿을 주고받은 사이가 아닙니다 — 재사용 혈통은 <b>05. 자기진화</b> 참조(crystal-fox → moon-fern).</div>
+    <div class="note">두 게임은 <b>실제 생성물</b>이에요(repo <span class="mono">agent-forge</span>의 runs). 게임 화면을 클릭해 포커스한 뒤 조작해 보세요. 스프라이트 PNG 없이도 게임 내장 폴백 도형으로 돌아가요(날조 0). ※ 두 게임은 서로 템플릿을 주고받은 사이가 아니에요 — 재사용 혈통은 <b>05. 자기진화</b>를 보세요(crystal-fox → moon-fern).</div>
   </div>
 </section>
 
@@ -383,7 +383,7 @@
         <tr><td>산출</td><td class="v">runs/&lt;id&gt;/ (gdd · assets · game · proof · meta) · MIT</td></tr>
       </tbody>
     </table>
-    <div class="note">v1(브라우저 Gemini · DOM 웹앱)은 레거시(deprecated) — 진화 궤적의 증거로만 남깁니다.</div>
+    <div class="note">v1(브라우저 Gemini · DOM 웹앱)은 레거시(deprecated)예요 — 진화 궤적의 증거로만 남겼어요.</div>
   </div>
 </section>
 
@@ -395,12 +395,12 @@
       <div class="card">
         <div class="lab">AI 응용 엔지니어 / FDE</div>
         <h3>프로덕션 에이전트 시스템</h3>
-        <p>Codex CLI 멀티스텝 오케스트레이션 · proof-first 검증(dead 차단) · 자기진화(누적 메모리·HITL) · 비용/모델 인식. 에이전트를 “돌려보는” 게 아니라 운영하는 감각.</p>
+        <p>Codex CLI 멀티스텝 오케스트레이션 · proof-first 검증(dead 차단) · 자기진화(누적 메모리·HITL) · 비용/모델 인식. 에이전트를 “돌려보는” 게 아니라 운영하는 감각이에요.</p>
       </div>
       <div class="card">
         <div class="lab">게임 (게임 AI · 툴 · PM)</div>
         <h3>생산 시스템이 산출물</h3>
-        <p>AI로 게임을 기획→에셋→코드→검증까지 만드는 시스템. Game-PM Suite의 차별 멤버로, 다중관점 교차검증·proof-first 패턴이 Suite 전반과 공명합니다.</p>
+        <p>AI로 게임을 기획→에셋→코드→검증까지 만드는 시스템이에요. Game-PM Suite의 차별 멤버로, 다중관점 교차검증·proof-first 패턴이 Suite 전반과 맞닿아요.</p>
       </div>
     </div>
   </div>
@@ -411,11 +411,11 @@
     <div class="secnum">09 — 정직 · 한계</div>
     <h2>증명한 것과, 아직 아닌 것</h2>
     <ul class="limits">
-      <li><span class="ltag m">측정전</span><span><b>“지을수록 쉬워지는” 누적 효과는 아직 측정 전입니다.</b> 메커니즘과 코드는 ③Gate로 검증됐지만, 생산성 효과는 게임이 N개 이상 쌓인 뒤에 측정합니다.</span></li>
-      <li><span class="ltag">한계</span><span>생성에는 Codex CLI가 필요해 즉시 브라우저 데모가 불가합니다(플레이는 브라우저에서 OK). 멀티프레임 슬라이서·image_gen 1254px 고정·Chrome 의존은 알려진 제약입니다.</span></li>
-      <li><span class="ltag">HITL</span><span>룰 후보의 자동 승격은 0입니다. 활성화는 항상 작가 컨펌을 거칩니다.</span></li>
-      <li><span class="ltag">clean-room</span><span>공개 repo는 ③Gate 클린(시크릿 0). 타사 자산은 Codex CLI·Node/TS·React 등 도구뿐이며 MIT 범위입니다.</span></li>
-      <li><span class="ltag">범위</span><span>vault game-studio-pipeline은 작가의 설계(provisional)이고, AgentForge는 그 이론의 <b>독립 구현</b>입니다(동일 프로젝트 아님). 사용자 평가는 없습니다(1인 프로토타입).</span></li>
+      <li><span class="ltag m">측정전</span><span><b>“지을수록 쉬워지는” 누적 효과는 아직 측정 전이에요.</b> 메커니즘과 코드는 ③Gate로 검증됐지만, 생산성 효과는 게임이 N개 이상 쌓인 뒤에 측정해요.</span></li>
+      <li><span class="ltag">한계</span><span>게임을 <b>생성</b>하려면 Codex CLI가 필요해서, 바로 브라우저로 데모하긴 어려워요(<b>플레이</b>는 브라우저에서 돼요). 멀티프레임 슬라이서·image_gen 1254px 고정·Chrome 의존은 알려진 제약이에요.</span></li>
+      <li><span class="ltag">HITL</span><span>룰 후보가 자동으로 승격되는 일은 없어요. 활성화는 항상 작가 컨펌을 거쳐요.</span></li>
+      <li><span class="ltag">clean-room</span><span>공개 repo는 ③Gate 클린이에요(시크릿 0). 외부 자산은 Codex CLI·Node/TS·React 같은 도구뿐이고, 모두 MIT 범위예요.</span></li>
+      <li><span class="ltag">범위</span><span>vault game-studio-pipeline은 작가의 설계(provisional)이고, AgentForge는 그 이론을 <b>독립적으로 구현</b>한 거예요(같은 프로젝트는 아니에요). 사용자 평가는 아직 없어요(1인 프로토타입).</span></li>
     </ul>
   </div>
 </section>
@@ -425,12 +425,12 @@
     <div class="secnum">용어 풀이</div>
     <h2>비전문가용 한 줄</h2>
     <div class="gloss">
-      <div><b>Codex CLI</b><span>터미널에서 코드·이미지를 생성하는 AI 실행 도구. 여기선 Node가 단계별로 호출.</span></div>
-      <div><b>image_gen</b><span>Codex에 내장된 이미지 생성 — 게임 스프라이트(픽셀 그림)를 만든다.</span></div>
-      <div><b>headless</b><span>화면 없이 브라우저를 돌려, 게임이 진짜 작동하는지 자동 점검하는 방식.</span></div>
-      <div><b>reachability(proof-first)</b><span>“이 게임이 실제로 플레이·승리에 도달 가능한가”를 생성 후 증명하는 검증.</span></div>
-      <div><b>GDD</b><span>Game Design Document — 게임 기획서. 여기선 재미 규칙 + 엔진 실능력을 함께 담는다.</span></div>
-      <div><b>HITL</b><span>Human-in-the-loop — 자동화에 사람 승인 단계를 끼워, AI 단독 결정 막기.</span></div>
+      <div><b>Codex CLI</b><span>터미널에서 코드·이미지를 생성하는 AI 실행 도구예요. 여기선 Node가 단계별로 불러요.</span></div>
+      <div><b>image_gen</b><span>Codex에 내장된 이미지 생성이에요. 게임 스프라이트(픽셀 그림)를 만들어요.</span></div>
+      <div><b>headless</b><span>화면 없이 브라우저를 돌려서, 게임이 진짜 작동하는지 자동으로 점검하는 방식이에요.</span></div>
+      <div><b>reachability(proof-first)</b><span>“이 게임을 실제로 플레이해서 승리까지 갈 수 있나”를 만든 뒤에 증명하는 검증이에요.</span></div>
+      <div><b>GDD</b><span>Game Design Document, 게임 기획서예요. 여기선 재미 규칙과 엔진이 실제로 할 수 있는 일을 함께 담아요.</span></div>
+      <div><b>HITL</b><span>Human-in-the-loop이에요. 자동화 중간에 사람 승인 단계를 끼워서, AI가 혼자 결정하지 않게 해요.</span></div>
     </div>
   </div>
 </section>
@@ -438,7 +438,7 @@
 <div class="closing">
   <div class="wrap rv">
     <h2>통제된, 그리고 진화하는 생산</h2>
-    <p>AgentForge는 “AI가 게임을 만들어준다”가 아니라, 만드는 과정을 들여다보고·증명하고·누적하는 시스템입니다. 코드는 공개 repo에서 ③Gate로 재현됩니다.</p>
+    <p>AgentForge는 “AI가 게임을 만들어준다”가 아니에요. 만드는 과정을 들여다보고, 증명하고, 쌓아가는 시스템이에요. 코드는 공개 repo에서 ③Gate로 재현돼요.</p>
     <a class="cta" href="https://github.com/ljhljh0703-cmd/agent-forge" target="_blank" rel="noopener">GitHub에서 코드 보기 ↗</a>
   </div>
 </div>
