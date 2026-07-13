@@ -204,6 +204,44 @@
   .docmd pre{background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:.78rem;color:var(--ink-soft);line-height:1.65;margin:0 0 10px}
   .docmd pre .c{color:var(--ink-faint)}.docmd pre .k{color:var(--indigo)}.docmd pre .g{color:var(--ok)}
 
+  /* PROBLEM */
+  .probs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+  @media(max-width:760px){.probs{grid-template-columns:1fr}}
+  .prob{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:20px}
+  .prob .ph{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .prob .pg{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:rgba(255,125,107,.13);color:var(--warn);flex:0 0 auto}
+  .prob b{font-size:.98rem}
+  .prob p{margin:0;color:var(--ink-soft);font-size:.9rem;line-height:1.6}
+  .resolve{display:flex;gap:12px;align-items:flex-start;background:rgba(55,217,154,.06);border:1px solid rgba(55,217,154,.24);border-radius:13px;padding:16px 18px;color:var(--ink-soft);font-size:.95rem;line-height:1.65}
+  .resolve svg{flex:0 0 auto;color:var(--ok);margin-top:3px}
+  .resolve b{color:var(--ink)}
+
+  /* DECISION CARDS (reuse .hgrid/.hcard) */
+  .hcard .dn{font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;color:var(--cyan)}
+  .hcard .ev{margin-top:auto;font-family:var(--mono);font-size:.68rem;color:var(--ink-faint);border:1px solid var(--line);border-radius:6px;padding:3px 8px;align-self:flex-start}
+
+  /* TECH TABLE */
+  .tbl{width:100%;border-collapse:collapse;font-size:.9rem}
+  .tbl td{border-bottom:1px solid var(--line);padding:13px 14px;color:var(--ink-soft);vertical-align:top}
+  .tbl tr td:first-child{font-family:var(--mono);font-size:.78rem;color:var(--cyan);white-space:nowrap;width:118px}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl .m{font-family:var(--mono);font-size:.84em;color:var(--ink)}
+
+  /* PERSPECTIVES */
+  .persp{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.persp{grid-template-columns:1fr}}
+  .pcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+  .pcard .pl{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo)}
+  .pcard h3{font-size:1.12rem;margin:9px 0 10px}
+  .pcard p{margin:0;color:var(--ink-soft);font-size:.9rem;line-height:1.65}
+
+  /* GLOSSARY */
+  .glossary{display:grid;grid-template-columns:repeat(2,1fr);gap:0 28px}
+  @media(max-width:680px){.glossary{grid-template-columns:1fr}}
+  .gi{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
+  .gi dt{font-family:var(--mono);font-size:.8rem;color:var(--ink);white-space:nowrap;min-width:92px;font-weight:600}
+  .gi dd{margin:0;color:var(--ink-soft);font-size:.86rem;line-height:1.55}
+
   /* UNIVERSE */
   .universe{position:relative;padding:clamp(70px,10vw,120px) 0;text-align:center;overflow:hidden;border-top:1px solid var(--line);background:radial-gradient(900px 500px at 50% 120%, rgba(124,139,255,.18), transparent 70%)}
   .universe .stars{position:absolute;inset:0;pointer-events:none}
@@ -306,6 +344,30 @@
   </div>
 </section>
 
+<!-- PROBLEM -->
+<section class="block" id="problem">
+  <div class="wrap">
+    <div class="shead reveal">
+      <span class="eyebrow">01 · 문제</span>
+      <h2>AI로 게임을 만들 때 늘 막히는 두 가지</h2>
+    </div>
+    <div class="probs reveal">
+      <div class="prob">
+        <div class="ph"><span class="pg"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 10 8 10 8a13.2 13.2 0 0 1-1.67 2.68"/><path d="M6.6 6.6A13.5 13.5 0 0 0 2 12s3 8 10 8a9 9 0 0 0 5.4-1.6"/><path d="M2 2l20 20"/></svg></span><b>과정이 안 보인다</b></div>
+        <p>어디서 막혔는지, AI가 무엇을 했는지, 만든 코드가 실제로 도는지 알 수 없습니다.</p>
+      </div>
+      <div class="prob">
+        <div class="ph"><span class="pg"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></span><b>매번 처음부터</b></div>
+        <p>어제 만든 것을 오늘이 재활용하지 못합니다. 반복해 지어도 쌓이는 것이 없습니다.</p>
+      </div>
+    </div>
+    <div class="resolve reveal">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      <div>Agent Forge는 생성을 <b>단계로 쪼개 보이게</b> 하고, 바꾸기 전에 <b>플레이 가능성을 증명</b>하며, <b>지을수록 쌓이는</b> 생산을 지향합니다.</div>
+    </div>
+  </div>
+</section>
+
 <!-- TRACE (작동 원리) -->
 <section class="block" id="trace">
   <div class="wrap">
@@ -375,6 +437,24 @@
   </div>
 </section>
 
+<!-- DECISIONS -->
+<section class="block" id="decisions">
+  <div class="wrap">
+    <div class="shead reveal">
+      <span class="eyebrow">설계 결정</span>
+      <h2>라벨이 아니라, 작동하는 코드로</h2>
+      <p class="sub">설계로만 있던 게임 스튜디오 이론을 실제 작동 코드로 옮긴, 다섯 가지 핵심 결정입니다. 각 결정은 공개 저장소의 모듈로 재현됩니다.</p>
+    </div>
+    <div class="hgrid reveal">
+      <div class="hcard"><span class="dn">결정 1</span><b>엔진 · Codex CLI 오케스트레이션</b><p>Node가 코드 생성과 이미지 생성을 한 파이프라인에 묶습니다. 이미지는 에이전트가 한 말이 아니라 실제 파일로 회수합니다.</p><span class="ev">codex-cli.ts</span></div>
+      <div class="hcard"><span class="dn">결정 2</span><b>기획 · 구현 범위를 아는 기획서</b><p>재미 규칙과 엔진이 실제 할 수 있는 것을 함께 담아, 구현 불가능한 디자인을 걸러냅니다. 범위 밖은 조용히 버리지 않고 다운스코프로 표시합니다.</p><span class="ev">template-api.ts</span></div>
+      <div class="hcard"><span class="dn">결정 3</span><b>검증 · 플레이 가능성 먼저</b><p>게임이 실제로 움직이고 점수가 바뀌고 승패에 닿는지 화면 없이 확인합니다. 멈춘 화면은 통과시키지 않습니다.</p><span class="ev">reachability.ts</span></div>
+      <div class="hcard"><span class="dn">결정 4</span><b>자기진화 · 지을수록 누적</b><p>완성한 게임은 재사용 스캐폴드로 쌓이고, 같은 에러가 세 번 이상이면 사전 체크 룰 후보가 됩니다. 룰 활성화는 사람이 확인합니다.</p><span class="ev">evolution.ts</span></div>
+      <div class="hcard"><span class="dn">결정 5</span><b>에셋 · Canvas 백드</b><p>생성한 스프라이트를 배경 제거·묶음 처리해 실제 그림으로 그립니다. HTML 요소가 아니라 Canvas에 직접 렌더합니다.</p><span class="ev">assets pipeline</span></div>
+    </div>
+  </div>
+</section>
+
 <!-- PLAY (실제 게임) -->
 <section class="block" id="play">
   <div class="wrap">
@@ -416,7 +496,7 @@
       <div class="dom">
         <div class="dh"><span class="dg"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span><b>앱 · 디자인 시스템</b><span class="st">연계</span></div>
         <p>같은 검증·누적 규율을 UI 산출로 확장합니다. 컴포넌트 · 프리셋 · 이펙트를 하나의 디자인 스튜디오로 정리한 별도 자산과 연결됩니다.</p>
-        <a class="dlink" href="#">디자인 스튜디오 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9"/></svg></a>
+        <a class="dlink" href="https://ljhljh0703-cmd.github.io/VDS/" target="_blank" rel="noopener">디자인 스튜디오 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9"/></svg></a>
       </div>
       <div class="dom">
         <div class="dh"><span class="dg"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg></span><b>문서</b><span class="st">생성 샘플</span></div>
@@ -481,6 +561,49 @@ reset()     <span class="g">→ 상태 초기화 (재시작)</span></pre>
   </div>
 </section>
 
+<!-- TECH STACK -->
+<section class="block" id="stack">
+  <div class="wrap">
+    <div class="shead reveal">
+      <span class="eyebrow">기술 스택</span>
+      <h2>무엇으로 만들었나</h2>
+    </div>
+    <table class="tbl reveal">
+      <tbody>
+        <tr><td>오케스트레이터</td><td><span class="m">Node · TypeScript</span> · Codex CLI (codex exec --json · 내장 image_gen)</td></tr>
+        <tr><td>모듈</td><td><span class="m">codex-cli · generate · template-api · reachability · evolution</span></td></tr>
+        <tr><td>검증</td><td>Chrome headless · 관찰 digest · 단계 실행 커맨드</td></tr>
+        <tr><td>에셋</td><td>image_gen → 배경 제거 → atlas → <span class="m">Canvas drawImage</span></td></tr>
+        <tr><td>모니터</td><td>React 18 · Vite 5 · TypeScript strict · Tailwind (생성 결과 · 메모리 시각화)</td></tr>
+        <tr><td>산출</td><td><span class="m">runs/&lt;id&gt;/</span> (기획 · 에셋 · 게임 · 검증 · 메타) · MIT</td></tr>
+      </tbody>
+    </table>
+    <p class="note reveal">초기 버전(브라우저 Gemini · DOM 웹앱)은 레거시입니다 — 진화 궤적의 증거로만 남겼습니다.</p>
+  </div>
+</section>
+
+<!-- PERSPECTIVES -->
+<section class="block" id="perspectives">
+  <div class="wrap">
+    <div class="shead reveal">
+      <span class="eyebrow">어떻게 읽히나</span>
+      <h2>두 직무 관점</h2>
+    </div>
+    <div class="persp reveal">
+      <div class="pcard">
+        <span class="pl">AI 응용 엔지니어 · FDE</span>
+        <h3>프로덕션 에이전트 시스템</h3>
+        <p>멀티스텝 오케스트레이션 · 플레이 가능성 검증(멈춘 화면 차단) · 자기진화(누적 메모리 · 사람 승인) · 비용/모델 인식. 에이전트를 "돌려보는" 게 아니라 운영하는 감각입니다.</p>
+      </div>
+      <div class="pcard">
+        <span class="pl">게임 · 게임 AI · 툴 · PM</span>
+        <h3>생산 시스템이 산출물</h3>
+        <p>AI로 게임을 기획→에셋→코드→검증까지 만드는 시스템입니다. 다중 관점 교차검증과 플레이 가능성 검증 패턴이 다른 작업에도 그대로 이어집니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- HARNESS -->
 <section class="block" id="harness">
   <div class="wrap">
@@ -500,6 +623,24 @@ reset()     <span class="g">→ 상태 초기화 (재시작)</span></pre>
   </div>
 </section>
 
+<!-- GLOSSARY -->
+<section class="block" id="glossary">
+  <div class="wrap">
+    <div class="shead reveal">
+      <span class="eyebrow">용어</span>
+      <h2>비전문가용 한 줄 풀이</h2>
+    </div>
+    <dl class="glossary reveal">
+      <div class="gi"><dt>Codex CLI</dt><dd>터미널에서 코드와 이미지를 생성하는 AI 실행 도구입니다. 여기선 Node가 단계별로 부릅니다.</dd></div>
+      <div class="gi"><dt>image_gen</dt><dd>Codex에 내장된 이미지 생성입니다. 게임 스프라이트(픽셀 그림)를 만듭니다.</dd></div>
+      <div class="gi"><dt>headless</dt><dd>화면 없이 브라우저를 돌려, 게임이 진짜 작동하는지 자동으로 점검하는 방식입니다.</dd></div>
+      <div class="gi"><dt>플레이 가능성</dt><dd>이 게임을 실제로 플레이해 승리까지 갈 수 있는지를 만든 뒤에 증명하는 검증입니다.</dd></div>
+      <div class="gi"><dt>GDD</dt><dd>게임 기획서(Game Design Document)입니다. 여기선 재미 규칙과 엔진의 실제 능력을 함께 담습니다.</dd></div>
+      <div class="gi"><dt>사람 승인 게이트</dt><dd>자동화 중간에 사람 확인 단계를 끼워, AI가 혼자 결정하지 않게 하는 방식입니다.</dd></div>
+    </dl>
+  </div>
+</section>
+
 <!-- UNIVERSE -->
 <section class="universe">
   <div class="stars" id="stars" aria-hidden="true"></div>
@@ -514,7 +655,7 @@ reset()     <span class="g">→ 상태 초기화 (재시작)</span></pre>
     <div class="planets">
       <span class="planet cur"><span class="o"></span>Agent Forge</span>
       <span class="planet"><span class="o" style="background:#7c8bff"></span>AI 게임 포트폴리오</span>
-      <span class="planet"><span class="o" style="background:#f5b642"></span>디자인 스튜디오</span>
+      <a class="planet" href="https://ljhljh0703-cmd.github.io/VDS/" target="_blank" rel="noopener" style="text-decoration:none"><span class="o" style="background:#f5b642"></span>디자인 스튜디오</a>
     </div>
   </div>
 </section>
