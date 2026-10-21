@@ -2,6 +2,51 @@
 
 **한국어** | [English](README.en.md)
 
+> 아이디어 한 줄을 받아 기획서 → 그림 에셋 → 브라우저 게임 코드 → 실제로 플레이되는지 자동 확인까지 단계별로 돌리는 게임 제작 파이프라인과, 그 과정을 보여 주는 대시보드.
+>
+> 작품 페이지: https://ljhljh0703-cmd.github.io/agent-forge/portfolio.html
+
+**실행**
+
+```bash
+npm install
+npm run generate -- "슬라임 대피 서바이벌"   # 게임 만들기 → runs/<id>/ (Codex CLI 설치·로그인 필요)
+npm run dev                                   # 대시보드 http://localhost:5173
+```
+
+게임 생성에는 Codex CLI 로그인이 필요하다. 대시보드의 AI 호출을 쓸 때만 `.env`에 `VITE_AI_API_KEY` · `VITE_AI_MODEL`.
+
+**시험**
+
+```bash
+npm run type-check                # 대시보드 타입 검사
+npm run orchestrator:type-check   # 파이프라인 타입 검사
+npm run lint
+npm run build
+```
+
+단위 테스트 파일은 없다. 게임이 실제로 플레이되는지(플레이어가 움직이는지, 점수가 바뀌는지, 승패에 닿는지)는 `generate`의 검증 단계(`orchestrator/src/reachability.ts`)가 확인하고 `runs/<id>/proof/`에 남긴다.
+
+2026-10-21 컨테이너에서 돌린 결과: 타입 검사 두 개 오류 0 · lint 오류 0(경고 20) · build 성공.
+
+**구조**
+
+```
+orchestrator/src/   파이프라인(기획서·에셋·코드 생성은 Codex CLI 호출, 플레이 검증, 템플릿·오류 기록 추가)
+orchestrator/knowledge/   기획 단계에 넣는 설계 규칙·템플릿 API
+src/                대시보드(React · Vite)
+runs/               파이프라인 실행 기록 6개(기획서·에셋·게임·검증 자료)
+studio-memory/      재사용 템플릿 · 반복 오류 기록
+```
+
+**누가 무엇을**
+
+- 내가 정한 것: 기획·설계·판정 (이주형)
+- AI가 짠 것: 코드 작성, AI 코딩 도구와 함께. 커밋 25개 중 11개에 `Co-Authored-By: Claude` 표기
+- 내가 확인한 것: 검증 (이주형)
+
+---
+
 아이디어 한 줄을 Codex CLI 파이프라인이 **기획→에셋→코드→검증→자기진화**로 도는 AI 게임 스튜디오.
 
 [![v2 Codex 오케스트레이터](https://img.shields.io/badge/엔진-Codex_CLI_오케스트레이터-black)](.)
