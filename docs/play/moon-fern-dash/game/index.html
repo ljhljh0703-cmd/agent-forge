@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Moon Fern Dash</title>
+  <style>
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: #10161f;
+      color: #f3f7f0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+    }
+
+    canvas {
+      width: min(100vw, 960px);
+      height: min(100vh, 640px);
+      max-width: 100vw;
+      max-height: 100vh;
+      display: block;
+      background: #111821;
+    }
+  </style>
+</head>
+<body>
+<canvas id="game" width="960" height="640" aria-label="Moon Fern Dash"></canvas>
+
+<script>
+(() => {
+  "use strict";
+
+  /* Reused Scaffold Candidate: template-top-down-2d-dash-collectible-score-fail-timer-dash-input */
+
+  const canvas = document.getElementById("game");
+  const ctx = canvas.getContext("2d");
+
+  const sprite = new Image();
+  sprite.src = "../assets/codex-sprite.png";
+
+  const W = canvas.width;
+  const H = canvas.height;
+  const winTarget = 2;
+  const failTime = 10;
+
+  const keys = {
+    left: false,
+    right: false,
+    up: false,
+    down: false,
+    dash: false
+  };
+
+  const player = {
+    x: 142,
+    y: 132,
+    r: 22,
+    speed: 150,
+    dashSpeed: 430,
+    dashTime: 0,
+    dashCooldown: 0,
+    moved: false,
+    lastDx: 1,
+    lastDy: 0,
+    trail: []
+  };
+
+  const motes = [
+    { x: 315, y: 305, r: 18, active: true, phase: 0.2 },
+    { x: 560, y: 510, r: 18, active: true, phase: 1.4 }
+  ];
+
+  let status = "play";
+  let score = 0;
+  let frame = 0;
+  let timer = failTime;
+  let lastT = 0;
+  let pointerDown = false;
+
+  function reset() {
+    player.x = 142;
+    player.y = 132;
+    player.dashTime = 0;
+    player.dashCooldown = 0;
+    player.moved = false;
+    player.lastDx = 1;
+    player.lastDy = 0;
+    player.trail.length = 0;
+
+    motes[0].x = 315;
+    motes[0].y = 305;
+    motes[0].active = true;
+    motes[1].x = 560;
+    motes[1].y = 510;
+    motes[1].active = true;
+
+    status = "play";
+    score = 0;
+    timer = failTime;
+    frame = 0;
+    updateDigest();
+  }
+
+  function updateDigest() {
+    window.__af = {
+      status,
+      score,
+      winTarget,
+      playerMoved: player.moved,
+      playerPos: { x: Math.round(player.x), y: Math.round(player.y) },
+      frame
+    };
+  }
+
+  function readInput(input) {
+    if (!input) return keys;
+    return {
+      left: !!input.left,
+      right: !!input.right,
+      up: !!input.up,
+      down: !!input.down,
+      dash: !!input.dash
+    };
+  }
+
+  function clamp(v, min, max) {
+    return Math.max(min, Math.min(max, v));
+  }
+
+  function update(dt, input) {
+    dt = Math.max(0, Math.min(0.1, Number(dt) || 0));
+    const control = readInput(input);
+
+    if (status !== "play") {
+      frame++;
+      render();
+      updateDigest();
+      return;
+    }
+
+    timer -= dt;
+    if (timer <= 0) {
+      timer = 0;
+      status = "fail";
+    }
+
+    let dx = 0;
+    let dy = 0;
+    if (control.left) dx -= 1;
+    if (control.right) dx += 1;
+    if (control.up) dy -= 1;
+    if (control.down) dy += 1;
+
+    const len = Math.hypot(dx, dy);
+    if (len > 0) {
+      dx /= len;
+      dy /= len;
+      player.lastDx = dx;
+      player.lastDy = dy;
+    }
+
+    if (control.dash && player.dashCooldown <= 0 && len > 0) {
+      player.dashTime = 0.18;
+      player.dashCooldown = 0.72;
+      player.trail.push({ x: player.x, y: player.y, a: 0.55 });
+    }
+
+    const wasX = player.x;
+    const wasY = player.y;
+    const dashing = player.dashTime > 0;
+    const speed = dashing ? player.dashSpeed : player.speed;
+
+    player.x += dx * speed * dt;
+    player.y += dy * speed * dt;
+    player.x = clamp(player.x, player.r, W - player.r);
+    player.y = clamp(player.y, player.r, H - player.r);
+
+    if (player.x !== wasX || player.y !== wasY) {
+      player.moved = true;
+      if (dashing || frame % 3 === 0) {
+        player.trail.push({ x: wasX, y: wasY, a: dashing ? 0.52 : 0.18 });
+      }
+    }
+
+    player.dashTime = Math.max(0, player.dashTime - dt);
+    player.dashCooldown = Math.max(0, player.dashCooldown - dt);
+
+    for (const t of player.trail) t.a -= dt * 1.8;
+    while (player.trail.length && player.trail[0].a <= 0) player.trail.shift();
+
+    for (const mote of motes) {
+      if (!mote.active) continue;
+      const hit = Math.hypot(player.x - mote.x, player.y - mote.y) <= player.r + mote.r;
+      if (hit) {
+        mote.active = false;
+        score++;
+        if (score >= winTarget) status = "win";
+      }
+    }
+
+    frame++;
+    render();
+    updateDigest();
+  }
+
+  function drawBackground() {
+    const g = ctx.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0, "#152333");
+    g.addColorStop(0.52, "#101922");
+    g.addColorStop(1, "#182818");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.globalAlpha = 0.45;
+    ctx.fillStyle = "#d6f7c8";
+    for (let i = 0; i < 44; i++) {
+      const x = (i * 137 + frame * 0.08) % W;
+      const y = (i * 71) % H;
+      const r = 1 + (i % 3);
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    ctx.strokeStyle = "rgba(182, 233, 183, 0.08)";
+    ctx.lineWidth = 1;
+    for (let x = 40; x < W; x += 80) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x - 80, H);
+      ctx.stroke();
+    }
+  }
+
+  function drawMotes() {
+    for (const mote of motes) {
+      if (!mote.active) continue;
+      const pulse = 1 + Math.sin(frame * 0.08 + mote.phase) * 0.12;
+      const glow = ctx.createRadialGradient(mote.x, mote.y, 2, mote.x, mote.y, mote.r * 3.4);
+      glow.addColorStop(0, "rgba(230,255,172,0.95)");
+      glow.addColorStop(0.28, "rgba(140,230,190,0.5)");
+      glow.addColorStop(1, "rgba(140,230,190,0)");
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(mote.x, mote.y, mote.r * 3.4 * pulse, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#e7ffac";
+      ctx.beginPath();
+      ctx.arc(mote.x, mote.y, mote.r * pulse, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function drawPlayer() {
+    for (const mark of player.trail) {
+      ctx.globalAlpha = Math.max(0, mark.a);
+      ctx.fillStyle = "#a5f3d0";
+      ctx.beginPath();
+      ctx.arc(mark.x, mark.y, player.r * 0.9, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    const size = player.r * (player.dashTime > 0 ? 2.6 : 2.25);
+    ctx.save();
+    ctx.translate(player.x, player.y);
+    ctx.rotate(Math.atan2(player.lastDy, player.lastDx) + Math.PI / 2);
+
+    ctx.shadowColor = player.dashTime > 0 ? "#f0ff9b" : "#9ff5c4";
+    ctx.shadowBlur = player.dashTime > 0 ? 28 : 15;
+
+    if (sprite.complete && sprite.naturalWidth > 0) {
+      ctx.drawImage(sprite, -size / 2, -size / 2, size, size);
+    } else {
+      ctx.fillStyle = "#bdf7c8";
+      ctx.beginPath();
+      ctx.ellipse(0, 0, size * 0.34, size * 0.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#405f5f";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0, size * 0.38);
+      ctx.lineTo(0, -size * 0.44);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawUi() {
+    ctx.fillStyle = "rgba(7, 12, 18, 0.64)";
+    ctx.fillRect(18, 18, 260, 76);
+
+    ctx.fillStyle = "#f5ffe8";
+    ctx.font = "700 22px system-ui, sans-serif";
+    ctx.fillText("Score " + score + " / " + winTarget, 34, 48);
+
+    ctx.font = "600 18px system-ui, sans-serif";
+    ctx.fillStyle = timer <= 3 ? "#ffd1b3" : "#cfead4";
+    ctx.fillText("Moonlight " + timer.toFixed(1), 34, 76);
+
+    ctx.fillStyle = "rgba(255,255,255,0.16)";
+    ctx.fillRect(710, 30, 190, 12);
+    ctx.fillStyle = player.dashCooldown <= 0 ? "#e7ff9a" : "#8dd8bf";
+    ctx.fillRect(710, 30, 190 * (1 - clamp(player.dashCooldown / 0.72, 0, 1)), 12);
+    ctx.fillStyle = "#dcefe3";
+    ctx.font = "600 14px system-ui, sans-serif";
+    ctx.fillText("Dash", 710, 62);
+  }
+
+  function drawOverlay() {
+    if (status === "play") return;
+
+    ctx.fillStyle = "rgba(5, 9, 14, 0.68)";
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#f6ffe9";
+    ctx.font = "800 56px system-ui, sans-serif";
+    ctx.fillText(status === "win" ? "Moon Fern Bloomed" : "Moonlight Faded", W / 2, H / 2 - 24);
+
+    ctx.font = "600 22px system-ui, sans-serif";
+    ctx.fillStyle = "#d5ecd8";
+    ctx.fillText("Click to restart", W / 2, H / 2 + 28);
+    ctx.textAlign = "start";
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, W, H);
+    drawBackground();
+    drawMotes();
+    drawPlayer();
+    drawUi();
+    drawOverlay();
+  }
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") keys.left = true;
+    if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = true;
+    if (e.key === "ArrowUp" || e.key === "w" || e.key === "W") keys.up = true;
+    if (e.key === "ArrowDown" || e.key === "s" || e.key === "S") keys.down = true;
+    if (e.key === " " || e.key === "Shift") keys.dash = true;
+  });
+
+  window.addEventListener("keyup", (e) => {
+    if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") keys.left = false;
+    if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = false;
+    if (e.key === "ArrowUp" || e.key === "w" || e.key === "W") keys.up = false;
+    if (e.key === "ArrowDown" || e.key === "s" || e.key === "S") keys.down = false;
+    if (e.key === " " || e.key === "Shift") keys.dash = false;
+  });
+
+  canvas.addEventListener("pointerdown", () => {
+    pointerDown = true;
+    if (status !== "play") reset();
+  });
+
+  canvas.addEventListener("pointerup", () => {
+    pointerDown = false;
+  });
+
+  window.__afStep = function(input, dt) {
+    update(dt, input);
+    return window.__af;
+  };
+
+  function loop(t) {
+    if (!lastT) lastT = t;
+    const dt = (t - lastT) / 1000;
+    lastT = t;
+    update(dt, keys);
+    requestAnimationFrame(loop);
+  }
+
+  sprite.onload = () => render();
+
+  reset();
+  render();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
